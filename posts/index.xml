@@ -6,9 +6,18 @@
     <description>Recent content in Posts on Bert&#39;s Corner</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 02 Aug 2022 14:04:39 +0200</lastBuildDate><atom:link href="https://bert.neef.nu/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 07 Aug 2022 13:54:54 +0200</lastBuildDate><atom:link href="https://bert.neef.nu/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Limiting_thoughts</title>
+      <title>Incremental Progress</title>
+      <link>https://bert.neef.nu/posts/incremental/</link>
+      <pubDate>Sun, 07 Aug 2022 13:54:54 +0200</pubDate>
+      
+      <guid>https://bert.neef.nu/posts/incremental/</guid>
+      <description>On Friday I passed my AWS Solution Architect Professional exam. I did spend some time studying but since technology builds upon existing layers, I could build upon my existing knowledge and experience. Foundational layers related to Business Continuity or DNS always pop up, and having been advising customers about Azure, designing and developing solutions upon Azure for the last 6 years helps with a cloud mindset which is not really that different between AWS and Azure.</description>
+    </item>
+    
+    <item>
+      <title>Limiting thoughts</title>
       <link>https://bert.neef.nu/posts/limiting_thoughts/</link>
       <pubDate>Tue, 02 Aug 2022 14:04:39 +0200</pubDate>
       
