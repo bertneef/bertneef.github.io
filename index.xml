@@ -4,35 +4,37 @@
     <title>Bert&#39;s Corner</title>
     <link>https://bert.neef.nu/</link>
     <description>Recent content on Bert&#39;s Corner</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 07 Aug 2022 13:54:54 +0200</lastBuildDate><atom:link href="https://bert.neef.nu/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 04 Feb 2025 15:04:39 +0200</lastBuildDate>
+    <atom:link href="https://bert.neef.nu/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Been a while</title>
+      <link>https://bert.neef.nu/posts/been_a_while/</link>
+      <pubDate>Tue, 04 Feb 2025 15:04:39 +0200</pubDate>
+      <guid>https://bert.neef.nu/posts/been_a_while/</guid>
+      <description>&lt;p&gt;Well it&amp;rsquo;s been about 2.5 years since my previous entry. Kept thinking I should get back to this but just never seemed to get round to it.&#xA;What has happened in the meantime:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;I stopped running due to an injury, probably due to trying to hard and not using decent enough shoes, this injury kept playing up when I tried to get back into running again, so after a while I just stopped trying and accepted&lt;/li&gt;&#xA;&lt;li&gt;About a year after that I joined a gym, rebuild some of my endurance and gained a bit of strength&lt;/li&gt;&#xA;&lt;li&gt;Took up running again, first on a tread mill and then on the street again. Moved from 5 to 10KM runs&lt;/li&gt;&#xA;&lt;li&gt;Improved my speed, improved my distances, have run a few runs of more than 22KM&lt;/li&gt;&#xA;&lt;li&gt;Ran my first 8KM race last Sunday, couldn&amp;rsquo;t hit the time I wanted, lost a bit too much time in getting past slower runners, but it was fun. Definitely something I would like to do again, which is a good thing because I already signed up for a 15KM race before running the 8KM&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;So I have gone beyond my expectations, of course the downside is that I now own multiple pairs of running shoes and have clothes I only use for running / the gym. Which also is something I never expected.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Incremental Progress</title>
       <link>https://bert.neef.nu/posts/incremental/</link>
       <pubDate>Sun, 07 Aug 2022 13:54:54 +0200</pubDate>
-      
       <guid>https://bert.neef.nu/posts/incremental/</guid>
-      <description>On Friday I passed my AWS Solution Architect Professional exam. I did spend some time studying but since technology builds upon existing layers, I could build upon my existing knowledge and experience. Foundational layers related to Business Continuity or DNS always pop up, and having been advising customers about Azure, designing and developing solutions upon Azure for the last 6 years helps with a cloud mindset which is not really that different between AWS and Azure.</description>
+      <description>&lt;p&gt;On Friday I passed my AWS Solution Architect Professional exam. I did spend some time studying but since technology builds upon existing layers, I could build upon my existing knowledge and experience. Foundational layers related to Business Continuity or DNS always pop up, and having been advising customers about Azure, designing and developing solutions upon Azure for the last 6 years helps with a cloud mindset which is not really that different between AWS and Azure. Of course some things are really different but that&amp;rsquo;s where incremental progress comes in, figure out where the changes are and study those. No need to start from scratch. Of course this is not just limited to technology, we can often build upon existing layers, skills can be transferable, going from running 0 to 1KM is harder than from 5 to 6KM, a foundation helps.&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Limiting thoughts</title>
       <link>https://bert.neef.nu/posts/limiting_thoughts/</link>
       <pubDate>Tue, 02 Aug 2022 14:04:39 +0200</pubDate>
-      
       <guid>https://bert.neef.nu/posts/limiting_thoughts/</guid>
-      <description>Today I ran 5KM. And altough it&amp;rsquo;s nothing special, plenty of people run greater distances each day for me it was a first. My time was actually worse than expected but it didn&amp;rsquo;t matter, I had proven my past self wrong. For years I was sure I couldn&amp;rsquo;t run at all, anything above a 100M was simply impossible. But about 7 weeks ago something changed and I just tried running for half a minute.</description>
+      <description>&lt;p&gt;Today I ran 5KM. And altough it&amp;rsquo;s nothing special, plenty of people run greater distances each day for me it was a first. My time was actually worse than expected but it didn&amp;rsquo;t matter, I had proven my past self wrong. For years I was sure I couldn&amp;rsquo;t run at all, anything above a 100M was simply impossible. But about 7 weeks ago something changed and I just tried running for half a minute. And I went on from there.&#xA;I am sure I won&amp;rsquo;t run really fast and I probably won&amp;rsquo;t do anything beyond 10KM but it did show me I can be my own worst enemy, when it comes to my mental capabilities I have always had a growth mindset but it turned out it didn&amp;rsquo;t extend beyond. Thoughts can change. Some limits are hard but don&amp;rsquo;t let those stop you from trying, there&amp;rsquo;s usually enough room between where you are and the actual limit.&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Hello</title>
       <link>https://bert.neef.nu/posts/hello/</link>
       <pubDate>Wed, 13 Jul 2022 19:39:41 +0200</pubDate>
-      
       <guid>https://bert.neef.nu/posts/hello/</guid>
-      <description>Test 1.2.3</description>
+      <description>&lt;p&gt;Test 1.2.3&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

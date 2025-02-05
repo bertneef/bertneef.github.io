@@ -2,13 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://bert.neef.nu/</loc>
-    <lastmod>2022-08-07T13:54:54+02:00</lastmod>
+    <loc>https://bert.neef.nu/posts/been_a_while/</loc>
+    <lastmod>2025-02-04T15:04:39+02:00</lastmod>
   </url><url>
-    <loc>https://bert.neef.nu/posts/incremental/</loc>
-    <lastmod>2022-08-07T13:54:54+02:00</lastmod>
+    <loc>https://bert.neef.nu/</loc>
+    <lastmod>2025-02-04T15:04:39+02:00</lastmod>
   </url><url>
     <loc>https://bert.neef.nu/posts/</loc>
+    <lastmod>2025-02-04T15:04:39+02:00</lastmod>
+  </url><url>
+    <loc>https://bert.neef.nu/posts/incremental/</loc>
     <lastmod>2022-08-07T13:54:54+02:00</lastmod>
   </url><url>
     <loc>https://bert.neef.nu/posts/limiting_thoughts/</loc>

@@ -4,7 +4,8 @@
     <title>Tags on Bert&#39;s Corner</title>
     <link>https://bert.neef.nu/tags/</link>
     <description>Recent content in Tags on Bert&#39;s Corner</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://bert.neef.nu/tags/index.xml" rel="self" type="application/rss+xml" />
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="https://bert.neef.nu/tags/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>
