@@ -6,8 +6,15 @@
     <description>Recent content on Bert&#39;s Corner</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 04 Feb 2025 15:04:39 +0200</lastBuildDate>
+    <lastBuildDate>Fri, 07 Feb 2025 16:38:57 +0100</lastBuildDate>
     <atom:link href="https://bert.neef.nu/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Old ways / New things</title>
+      <link>https://bert.neef.nu/posts/post-2025-02-07t163857&#43;0100/</link>
+      <pubDate>Fri, 07 Feb 2025 16:38:57 +0100</pubDate>
+      <guid>https://bert.neef.nu/posts/post-2025-02-07t163857&#43;0100/</guid>
+      <description>&lt;p&gt;I just noticed I wanted to start this post with &amp;ldquo;Well&amp;rdquo;, which would make 2 in a row. So lets not do that. I did manage to get my Feedreader back under control, more details will follow but it was a fun little excercise in some XML parsing, some automatic checks, followed by some additional manual checks and dealing with a RealmDB (which was actually the first time I encountered this DB type, would have expected SQLite) to get a backup of all the Starred items. It was fun, nothing too complex, I do plan to write it up and try to replicate it using some LLM. Another fun little experiment.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Been a while</title>
       <link>https://bert.neef.nu/posts/been_a_while/</link>
