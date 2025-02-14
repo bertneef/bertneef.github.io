@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us">
+<head>
+  <link href="https://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="generator" content="Hugo 0.143.1">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>LLM as a coding assistant &middot; Bert&#39;s Corner</title>
+  <meta name="description" content="" />
+
+  
+  <link type="text/css" rel="stylesheet" href="https://bert.neef.nu/css/print.css" media="print">
+  <link type="text/css" rel="stylesheet" href="https://bert.neef.nu/css/poole.css">
+  <link type="text/css" rel="stylesheet" href="https://bert.neef.nu/css/syntax.css">
+  <link type="text/css" rel="stylesheet" href="https://bert.neef.nu/css/hyde.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Abril+Fatface|PT+Sans:400,400i,700">
+
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  
+</head>
+
+  <body class="theme-base-0b ">
+  <aside class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <a href="https://bert.neef.nu/"><h1>Bert&#39;s Corner</h1></a>
+      <p class="lead">
+       &lt;todo: add a meaningful description&gt; 
+      </p>
+    </div>
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li><a href="https://bert.neef.nu/">Home</a> </li>
+        <li><a href="https://github.com/bertneef/"> Github </a></li><li><a href="https://www.linkedin.com/in/bert-neef-b1676a4"> LinkedIn </a></li>
+      </ul>
+    </nav>
+
+    <p>&copy; 2025. All rights reserved. </p>
+  </div>
+</aside>
+
+    <main class="content container">
+    <div class="post">
+  <h1>LLM as a coding assistant</h1>
+  <time datetime=2025-02-14T15:34:46&#43;0100 class="post-date">Fri, Feb 14, 2025</time>
+  <p>Having written the pipeline wrangling Shiny script (around 80 lines of R code) the old fashioned way I was curious to see how LLMs would handle it. Having access to MS Copilot and to the free tier of Claude I have tried both of these.</p>
+<p>To keep it fair I tried the same prompt with both, and the results were very close for both LLMs, I asked for a partial match for &ldquo;Won&rdquo; in a certain field and Claude coded an exact match, both LLMs showed row numbers in the datagrids which I had explicitely asked for not to be shown and in both cases irrelevant old data was shown, due to improper handling of dates.</p>
+<p>In Claude I used two messages to fix the issues, one for the partial match and another one for the row numbers and irrelevant data. In Copilot I have given up in fruststration, I can get some things fixed but I really have to provide clear hints based on my own understanding of R. So while in Claude I moved on to improving the script with nicer presentation (something I didn&rsquo;t bother with in my own attempt) I have decided not to waste too much time on Copilot for code generation.</p>
+<p>Of course Claude isn&rsquo;t perfect either, previous attempts were better than Copilot but still ran into strange issues. In this case I am trying to get some layout fixes in, it&rsquo;s getting there but I am out of free messages. But that&rsquo;s just improvements, I managed to get something better than what I had come up on my own in a very short amount of time. Of course it helps to have done the work before so I can write better prompts :)</p>
+<p>In summary: when doing anything with coding, look to Claude first instead of Copilot.</p>
+
+</div>
+
+
+    </main>
+
+    
+      
+    
+  </body>
+</html>
