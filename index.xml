@@ -6,8 +6,15 @@
     <description>Recent content on Bert&#39;s Corner</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 14 Feb 2025 15:34:46 +0100</lastBuildDate>
+    <lastBuildDate>Sun, 16 Feb 2025 12:52:27 +0100</lastBuildDate>
     <atom:link href="https://bert.neef.nu/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Further LLM assisted coding</title>
+      <link>https://bert.neef.nu/posts/post-2025-02-16t125227&#43;0100/</link>
+      <pubDate>Sun, 16 Feb 2025 12:52:27 +0100</pubDate>
+      <guid>https://bert.neef.nu/posts/post-2025-02-16t125227&#43;0100/</guid>
+      <description>&lt;p&gt;To follow up on my previous posts, I have tried to recreate the OPML check script I created for the Reeder OPML export through LLMs, no luck yet with Claude or Copilot. I know Microsoft Copilot is based on ChatGPT but I was curious if there was a difference in ability, so I logged into the ChatGPT app. Trying the same prompt I had tried with Claude and Copilot. The first result looked very promising, it didn&amp;rsquo;t reference a R package which was no longer on CRAN, and it managed to process quite a few entries in the OPML file without any issues. It did run into an issue later on but that was easily fixed by a single message to ChatGPT with the error message. Overall I was impressed.&#xA;Next step was to reattempt the pipeline wrangling Shiny script. It produced a working version with the initial prompt, I moved on to improvements and through a rather smooth process I ended up with something which was fit for purpose and maintainable.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>LLM as a coding assistant</title>
       <link>https://bert.neef.nu/posts/post-2025-02-14t153446&#43;0100/</link>
