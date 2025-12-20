@@ -102,6 +102,7 @@
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       margin-bottom: 2rem;
+      overflow-x: auto;
     }
 
     section h2 {
@@ -234,6 +235,8 @@
       gap: 1px;
       background: #ddd;
       border: 1px solid #ddd;
+      width: 100%;
+      overflow-x: auto;
     }
 
     .calendar-day-header {
@@ -419,13 +422,22 @@
 
     /* ===== RESPONSIVE DESIGN ===== */
     @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+
       header {
         flex-direction: column;
         gap: 1rem;
+        padding: 1rem;
       }
 
       header h1 {
         font-size: 1.5rem;
+      }
+
+      section {
+        padding: 1rem;
       }
 
       .template-selector {
@@ -436,13 +448,24 @@
         width: 100%;
       }
 
+      .calendar-grid {
+        font-size: 0.8rem;
+        min-width: auto;
+      }
+
       .calendar-day {
         min-height: 60px;
-        font-size: 0.875rem;
+        font-size: 0.75rem;
+        padding: 0.25rem;
       }
 
       .date-number {
-        font-size: 0.95rem;
+        font-size: 0.85rem;
+      }
+
+      .calendar-day-header {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.75rem;
       }
 
       .quick-apply-section {
@@ -452,6 +475,14 @@
 
       .form-select {
         width: 100%;
+      }
+
+      .shift-indicator {
+        height: 3px;
+      }
+
+      .calendar-day:hover .shift-indicator {
+        height: 4px;
       }
     }
   </style>
@@ -526,7 +557,11 @@
         </div>
         <div class="form-group">
           <label for="template-color">Color:</label>
-          <input type="color" id="template-color" value="#3498db">
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <input type="color" id="template-color" value="#3498db" style="width: 60px; height: 40px; border: none; cursor: pointer;">
+            <input type="text" id="template-color-hex" value="#3498db" pattern="^#[0-9A-Fa-f]{6}$" style="width: 100px; font-family: monospace;" placeholder="#3498db">
+            <div id="color-preview" style="width: 40px; height: 40px; border-radius: 4px; border: 2px solid #ddd; background-color: #3498db;"></div>
+          </div>
         </div>
         <div class="form-group">
           <label for="template-notes">Notes (optional):</label>
@@ -651,7 +686,18 @@
           </div>
         `;
 
-        pill.addEventListener('click', () => selectTemplate(template.id));
+        // Better iOS support: use both click and touchstart
+        const selectHandler = (e) => {
+          if (e.target.classList.contains('template-pill-btn')) {
+            return; // Don't select if clicking edit button
+          }
+          e.preventDefault();
+          selectTemplate(template.id);
+        };
+
+        pill.addEventListener('click', selectHandler);
+        pill.addEventListener('touchstart', selectHandler, { passive: false });
+
         selector.appendChild(pill);
       });
     }
@@ -686,12 +732,17 @@
           document.getElementById('template-start-time').value = template.startTime;
           document.getElementById('template-duration').value = template.duration;
           document.getElementById('template-color').value = template.color;
+          document.getElementById('template-color-hex').value = template.color;
+          document.getElementById('color-preview').style.backgroundColor = template.color;
           document.getElementById('template-notes').value = template.notes || '';
           deleteBtn.classList.remove('hidden');
         }
       } else {
         title.textContent = 'New Template';
-        document.getElementById('template-color').value = '#3498db';
+        const defaultColor = '#3498db';
+        document.getElementById('template-color').value = defaultColor;
+        document.getElementById('template-color-hex').value = defaultColor;
+        document.getElementById('color-preview').style.backgroundColor = defaultColor;
         deleteBtn.classList.add('hidden');
       }
 
@@ -834,7 +885,17 @@
 
       if (dateStr && !isOtherMonth) {
         cell.dataset.date = dateStr;
-        cell.addEventListener('click', () => handleDayClick(dateStr));
+
+        // Better iOS support for day clicks
+        const dayClickHandler = () => handleDayClick(dateStr);
+        cell.addEventListener('click', dayClickHandler);
+        cell.addEventListener('touchend', (e) => {
+          // Only trigger if not a shift indicator
+          if (!e.target.classList.contains('shift-indicator')) {
+            e.preventDefault();
+            dayClickHandler();
+          }
+        }, { passive: false });
 
         // Find shifts for this date
         const dayShifts = state.shifts.filter(s => s.date === dateStr);
@@ -842,13 +903,17 @@
           const indicator = document.createElement('div');
           indicator.className = 'shift-indicator';
           indicator.style.backgroundColor = shift.color;
-          indicator.title = `${shift.label}: ${shift.startTime} - ${shift.endTime}${shift.notes ? '\n' + shift.notes : ''}\nClick to delete`;
+          indicator.title = `${shift.label}: ${shift.startTime} - ${shift.endTime}${shift.notes ? '\n' + shift.notes : ''}\nTap to delete`;
 
-          // Add click handler to delete shift
-          indicator.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent day click event
+          // Add handlers to delete shift (iOS-friendly)
+          const deleteHandler = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
             deleteShift(shift.id);
-          });
+          };
+
+          indicator.addEventListener('click', deleteHandler);
+          indicator.addEventListener('touchend', deleteHandler, { passive: false });
 
           shiftsContainer.appendChild(indicator);
         });
@@ -1152,10 +1217,25 @@
           label: document.getElementById('template-label').value,
           startTime: document.getElementById('template-start-time').value,
           duration: document.getElementById('template-duration').value,
-          color: document.getElementById('template-color').value,
+          color: document.getElementById('template-color-hex').value,
           notes: document.getElementById('template-notes').value
         };
         saveTemplate(formData);
+      });
+
+      // Color picker sync
+      document.getElementById('template-color').addEventListener('input', (e) => {
+        const color = e.target.value;
+        document.getElementById('template-color-hex').value = color;
+        document.getElementById('color-preview').style.backgroundColor = color;
+      });
+
+      document.getElementById('template-color-hex').addEventListener('input', (e) => {
+        const color = e.target.value;
+        if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
+          document.getElementById('template-color').value = color;
+          document.getElementById('color-preview').style.backgroundColor = color;
+        }
       });
 
       // Calendar navigation
