@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shift Scheduler</title>
+  <style>
+    /* ===== CSS RESET ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* ===== BASE STYLES ===== */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* ===== CONTAINER & LAYOUT ===== */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      color: #2c3e50;
+      font-size: 2rem;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #3498db;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2980b9;
+    }
+
+    .btn-secondary {
+      background: #95a5a6;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #7f8c8d;
+    }
+
+    .btn-danger {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c0392b;
+    }
+
+    .btn-nav {
+      background: white;
+      border: 2px solid #3498db;
+      color: #3498db;
+      padding: 0.5rem 1rem;
+      font-size: 1.2rem;
+    }
+
+    .btn-nav:hover {
+      background: #3498db;
+      color: white;
+    }
+
+    /* ===== SECTIONS ===== */
+    section {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+    }
+
+    section h2 {
+      color: #2c3e50;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    /* ===== TEMPLATE MANAGEMENT ===== */
+    .template-selector {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .template-pill {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 3px solid transparent;
+      min-width: 120px;
+      position: relative;
+    }
+
+    .template-pill:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .template-pill.selected {
+      border-color: #2c3e50;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+    }
+
+    .template-pill-label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 0.25rem;
+      color: white;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+
+    .template-pill-time {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .template-pill-actions {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      display: flex;
+      gap: 4px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .template-pill:hover .template-pill-actions {
+      opacity: 1;
+    }
+
+    .template-pill-btn {
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+
+    .template-pill-btn:hover {
+      background: rgba(0,0,0,0.7);
+    }
+
+    .empty-state {
+      padding: 2rem;
+      text-align: center;
+      color: #7f8c8d;
+      font-style: italic;
+    }
+
+    /* ===== QUICK APPLY ===== */
+    .quick-apply-section {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .quick-apply-section label {
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .form-select {
+      padding: 0.5rem 1rem;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+      min-width: 200px;
+    }
+
+    .form-select:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+
+    /* ===== CALENDAR ===== */
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .calendar-header h2 {
+      margin: 0;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      background: #ddd;
+      border: 1px solid #ddd;
+    }
+
+    .calendar-day-header {
+      background: #2c3e50;
+      color: white;
+      padding: 0.75rem;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .calendar-day {
+      background: white;
+      min-height: 100px;
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .calendar-day:hover:not(.other-month) {
+      background-color: #f8f9fa;
+    }
+
+    .calendar-day.other-month {
+      background: #f8f9fa;
+      color: #999;
+      cursor: default;
+    }
+
+    .calendar-day.today {
+      background-color: #fff3cd;
+    }
+
+    .date-number {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .shifts {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+    }
+
+    .shift-indicator {
+      height: 4px;
+      border-radius: 2px;
+      transition: all 0.2s;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .calendar-day:hover .shift-indicator {
+      height: 6px;
+    }
+
+    .shift-indicator:hover {
+      opacity: 0.8;
+      height: 8px !important;
+    }
+
+    .shift-indicator::after {
+      content: '×';
+      position: absolute;
+      right: 2px;
+      top: -2px;
+      color: white;
+      font-size: 0.7rem;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.2s;
+      text-shadow: 0 0 2px rgba(0,0,0,0.5);
+    }
+
+    .shift-indicator:hover::after {
+      opacity: 1;
+    }
+
+    /* ===== MODAL ===== */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal.hidden {
+      display: none;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-content h3 {
+      margin-bottom: 1.5rem;
+      color: #2c3e50;
+    }
+
+    /* ===== FORM STYLES ===== */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+
+    /* ===== FLASH MESSAGE ===== */
+    .flash-message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      border-radius: 6px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      z-index: 2000;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .flash-message.success {
+      background: #2ecc71;
+      color: white;
+    }
+
+    .flash-message.error {
+      background: #e74c3c;
+      color: white;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    /* ===== RESPONSIVE DESIGN ===== */
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      header h1 {
+        font-size: 1.5rem;
+      }
+
+      .template-selector {
+        flex-direction: column;
+      }
+
+      .template-pill {
+        width: 100%;
+      }
+
+      .calendar-day {
+        min-height: 60px;
+        font-size: 0.875rem;
+      }
+
+      .date-number {
+        font-size: 0.95rem;
+      }
+
+      .quick-apply-section {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .form-select {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header Section -->
+    <header>
+      <h1>Shift Scheduler</h1>
+      <button id="export-btn" class="btn btn-primary">Export to Calendar</button>
+    </header>
+
+    <!-- Template Management Section -->
+    <section class="template-management">
+      <h2>Shift Templates</h2>
+      <div class="template-selector" id="template-selector">
+        <!-- Template pills rendered here -->
+      </div>
+      <button id="add-template-btn" class="btn btn-secondary">+ New Template</button>
+    </section>
+
+    <!-- Quick Apply Section -->
+    <section class="quick-apply-section">
+      <label for="recurring-pattern">Quick Apply:</label>
+      <select id="recurring-pattern" class="form-select">
+        <option value="">Select a pattern...</option>
+        <option value="all-mondays">All Mondays</option>
+        <option value="all-tuesdays">All Tuesdays</option>
+        <option value="all-wednesdays">All Wednesdays</option>
+        <option value="all-thursdays">All Thursdays</option>
+        <option value="all-fridays">All Fridays</option>
+        <option value="all-saturdays">All Saturdays</option>
+        <option value="all-sundays">All Sundays</option>
+        <option value="all-weekdays">All Weekdays (Mon-Fri)</option>
+        <option value="all-weekends">All Weekends (Sat-Sun)</option>
+      </select>
+      <button id="apply-recurring-btn" class="btn btn-primary" disabled>Apply to Pattern</button>
+    </section>
+
+    <!-- Calendar Section -->
+    <section class="calendar-section">
+      <div class="calendar-header">
+        <button id="prev-month" class="btn btn-nav">&larr;</button>
+        <h2 id="current-month-year"></h2>
+        <button id="next-month" class="btn btn-nav">&rarr;</button>
+      </div>
+      <div style="text-align: right; margin-bottom: 1rem;">
+        <button id="clear-month-btn" class="btn btn-danger" style="font-size: 0.9rem; padding: 0.5rem 1rem;">Clear All Shifts This Month</button>
+      </div>
+      <div id="calendar-grid" class="calendar-grid">
+        <!-- Calendar cells rendered here -->
+      </div>
+    </section>
+  </div>
+
+  <!-- Template Modal -->
+  <div id="template-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3 id="modal-title">New Template</h3>
+      <form id="template-form">
+        <div class="form-group">
+          <label for="template-label">Label:</label>
+          <input type="text" id="template-label" required maxlength="50" placeholder="e.g., Morning Shift">
+        </div>
+        <div class="form-group">
+          <label for="template-start-time">Start Time:</label>
+          <input type="time" id="template-start-time" required>
+        </div>
+        <div class="form-group">
+          <label for="template-duration">Duration (hours):</label>
+          <input type="number" id="template-duration" step="0.5" min="0.5" max="24" required placeholder="e.g., 8">
+        </div>
+        <div class="form-group">
+          <label for="template-color">Color:</label>
+          <input type="color" id="template-color" value="#3498db">
+        </div>
+        <div class="form-group">
+          <label for="template-notes">Notes (optional):</label>
+          <textarea id="template-notes" rows="3" placeholder="Any additional information..."></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" id="delete-template-btn" class="btn btn-danger hidden">Delete</button>
+          <button type="button" id="cancel-template-btn" class="btn btn-secondary">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // ===== STATE MANAGEMENT =====
+    const state = {
+      templates: [],
+      shifts: [],
+      selectedTemplateId: null,
+      currentYear: new Date().getFullYear(),
+      currentMonth: new Date().getMonth() + 1, // 1-12
+      editingTemplateId: null
+    };
+
+    // ===== CONSTANTS =====
+    const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'];
+    const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const STORAGE_KEY = 'shiftSchedulerData';
+
+    // ===== UTILITY FUNCTIONS =====
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function calculateEndTime(startTime, durationHours) {
+      const [hours, minutes] = startTime.split(':').map(Number);
+      const totalMinutes = hours * 60 + minutes + (durationHours * 60);
+      const endHours = Math.floor(totalMinutes / 60) % 24;
+      const endMinutes = totalMinutes % 60;
+      return `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
+    }
+
+    function showMessage(text, type = 'success') {
+      const message = document.createElement('div');
+      message.className = `flash-message ${type}`;
+      message.textContent = text;
+      document.body.appendChild(message);
+
+      setTimeout(() => {
+        message.remove();
+      }, 3000);
+    }
+
+    // ===== LOCALSTORAGE OPERATIONS =====
+    function loadFromLocalStorage() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const data = JSON.parse(saved);
+          state.templates = data.templates || [];
+          state.shifts = data.shifts || [];
+        }
+      } catch (error) {
+        console.error('Error loading from localStorage:', error);
+        showMessage('Error loading saved data', 'error');
+      }
+    }
+
+    function saveToLocalStorage() {
+      try {
+        const data = {
+          templates: state.templates,
+          shifts: state.shifts
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (error) {
+        console.error('Error saving to localStorage:', error);
+        showMessage('Error saving data', 'error');
+      }
+    }
+
+    // ===== TEMPLATE MANAGEMENT =====
+    function renderTemplates() {
+      const selector = document.getElementById('template-selector');
+
+      if (state.templates.length === 0) {
+        selector.innerHTML = '<div class="empty-state">No templates yet. Click "+ New Template" to create one!</div>';
+        return;
+      }
+
+      selector.innerHTML = '';
+      state.templates.forEach(template => {
+        const pill = document.createElement('div');
+        pill.className = 'template-pill';
+        pill.style.backgroundColor = template.color;
+        pill.dataset.templateId = template.id;
+
+        if (state.selectedTemplateId === template.id) {
+          pill.classList.add('selected');
+        }
+
+        const endTime = calculateEndTime(template.startTime, template.duration);
+
+        pill.innerHTML = `
+          <div class="template-pill-label">${template.label}</div>
+          <div class="template-pill-time">${template.startTime} - ${endTime}</div>
+          <div class="template-pill-actions">
+            <button class="template-pill-btn" onclick="editTemplate('${template.id}'); event.stopPropagation();">Edit</button>
+          </div>
+        `;
+
+        pill.addEventListener('click', () => selectTemplate(template.id));
+        selector.appendChild(pill);
+      });
+    }
+
+    function selectTemplate(templateId) {
+      if (state.selectedTemplateId === templateId) {
+        // Deselect
+        state.selectedTemplateId = null;
+        document.getElementById('apply-recurring-btn').disabled = true;
+      } else {
+        // Select
+        state.selectedTemplateId = templateId;
+        document.getElementById('apply-recurring-btn').disabled = false;
+      }
+      renderTemplates();
+    }
+
+    function openTemplateModal(templateId = null) {
+      const modal = document.getElementById('template-modal');
+      const form = document.getElementById('template-form');
+      const title = document.getElementById('modal-title');
+      const deleteBtn = document.getElementById('delete-template-btn');
+
+      form.reset();
+      state.editingTemplateId = templateId;
+
+      if (templateId) {
+        const template = state.templates.find(t => t.id === templateId);
+        if (template) {
+          title.textContent = 'Edit Template';
+          document.getElementById('template-label').value = template.label;
+          document.getElementById('template-start-time').value = template.startTime;
+          document.getElementById('template-duration').value = template.duration;
+          document.getElementById('template-color').value = template.color;
+          document.getElementById('template-notes').value = template.notes || '';
+          deleteBtn.classList.remove('hidden');
+        }
+      } else {
+        title.textContent = 'New Template';
+        document.getElementById('template-color').value = '#3498db';
+        deleteBtn.classList.add('hidden');
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeTemplateModal() {
+      document.getElementById('template-modal').classList.add('hidden');
+      state.editingTemplateId = null;
+    }
+
+    function saveTemplate(formData) {
+      const template = {
+        label: formData.label,
+        startTime: formData.startTime,
+        duration: parseFloat(formData.duration),
+        color: formData.color,
+        notes: formData.notes
+      };
+
+      if (state.editingTemplateId) {
+        // Update existing
+        const index = state.templates.findIndex(t => t.id === state.editingTemplateId);
+        if (index !== -1) {
+          template.id = state.editingTemplateId;
+          state.templates[index] = template;
+
+          // Update all shifts using this template
+          state.shifts.forEach(shift => {
+            if (shift.templateId === state.editingTemplateId) {
+              shift.label = template.label;
+              shift.startTime = template.startTime;
+              shift.endTime = calculateEndTime(template.startTime, template.duration);
+              shift.color = template.color;
+              shift.notes = template.notes;
+            }
+          });
+
+          showMessage('Template updated successfully!');
+        }
+      } else {
+        // Create new
+        template.id = generateUUID();
+        state.templates.push(template);
+        showMessage('Template created successfully!');
+      }
+
+      saveToLocalStorage();
+      renderTemplates();
+      renderCalendar();
+      closeTemplateModal();
+    }
+
+    function editTemplate(templateId) {
+      openTemplateModal(templateId);
+    }
+
+    function deleteTemplate() {
+      if (!state.editingTemplateId) return;
+
+      if (!confirm('Are you sure you want to delete this template? All shifts created from this template will also be deleted.')) {
+        return;
+      }
+
+      state.templates = state.templates.filter(t => t.id !== state.editingTemplateId);
+      state.shifts = state.shifts.filter(s => s.templateId !== state.editingTemplateId);
+
+      if (state.selectedTemplateId === state.editingTemplateId) {
+        state.selectedTemplateId = null;
+      }
+
+      saveToLocalStorage();
+      renderTemplates();
+      renderCalendar();
+      closeTemplateModal();
+      showMessage('Template deleted successfully!');
+    }
+
+    // ===== CALENDAR RENDERING =====
+    function renderCalendar() {
+      const grid = document.getElementById('calendar-grid');
+      grid.innerHTML = '';
+
+      // Add day headers
+      DAY_NAMES.forEach(day => {
+        const header = document.createElement('div');
+        header.className = 'calendar-day-header';
+        header.textContent = day;
+        grid.appendChild(header);
+      });
+
+      // Calculate calendar data
+      const firstDay = new Date(state.currentYear, state.currentMonth - 1, 1);
+      const lastDay = new Date(state.currentYear, state.currentMonth, 0);
+      const daysInMonth = lastDay.getDate();
+      const startingDayOfWeek = firstDay.getDay(); // 0 = Sunday
+
+      // Previous month padding
+      const prevMonthLastDay = new Date(state.currentYear, state.currentMonth - 1, 0).getDate();
+      for (let i = startingDayOfWeek - 1; i >= 0; i--) {
+        const day = prevMonthLastDay - i;
+        createDayCell(day, true, null);
+      }
+
+      // Current month days
+      const today = new Date();
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(state.currentYear, state.currentMonth - 1, day);
+        const isToday = date.toDateString() === today.toDateString();
+        const dateStr = formatDate(date);
+        createDayCell(day, false, dateStr, isToday);
+      }
+
+      // Next month padding (6 weeks = 42 cells)
+      const totalCells = 42;
+      const filledCells = startingDayOfWeek + daysInMonth;
+      const remainingCells = totalCells - filledCells;
+      for (let day = 1; day <= remainingCells; day++) {
+        createDayCell(day, true, null);
+      }
+    }
+
+    function createDayCell(day, isOtherMonth, dateStr, isToday = false) {
+      const grid = document.getElementById('calendar-grid');
+      const cell = document.createElement('div');
+      cell.className = 'calendar-day';
+
+      if (isOtherMonth) cell.classList.add('other-month');
+      if (isToday) cell.classList.add('today');
+
+      // Date number
+      const dateNumber = document.createElement('div');
+      dateNumber.className = 'date-number';
+      dateNumber.textContent = day;
+      cell.appendChild(dateNumber);
+
+      // Shifts container
+      const shiftsContainer = document.createElement('div');
+      shiftsContainer.className = 'shifts';
+
+      if (dateStr && !isOtherMonth) {
+        cell.dataset.date = dateStr;
+        cell.addEventListener('click', () => handleDayClick(dateStr));
+
+        // Find shifts for this date
+        const dayShifts = state.shifts.filter(s => s.date === dateStr);
+        dayShifts.forEach(shift => {
+          const indicator = document.createElement('div');
+          indicator.className = 'shift-indicator';
+          indicator.style.backgroundColor = shift.color;
+          indicator.title = `${shift.label}: ${shift.startTime} - ${shift.endTime}${shift.notes ? '\n' + shift.notes : ''}\nClick to delete`;
+
+          // Add click handler to delete shift
+          indicator.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent day click event
+            deleteShift(shift.id);
+          });
+
+          shiftsContainer.appendChild(indicator);
+        });
+      }
+
+      cell.appendChild(shiftsContainer);
+      grid.appendChild(cell);
+    }
+
+    function updateMonthDisplay() {
+      document.getElementById('current-month-year').textContent =
+        `${MONTH_NAMES[state.currentMonth - 1]} ${state.currentYear}`;
+    }
+
+    function changeMonth(offset) {
+      state.currentMonth += offset;
+
+      if (state.currentMonth > 12) {
+        state.currentMonth = 1;
+        state.currentYear++;
+      } else if (state.currentMonth < 1) {
+        state.currentMonth = 12;
+        state.currentYear--;
+      }
+
+      updateMonthDisplay();
+      renderCalendar();
+    }
+
+    // ===== SHIFT MANAGEMENT =====
+    function handleDayClick(dateStr) {
+      if (!state.selectedTemplateId) {
+        showMessage('Please select a template first!', 'error');
+        return;
+      }
+      applyTemplateToDate(dateStr);
+    }
+
+    function applyTemplateToDate(dateStr) {
+      const template = state.templates.find(t => t.id === state.selectedTemplateId);
+      if (!template) return;
+
+      const endTime = calculateEndTime(template.startTime, template.duration);
+
+      const shift = {
+        id: generateUUID(),
+        date: dateStr,
+        startTime: template.startTime,
+        endTime: endTime,
+        label: template.label,
+        color: template.color,
+        notes: template.notes || '',
+        templateId: template.id
+      };
+
+      // Remove existing shift for this date and template if present
+      state.shifts = state.shifts.filter(s => !(s.date === dateStr && s.templateId === template.id));
+
+      state.shifts.push(shift);
+      saveToLocalStorage();
+      renderCalendar();
+    }
+
+    function deleteShift(shiftId) {
+      const shift = state.shifts.find(s => s.id === shiftId);
+      if (!shift) return;
+
+      if (!confirm(`Delete shift: ${shift.label} on ${shift.date}?`)) {
+        return;
+      }
+
+      state.shifts = state.shifts.filter(s => s.id !== shiftId);
+      saveToLocalStorage();
+      renderCalendar();
+      showMessage('Shift deleted');
+    }
+
+    function clearMonthShifts() {
+      // Get all dates in the current month
+      const year = state.currentYear;
+      const month = state.currentMonth;
+      const firstDay = new Date(year, month - 1, 1);
+      const lastDay = new Date(year, month, 0);
+
+      // Count shifts in this month
+      const monthShifts = state.shifts.filter(shift => {
+        const shiftDate = new Date(shift.date);
+        return shiftDate >= firstDay && shiftDate <= lastDay;
+      });
+
+      if (monthShifts.length === 0) {
+        showMessage('No shifts to clear in this month', 'error');
+        return;
+      }
+
+      const monthName = MONTH_NAMES[state.currentMonth - 1];
+      if (!confirm(`Delete all ${monthShifts.length} shift(s) from ${monthName} ${state.currentYear}?`)) {
+        return;
+      }
+
+      // Filter out shifts from this month
+      state.shifts = state.shifts.filter(shift => {
+        const shiftDate = new Date(shift.date);
+        return shiftDate < firstDay || shiftDate > lastDay;
+      });
+
+      saveToLocalStorage();
+      renderCalendar();
+      showMessage(`Cleared ${monthShifts.length} shift(s) from ${monthName}`);
+    }
+
+    // ===== RECURRING PATTERNS =====
+    function applyRecurringPattern() {
+      if (!state.selectedTemplateId) {
+        showMessage('Please select a template first!', 'error');
+        return;
+      }
+
+      const pattern = document.getElementById('recurring-pattern').value;
+      if (!pattern) {
+        showMessage('Please select a pattern!', 'error');
+        return;
+      }
+
+      const template = state.templates.find(t => t.id === state.selectedTemplateId);
+      const patternName = pattern.replace('all-', '').replace('-', ' ');
+
+      if (!confirm(`Apply "${template.label}" to ${patternName} in ${MONTH_NAMES[state.currentMonth - 1]} ${state.currentYear}?`)) {
+        return;
+      }
+
+      const dates = getRecurringDates(pattern);
+      dates.forEach(dateStr => applyTemplateToDate(dateStr));
+
+      document.getElementById('recurring-pattern').value = '';
+      showMessage(`Applied template to ${dates.length} date(s)`);
+    }
+
+    function getRecurringDates(pattern) {
+      const dates = [];
+      const year = state.currentYear;
+      const month = state.currentMonth;
+
+      const lastDay = new Date(year, month, 0);
+      const daysInMonth = lastDay.getDate();
+
+      const weekdayMap = {
+        'all-mondays': 1,
+        'all-tuesdays': 2,
+        'all-wednesdays': 3,
+        'all-thursdays': 4,
+        'all-fridays': 5,
+        'all-saturdays': 6,
+        'all-sundays': 0
+      };
+
+      if (pattern in weekdayMap) {
+        const targetWeekday = weekdayMap[pattern];
+        for (let day = 1; day <= daysInMonth; day++) {
+          const date = new Date(year, month - 1, day);
+          if (date.getDay() === targetWeekday) {
+            dates.push(formatDate(date));
+          }
+        }
+      } else if (pattern === 'all-weekdays') {
+        for (let day = 1; day <= daysInMonth; day++) {
+          const date = new Date(year, month - 1, day);
+          const weekday = date.getDay();
+          if (weekday >= 1 && weekday <= 5) { // Mon-Fri
+            dates.push(formatDate(date));
+          }
+        }
+      } else if (pattern === 'all-weekends') {
+        for (let day = 1; day <= daysInMonth; day++) {
+          const date = new Date(year, month - 1, day);
+          const weekday = date.getDay();
+          if (weekday === 0 || weekday === 6) { // Sun or Sat
+            dates.push(formatDate(date));
+          }
+        }
+      }
+
+      return dates;
+    }
+
+    // ===== ICS EXPORT =====
+    function generateICS() {
+      if (state.shifts.length === 0) {
+        showMessage('No shifts to export!', 'error');
+        return null;
+      }
+
+      const lines = [];
+
+      // Calendar header
+      lines.push('BEGIN:VCALENDAR');
+      lines.push('VERSION:2.0');
+      lines.push('PRODID:-//Shift Scheduler//EN');
+      lines.push('CALSCALE:GREGORIAN');
+      lines.push('X-WR-CALNAME:Work Shifts');
+
+      try {
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        lines.push(`X-WR-TIMEZONE:${timezone}`);
+      } catch (e) {
+        lines.push('X-WR-TIMEZONE:UTC');
+      }
+
+      // Add each shift as an event
+      state.shifts.forEach(shift => {
+        lines.push('BEGIN:VEVENT');
+
+        // Generate UID
+        lines.push(`UID:${shift.id}@shift-scheduler.local`);
+
+        // DTSTART and DTEND in UTC format
+        const startDateTime = new Date(`${shift.date}T${shift.startTime}:00`);
+        let endDateTime = new Date(`${shift.date}T${shift.endTime}:00`);
+
+        // Handle shifts crossing midnight
+        if (shift.endTime < shift.startTime) {
+          endDateTime.setDate(endDateTime.getDate() + 1);
+        }
+
+        lines.push(`DTSTART:${formatICSDate(startDateTime)}`);
+        lines.push(`DTEND:${formatICSDate(endDateTime)}`);
+
+        // Summary and description
+        lines.push(`SUMMARY:${escapeICSText(shift.label)} Shift`);
+        if (shift.notes) {
+          lines.push(`DESCRIPTION:${escapeICSText(shift.notes)}`);
+        }
+
+        // Timestamps
+        const now = new Date();
+        lines.push(`DTSTAMP:${formatICSDate(now)}`);
+        lines.push(`CREATED:${formatICSDate(now)}`);
+        lines.push(`LAST-MODIFIED:${formatICSDate(now)}`);
+
+        // Additional properties
+        lines.push('SEQUENCE:0');
+        lines.push('STATUS:CONFIRMED');
+        lines.push('TRANSP:OPAQUE');
+        lines.push('CLASS:PUBLIC');
+
+        lines.push('END:VEVENT');
+      });
+
+      lines.push('END:VCALENDAR');
+
+      return lines.join('\r\n');
+    }
+
+    function formatICSDate(date) {
+      // Convert to UTC and format as YYYYMMDDTHHmmssZ
+      const year = date.getUTCFullYear();
+      const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+      const day = String(date.getUTCDate()).padStart(2, '0');
+      const hours = String(date.getUTCHours()).padStart(2, '0');
+      const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+      const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+      return `${year}${month}${day}T${hours}${minutes}${seconds}Z`;
+    }
+
+    function escapeICSText(text) {
+      return text.replace(/\\/g, '\\\\')
+                 .replace(/;/g, '\\;')
+                 .replace(/,/g, '\\,')
+                 .replace(/\n/g, '\\n');
+    }
+
+    function downloadICS() {
+      const icsContent = generateICS();
+      if (!icsContent) return;
+
+      const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `shifts-${state.currentYear}-${String(state.currentMonth).padStart(2, '0')}.ics`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+      showMessage('Calendar exported successfully!');
+    }
+
+    // ===== EVENT LISTENERS =====
+    function attachEventListeners() {
+      // Template management
+      document.getElementById('add-template-btn').addEventListener('click', () => openTemplateModal());
+      document.getElementById('cancel-template-btn').addEventListener('click', closeTemplateModal);
+      document.getElementById('delete-template-btn').addEventListener('click', deleteTemplate);
+
+      // Template form
+      document.getElementById('template-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = {
+          label: document.getElementById('template-label').value,
+          startTime: document.getElementById('template-start-time').value,
+          duration: document.getElementById('template-duration').value,
+          color: document.getElementById('template-color').value,
+          notes: document.getElementById('template-notes').value
+        };
+        saveTemplate(formData);
+      });
+
+      // Calendar navigation
+      document.getElementById('prev-month').addEventListener('click', () => changeMonth(-1));
+      document.getElementById('next-month').addEventListener('click', () => changeMonth(1));
+      document.getElementById('clear-month-btn').addEventListener('click', clearMonthShifts);
+
+      // Recurring patterns
+      document.getElementById('apply-recurring-btn').addEventListener('click', applyRecurringPattern);
+
+      // ICS export
+      document.getElementById('export-btn').addEventListener('click', downloadICS);
+
+      // Close modal on background click
+      document.getElementById('template-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'template-modal') {
+          closeTemplateModal();
+        }
+      });
+    }
+
+    // ===== INITIALIZATION =====
+    function init() {
+      loadFromLocalStorage();
+      renderTemplates();
+      updateMonthDisplay();
+      renderCalendar();
+      attachEventListeners();
+    }
+
+    // Start the application
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
