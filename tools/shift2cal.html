@@ -95,6 +95,80 @@
       color: white;
     }
 
+    /* ===== DROPDOWN BUTTON ===== */
+    .dropdown-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dropdown-arrow {
+      font-size: 0.8rem;
+      transition: transform 0.2s;
+    }
+
+    .dropdown-container.open .dropdown-arrow {
+      transform: rotate(180deg);
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 0.5rem;
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      min-width: 250px;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.2s;
+    }
+
+    .dropdown-container.open .dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown-item {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      border-bottom: 1px solid #f0f0f0;
+      color: #2c3e50;
+    }
+
+    .dropdown-item:first-child {
+      border-radius: 6px 6px 0 0;
+    }
+
+    .dropdown-item:last-child {
+      border-bottom: none;
+      border-radius: 0 0 6px 6px;
+    }
+
+    .dropdown-item:hover {
+      background: #f8f9fa;
+    }
+
+    .dropdown-item-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .dropdown-item-desc {
+      font-size: 0.85rem;
+      color: #7f8c8d;
+    }
+
     /* ===== SECTIONS ===== */
     section {
       background: white;
@@ -492,7 +566,22 @@
     <!-- Header Section -->
     <header>
       <h1>Shift Scheduler</h1>
-      <button id="export-btn" class="btn btn-primary">Export to Calendar</button>
+      <div class="dropdown-container" id="export-dropdown">
+        <button class="btn btn-primary dropdown-btn" id="export-toggle-btn">
+          <span>Export to Calendar</span>
+          <span class="dropdown-arrow">▼</span>
+        </button>
+        <div class="dropdown-menu">
+          <div class="dropdown-item" id="export-new-btn">
+            <div class="dropdown-item-title">Export New Shifts Only</div>
+            <div class="dropdown-item-desc">Export only shifts that haven't been exported yet</div>
+          </div>
+          <div class="dropdown-item" id="export-all-btn">
+            <div class="dropdown-item-title">Export All Shifts</div>
+            <div class="dropdown-item-desc">Export every scheduled shift to ICS</div>
+          </div>
+        </div>
+      </div>
     </header>
 
     <!-- Template Management Section -->
@@ -635,7 +724,11 @@
         if (saved) {
           const data = JSON.parse(saved);
           state.templates = data.templates || [];
-          state.shifts = data.shifts || [];
+          state.shifts = (data.shifts || []).map(shift => ({
+            ...shift,
+            // Ensure all shifts have the exported flag (default to false for backwards compatibility)
+            exported: shift.exported !== undefined ? shift.exported : false
+          }));
         }
       } catch (error) {
         console.error('Error loading from localStorage:', error);
@@ -778,6 +871,8 @@
               shift.endTime = calculateEndTime(template.startTime, template.duration);
               shift.color = template.color;
               shift.notes = template.notes;
+              // Preserve the exported flag
+              // shift.exported remains unchanged
             }
           });
 
@@ -966,7 +1061,8 @@
         label: template.label,
         color: template.color,
         notes: template.notes || '',
-        templateId: template.id
+        templateId: template.id,
+        exported: false
       };
 
       // Remove existing shift for this date and template if present
@@ -1100,9 +1196,17 @@
     }
 
     // ===== ICS EXPORT =====
-    function generateICS() {
-      if (state.shifts.length === 0) {
-        showMessage('No shifts to export!', 'error');
+    function generateICS(exportAll = true) {
+      // Filter shifts based on export mode
+      const shiftsToExport = exportAll
+        ? state.shifts
+        : state.shifts.filter(shift => !shift.exported);
+
+      if (shiftsToExport.length === 0) {
+        const message = exportAll
+          ? 'No shifts to export!'
+          : 'No new shifts to export! All shifts have been exported already.';
+        showMessage(message, 'error');
         return null;
       }
 
@@ -1123,7 +1227,7 @@
       }
 
       // Add each shift as an event
-      state.shifts.forEach(shift => {
+      shiftsToExport.forEach(shift => {
         lines.push('BEGIN:VEVENT');
 
         // Generate UID
@@ -1185,8 +1289,13 @@
                  .replace(/\n/g, '\\n');
     }
 
-    function downloadICS() {
-      const icsContent = generateICS();
+    function downloadICS(exportAll = true) {
+      // Count shifts before marking as exported
+      const count = exportAll
+        ? state.shifts.length
+        : state.shifts.filter(s => !s.exported).length;
+
+      const icsContent = generateICS(exportAll);
       if (!icsContent) return;
 
       const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
@@ -1194,13 +1303,31 @@
 
       const link = document.createElement('a');
       link.href = url;
-      link.download = `shifts-${state.currentYear}-${String(state.currentMonth).padStart(2, '0')}.ics`;
+      const filename = exportAll
+        ? `shifts-all-${state.currentYear}-${String(state.currentMonth).padStart(2, '0')}.ics`
+        : `shifts-new-${state.currentYear}-${String(state.currentMonth).padStart(2, '0')}.ics`;
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
 
       URL.revokeObjectURL(url);
-      showMessage('Calendar exported successfully!');
+
+      // Mark shifts as exported
+      if (!exportAll) {
+        markShiftsAsExported();
+      }
+
+      showMessage(`Calendar exported successfully! (${count} shift${count !== 1 ? 's' : ''})`);
+    }
+
+    function markShiftsAsExported() {
+      state.shifts.forEach(shift => {
+        if (!shift.exported) {
+          shift.exported = true;
+        }
+      });
+      saveToLocalStorage();
     }
 
     // ===== EVENT LISTENERS =====
@@ -1246,8 +1373,36 @@
       // Recurring patterns
       document.getElementById('apply-recurring-btn').addEventListener('click', applyRecurringPattern);
 
-      // ICS export
-      document.getElementById('export-btn').addEventListener('click', downloadICS);
+      // ICS export dropdown
+      const exportDropdown = document.getElementById('export-dropdown');
+      const exportToggleBtn = document.getElementById('export-toggle-btn');
+      const exportNewBtn = document.getElementById('export-new-btn');
+      const exportAllBtn = document.getElementById('export-all-btn');
+
+      // Toggle dropdown
+      exportToggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        exportDropdown.classList.toggle('open');
+      });
+
+      // Export new shifts only (default)
+      exportNewBtn.addEventListener('click', () => {
+        exportDropdown.classList.remove('open');
+        downloadICS(false);
+      });
+
+      // Export all shifts
+      exportAllBtn.addEventListener('click', () => {
+        exportDropdown.classList.remove('open');
+        downloadICS(true);
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!exportDropdown.contains(e.target)) {
+          exportDropdown.classList.remove('open');
+        }
+      });
 
       // Close modal on background click
       document.getElementById('template-modal').addEventListener('click', (e) => {
