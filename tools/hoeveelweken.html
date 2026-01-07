@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date & Weeks Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+
+        .calculator {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .calculator h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input[type="date"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="date"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result-text {
+            font-size: 1.1rem;
+            color: #333;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Date & Weeks Calculator</h1>
+
+        <!-- Calculator 1: Weeks from today to a date -->
+        <div class="calculator">
+            <h2>1. How many weeks from today to a certain date?</h2>
+            <div class="input-group">
+                <label for="targetDate">Select a date:</label>
+                <input type="date" id="targetDate">
+            </div>
+            <button onclick="calculateWeeksFromToday()">Calculate</button>
+            <div class="result" id="result1">
+                <div class="result-text" id="result1Text"></div>
+            </div>
+        </div>
+
+        <!-- Calculator 2: Date X weeks from now -->
+        <div class="calculator">
+            <h2>2. Which date is it going to be X weeks from now?</h2>
+            <div class="input-group">
+                <label for="weeksFromNow">Number of weeks:</label>
+                <input type="number" id="weeksFromNow" min="0" step="1" placeholder="Enter number of weeks">
+            </div>
+            <button onclick="calculateDateFromNow()">Calculate</button>
+            <div class="result" id="result2">
+                <div class="result-text" id="result2Text"></div>
+            </div>
+        </div>
+
+        <!-- Calculator 3: Start date X weeks before a date -->
+        <div class="calculator">
+            <h2>3. If I want to start X weeks before a date, when should I start?</h2>
+            <div class="input-group">
+                <label for="weeksBefore">Number of weeks before:</label>
+                <input type="number" id="weeksBefore" min="0" step="1" placeholder="Enter number of weeks">
+            </div>
+            <div class="input-group">
+                <label for="endDate">Target date:</label>
+                <input type="date" id="endDate">
+            </div>
+            <button onclick="calculateStartDate()">Calculate</button>
+            <div class="result" id="result3">
+                <div class="result-text" id="result3Text"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set default dates to today
+        const today = new Date();
+        const todayString = today.toISOString().split('T')[0];
+
+        // Helper function to format date nicely
+        function formatDate(date) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        // Calculator 1: Weeks from today to a date
+        function calculateWeeksFromToday() {
+            const targetDateInput = document.getElementById('targetDate').value;
+
+            if (!targetDateInput) {
+                alert('Please select a date');
+                return;
+            }
+
+            const targetDate = new Date(targetDateInput);
+            targetDate.setHours(0, 0, 0, 0);
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const diffTime = targetDate - today;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+            const weeks = Math.floor(Math.abs(diffDays) / 7);
+            const days = Math.abs(diffDays) % 7;
+
+            let resultText = '';
+            if (diffDays > 0) {
+                resultText = `${weeks} week${weeks !== 1 ? 's' : ''} and ${days} day${days !== 1 ? 's' : ''} from today`;
+            } else if (diffDays < 0) {
+                resultText = `${weeks} week${weeks !== 1 ? 's' : ''} and ${days} day${days !== 1 ? 's' : ''} ago`;
+            } else {
+                resultText = 'The selected date is today!';
+            }
+
+            document.getElementById('result1Text').textContent = resultText;
+            document.getElementById('result1').classList.add('show');
+        }
+
+        // Calculator 2: Date X weeks from now
+        function calculateDateFromNow() {
+            const weeksInput = document.getElementById('weeksFromNow').value;
+
+            if (!weeksInput || weeksInput < 0) {
+                alert('Please enter a valid number of weeks');
+                return;
+            }
+
+            const weeks = parseInt(weeksInput);
+            const today = new Date();
+            const futureDate = new Date(today);
+            futureDate.setDate(today.getDate() + (weeks * 7));
+
+            const resultText = `${formatDate(futureDate)} (${weeks} week${weeks !== 1 ? 's' : ''} from now)`;
+
+            document.getElementById('result2Text').textContent = resultText;
+            document.getElementById('result2').classList.add('show');
+        }
+
+        // Calculator 3: Start date X weeks before a date
+        function calculateStartDate() {
+            const weeksInput = document.getElementById('weeksBefore').value;
+            const endDateInput = document.getElementById('endDate').value;
+
+            if (!weeksInput || weeksInput < 0) {
+                alert('Please enter a valid number of weeks');
+                return;
+            }
+
+            if (!endDateInput) {
+                alert('Please select an end date');
+                return;
+            }
+
+            const weeks = parseInt(weeksInput);
+            const endDate = new Date(endDateInput);
+            const startDate = new Date(endDate);
+            startDate.setDate(endDate.getDate() - (weeks * 7));
+
+            const resultText = `Start on ${formatDate(startDate)} (${weeks} week${weeks !== 1 ? 's' : ''} before ${formatDate(endDate)})`;
+
+            document.getElementById('result3Text').textContent = resultText;
+            document.getElementById('result3').classList.add('show');
+        }
+    </script>
+</body>
+</html>
