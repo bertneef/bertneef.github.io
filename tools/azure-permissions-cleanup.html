@@ -296,13 +296,16 @@
                         <li>Click "Register"</li>
                         <li>Copy the "Application (client) ID" - this is your Client ID</li>
                         <li>Copy the "Directory (tenant) ID" - this is your Tenant ID</li>
-                        <li>Go to "API permissions" → "Add a permission"</li>
-                        <li>Select "Microsoft Graph" → "Delegated permissions"</li>
-                        <li>Add these permissions: <code>Directory.Read.All</code>, <code>User.Read.All</code>, <code>RoleManagement.Read.Directory</code></li>
-                        <li>Select "Azure Service Management" → "Delegated permissions"</li>
-                        <li>Add: <code>user_impersonation</code></li>
-                        <li>Click "Grant admin consent" (requires admin privileges)</li>
+                        <li><strong>API Permissions (Optional):</strong> You can skip this step to use user-delegated permissions only. Or, to pre-approve permissions:
+                            <ul style="margin-top: 5px;">
+                                <li>Go to "API permissions" → "Add a permission"</li>
+                                <li>Add Microsoft Graph delegated permissions: <code>Directory.Read.All</code>, <code>User.Read.All</code>, <code>RoleManagement.Read.Directory</code></li>
+                                <li>Add Azure Service Management delegated permission: <code>user_impersonation</code></li>
+                                <li>Click "Grant admin consent" (requires admin privileges)</li>
+                            </ul>
+                        </li>
                     </ol>
+                    <p style="margin-top: 15px;"><strong>Note:</strong> Without admin consent, each user will consent for themselves and can only access data they already have permissions to view.</p>
                 </div>
             </div>
 
@@ -314,11 +317,15 @@
                 <div class="info" style="margin-top: 20px; text-align: left;">
                     <strong>⚠️ First Time Setup Required:</strong>
                     <p style="margin: 10px 0;">You need to register your own Azure AD application to use this tool. Click "Configure App" above for instructions.</p>
-                    <strong>Required Permissions:</strong>
+                    <strong>Two Permission Options:</strong>
                     <ul style="margin-left: 20px; margin-top: 10px;">
-                        <li>Directory.Read.All (to read Entra ID roles)</li>
-                        <li>User.Read.All (to read user information)</li>
-                        <li>Reader access to Azure subscriptions (to read RBAC assignments)</li>
+                        <li><strong>Option A (Recommended):</strong> Use your own user permissions - no admin consent needed</li>
+                        <li><strong>Option B:</strong> Pre-approve permissions for all users (requires admin consent)</li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong>Your user account needs:</strong></p>
+                    <ul style="margin-left: 20px;">
+                        <li>Entra ID: Global Reader, Directory Readers, or Privileged Role Administrator role</li>
+                        <li>Azure RBAC: Reader role at subscription level</li>
                     </ul>
                 </div>
             </div>
