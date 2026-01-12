@@ -468,12 +468,13 @@
             }
         };
 
+        // Initial login request - only Microsoft Graph scopes
+        // Azure Management scopes will be requested separately when needed
         const loginRequest = {
             scopes: [
                 "https://graph.microsoft.com/Directory.Read.All",
                 "https://graph.microsoft.com/User.Read.All",
-                "https://graph.microsoft.com/RoleManagement.Read.Directory",
-                "https://management.azure.com/user_impersonation"
+                "https://graph.microsoft.com/RoleManagement.Read.Directory"
             ]
         };
 
