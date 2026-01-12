@@ -388,7 +388,7 @@
                         <strong>Selected users: <span id="selectedCount">0</span></strong>
                     </div>
 
-                    <button class="btn" onclick="copyScript()">📋 Copy Script to Clipboard</button>
+                    <button class="btn" onclick="copyScript(event)">📋 Copy Script to Clipboard</button>
 
                     <div id="scriptOutput" class="script-output" style="margin-top: 15px;">
                         # Select users above to generate a cleanup script
@@ -1072,7 +1072,7 @@
             return script;
         }
 
-        function copyScript() {
+        function copyScript(event) {
             const scriptText = document.getElementById('scriptOutput').textContent;
 
             if (scriptText === '# Select users above to generate a cleanup script') {
