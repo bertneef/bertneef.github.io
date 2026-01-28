@@ -361,33 +361,35 @@
     }
 
     .shift-indicator {
-      height: 4px;
-      border-radius: 2px;
+      height: 12px;
+      border-radius: 4px;
       transition: all 0.2s;
       position: relative;
       cursor: pointer;
     }
 
     .calendar-day:hover .shift-indicator {
-      height: 6px;
+      height: 14px;
     }
 
     .shift-indicator:hover {
       opacity: 0.8;
-      height: 8px !important;
+      height: 16px !important;
     }
 
     .shift-indicator::after {
       content: '×';
       position: absolute;
-      right: 2px;
-      top: -2px;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
       color: white;
-      font-size: 0.7rem;
+      font-size: 1rem;
       font-weight: bold;
       opacity: 0;
       transition: opacity 0.2s;
       text-shadow: 0 0 2px rgba(0,0,0,0.5);
+      line-height: 1;
     }
 
     .shift-indicator:hover::after {
@@ -552,11 +554,11 @@
       }
 
       .shift-indicator {
-        height: 3px;
+        height: 10px;
       }
 
       .calendar-day:hover .shift-indicator {
-        height: 4px;
+        height: 12px;
       }
     }
   </style>
@@ -679,7 +681,7 @@
     // ===== CONSTANTS =====
     const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December'];
-    const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const STORAGE_KEY = 'shiftSchedulerData';
 
     // ===== UTILITY FUNCTIONS =====
@@ -933,7 +935,8 @@
       const firstDay = new Date(state.currentYear, state.currentMonth - 1, 1);
       const lastDay = new Date(state.currentYear, state.currentMonth, 0);
       const daysInMonth = lastDay.getDate();
-      const startingDayOfWeek = firstDay.getDay(); // 0 = Sunday
+      // Adjust for Monday as first day of week (0 = Monday, 6 = Sunday)
+      const startingDayOfWeek = (firstDay.getDay() + 6) % 7;
 
       // Previous month padding
       const prevMonthLastDay = new Date(state.currentYear, state.currentMonth - 1, 0).getDate();
