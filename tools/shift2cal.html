@@ -1249,7 +1249,7 @@
         lines.push(`DTEND:${formatICSDate(endDateTime)}`);
 
         // Summary and description
-        lines.push(`SUMMARY:${escapeICSText(shift.label)} Shift`);
+        lines.push(`SUMMARY:${escapeICSText(shift.label)}`);
         if (shift.notes) {
           lines.push(`DESCRIPTION:${escapeICSText(shift.notes)}`);
         }
