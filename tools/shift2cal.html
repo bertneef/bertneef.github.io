@@ -457,6 +457,12 @@
       border-color: #3498db;
     }
 
+    .optional-hint {
+      font-weight: 400;
+      color: #999;
+      font-size: 0.85rem;
+    }
+
     .modal-actions {
       display: flex;
       gap: 0.5rem;
@@ -639,12 +645,18 @@
           <input type="text" id="template-label" required maxlength="50" placeholder="e.g., Morning Shift">
         </div>
         <div class="form-group">
-          <label for="template-start-time">Start Time:</label>
-          <input type="time" id="template-start-time" required>
+          <label for="template-start-time">Start Time: <span class="optional-hint">(optional)</span></label>
+          <input type="time" id="template-start-time">
         </div>
         <div class="form-group">
-          <label for="template-duration">Duration (hours):</label>
-          <input type="number" id="template-duration" step="0.5" min="0.5" max="24" required placeholder="e.g., 8">
+          <label for="template-duration">Duration (hours): <span class="optional-hint">(optional)</span></label>
+          <input type="number" id="template-duration" step="0.5" min="0.5" max="24" placeholder="e.g., 8">
+        </div>
+        <div id="full-day-option" class="form-group hidden">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+            <input type="checkbox" id="template-full-day" style="width: auto;">
+            Show as full day (Free) — start time and duration will be added to notes
+          </label>
         </div>
         <div class="form-group">
           <label for="template-color">Color:</label>
@@ -729,7 +741,8 @@
           state.shifts = (data.shifts || []).map(shift => ({
             ...shift,
             // Ensure all shifts have the exported flag (default to false for backwards compatibility)
-            exported: shift.exported !== undefined ? shift.exported : false
+            exported: shift.exported !== undefined ? shift.exported : false,
+            fullDay: shift.fullDay !== undefined ? shift.fullDay : false
           }));
         }
       } catch (error) {
@@ -771,11 +784,19 @@
           pill.classList.add('selected');
         }
 
-        const endTime = calculateEndTime(template.startTime, template.duration);
+        let timeDisplay;
+        if (template.fullDay) {
+          timeDisplay = 'Full day';
+        } else if (template.startTime && template.duration) {
+          const endTime = calculateEndTime(template.startTime, template.duration);
+          timeDisplay = `${template.startTime} - ${endTime}`;
+        } else {
+          timeDisplay = 'Full day';
+        }
 
         pill.innerHTML = `
           <div class="template-pill-label">${template.label}</div>
-          <div class="template-pill-time">${template.startTime} - ${endTime}</div>
+          <div class="template-pill-time">${timeDisplay}</div>
           <div class="template-pill-actions">
             <button class="template-pill-btn" onclick="editTemplate('${template.id}'); event.stopPropagation();">Edit</button>
           </div>
@@ -824,12 +845,21 @@
         if (template) {
           title.textContent = 'Edit Template';
           document.getElementById('template-label').value = template.label;
-          document.getElementById('template-start-time').value = template.startTime;
-          document.getElementById('template-duration').value = template.duration;
+          document.getElementById('template-start-time').value = template.startTime || '';
+          document.getElementById('template-duration').value = template.duration || '';
           document.getElementById('template-color').value = template.color;
           document.getElementById('template-color-hex').value = template.color;
           document.getElementById('color-preview').style.backgroundColor = template.color;
           document.getElementById('template-notes').value = template.notes || '';
+          // Show full-day option if time and duration are set
+          const fullDayOption = document.getElementById('full-day-option');
+          if (template.startTime && template.duration) {
+            fullDayOption.classList.remove('hidden');
+            document.getElementById('template-full-day').checked = template.fullDay || false;
+          } else {
+            fullDayOption.classList.add('hidden');
+            document.getElementById('template-full-day').checked = false;
+          }
           deleteBtn.classList.remove('hidden');
         }
       } else {
@@ -838,6 +868,8 @@
         document.getElementById('template-color').value = defaultColor;
         document.getElementById('template-color-hex').value = defaultColor;
         document.getElementById('color-preview').style.backgroundColor = defaultColor;
+        document.getElementById('full-day-option').classList.add('hidden');
+        document.getElementById('template-full-day').checked = false;
         deleteBtn.classList.add('hidden');
       }
 
@@ -853,9 +885,10 @@
       const template = {
         label: formData.label,
         startTime: formData.startTime,
-        duration: parseFloat(formData.duration),
+        duration: formData.duration ? parseFloat(formData.duration) : '',
         color: formData.color,
-        notes: formData.notes
+        notes: formData.notes,
+        fullDay: formData.fullDay
       };
 
       if (state.editingTemplateId) {
@@ -869,10 +902,23 @@
           state.shifts.forEach(shift => {
             if (shift.templateId === state.editingTemplateId) {
               shift.label = template.label;
-              shift.startTime = template.startTime;
-              shift.endTime = calculateEndTime(template.startTime, template.duration);
               shift.color = template.color;
-              shift.notes = template.notes;
+              shift.fullDay = template.fullDay;
+              if (template.fullDay) {
+                // Full day event: move time info to notes if available
+                let notes = template.notes || '';
+                if (template.startTime && template.duration) {
+                  const timeInfo = `Start: ${template.startTime}, Duration: ${template.duration}h`;
+                  notes = notes ? `${timeInfo}\n${notes}` : timeInfo;
+                }
+                shift.startTime = '';
+                shift.endTime = '';
+                shift.notes = notes;
+              } else {
+                shift.startTime = template.startTime;
+                shift.endTime = calculateEndTime(template.startTime, template.duration);
+                shift.notes = template.notes;
+              }
               // Preserve the exported flag
               // shift.exported remains unchanged
             }
@@ -1001,7 +1047,8 @@
           const indicator = document.createElement('div');
           indicator.className = 'shift-indicator';
           indicator.style.backgroundColor = shift.color;
-          indicator.title = `${shift.label}: ${shift.startTime} - ${shift.endTime}${shift.notes ? '\n' + shift.notes : ''}\nTap to delete`;
+          const timeInfo = shift.fullDay ? 'Full day' : `${shift.startTime} - ${shift.endTime}`;
+          indicator.title = `${shift.label}: ${timeInfo}${shift.notes ? '\n' + shift.notes : ''}\nTap to delete`;
 
           // Add handlers to delete shift (iOS-friendly)
           const deleteHandler = (e) => {
@@ -1054,19 +1101,42 @@
       const template = state.templates.find(t => t.id === state.selectedTemplateId);
       if (!template) return;
 
-      const endTime = calculateEndTime(template.startTime, template.duration);
+      const isFullDay = template.fullDay || (!template.startTime && !template.duration);
 
-      const shift = {
-        id: generateUUID(),
-        date: dateStr,
-        startTime: template.startTime,
-        endTime: endTime,
-        label: template.label,
-        color: template.color,
-        notes: template.notes || '',
-        templateId: template.id,
-        exported: false
-      };
+      let shift;
+      if (isFullDay) {
+        let notes = template.notes || '';
+        if (template.startTime && template.duration) {
+          const timeInfo = `Start: ${template.startTime}, Duration: ${template.duration}h`;
+          notes = notes ? `${timeInfo}\n${notes}` : timeInfo;
+        }
+        shift = {
+          id: generateUUID(),
+          date: dateStr,
+          startTime: '',
+          endTime: '',
+          label: template.label,
+          color: template.color,
+          notes: notes,
+          templateId: template.id,
+          fullDay: true,
+          exported: false
+        };
+      } else {
+        const endTime = calculateEndTime(template.startTime, template.duration);
+        shift = {
+          id: generateUUID(),
+          date: dateStr,
+          startTime: template.startTime,
+          endTime: endTime,
+          label: template.label,
+          color: template.color,
+          notes: template.notes || '',
+          templateId: template.id,
+          fullDay: false,
+          exported: false
+        };
+      }
 
       // Remove existing shift for this date and template if present
       state.shifts = state.shifts.filter(s => !(s.date === dateStr && s.templateId === template.id));
@@ -1236,17 +1306,29 @@
         // Generate UID
         lines.push(`UID:${shift.id}@shift-scheduler.local`);
 
-        // DTSTART and DTEND in UTC format
-        const startDateTime = new Date(`${shift.date}T${shift.startTime}:00`);
-        let endDateTime = new Date(`${shift.date}T${shift.endTime}:00`);
+        if (shift.fullDay) {
+          // Full day event: use DATE values (no time component)
+          const dateParts = shift.date.split('-');
+          const dateValue = dateParts.join('');
+          // Next day for DTEND (full-day events use exclusive end date)
+          const nextDay = new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]) + 1);
+          const nextDateValue = `${nextDay.getFullYear()}${String(nextDay.getMonth() + 1).padStart(2, '0')}${String(nextDay.getDate()).padStart(2, '0')}`;
 
-        // Handle shifts crossing midnight
-        if (shift.endTime < shift.startTime) {
-          endDateTime.setDate(endDateTime.getDate() + 1);
+          lines.push(`DTSTART;VALUE=DATE:${dateValue}`);
+          lines.push(`DTEND;VALUE=DATE:${nextDateValue}`);
+        } else {
+          // Timed event: DTSTART and DTEND in UTC format
+          const startDateTime = new Date(`${shift.date}T${shift.startTime}:00`);
+          let endDateTime = new Date(`${shift.date}T${shift.endTime}:00`);
+
+          // Handle shifts crossing midnight
+          if (shift.endTime < shift.startTime) {
+            endDateTime.setDate(endDateTime.getDate() + 1);
+          }
+
+          lines.push(`DTSTART:${formatICSDate(startDateTime)}`);
+          lines.push(`DTEND:${formatICSDate(endDateTime)}`);
         }
-
-        lines.push(`DTSTART:${formatICSDate(startDateTime)}`);
-        lines.push(`DTEND:${formatICSDate(endDateTime)}`);
 
         // Summary and description
         lines.push(`SUMMARY:${escapeICSText(shift.label)}`);
@@ -1263,7 +1345,7 @@
         // Additional properties
         lines.push('SEQUENCE:0');
         lines.push('STATUS:CONFIRMED');
-        lines.push('TRANSP:OPAQUE');
+        lines.push(shift.fullDay ? 'TRANSP:TRANSPARENT' : 'TRANSP:OPAQUE');
         lines.push('CLASS:PUBLIC');
 
         lines.push('END:VEVENT');
@@ -1343,15 +1425,35 @@
       // Template form
       document.getElementById('template-form').addEventListener('submit', (e) => {
         e.preventDefault();
+        const startTime = document.getElementById('template-start-time').value;
+        const duration = document.getElementById('template-duration').value;
+        const fullDayCheckbox = document.getElementById('template-full-day');
+        const hasTimeAndDuration = startTime && duration;
         const formData = {
           label: document.getElementById('template-label').value,
-          startTime: document.getElementById('template-start-time').value,
-          duration: document.getElementById('template-duration').value,
+          startTime: startTime || '',
+          duration: duration || '',
           color: document.getElementById('template-color-hex').value,
-          notes: document.getElementById('template-notes').value
+          notes: document.getElementById('template-notes').value,
+          fullDay: hasTimeAndDuration ? fullDayCheckbox.checked : true
         };
         saveTemplate(formData);
       });
+
+      // Show/hide full-day option when start time and duration are both provided
+      const startTimeInput = document.getElementById('template-start-time');
+      const durationInput = document.getElementById('template-duration');
+      function updateFullDayOptionVisibility() {
+        const fullDayOption = document.getElementById('full-day-option');
+        if (startTimeInput.value && durationInput.value) {
+          fullDayOption.classList.remove('hidden');
+        } else {
+          fullDayOption.classList.add('hidden');
+          document.getElementById('template-full-day').checked = false;
+        }
+      }
+      startTimeInput.addEventListener('input', updateFullDayOptionVisibility);
+      durationInput.addEventListener('input', updateFullDayOptionVisibility);
 
       // Color picker sync
       document.getElementById('template-color').addEventListener('input', (e) => {
