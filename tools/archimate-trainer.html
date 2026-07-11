@@ -173,9 +173,9 @@ table.placegrid td.cell.wrong{background:#faeeee;border:2px solid var(--again)}
   <section id="tab-settings" class="hidden">
     <h2 class="sec">Scheduling</h2>
     <div class="setrow">
-      <label for="newperday">New cards per day</label>
-      <input type="number" id="newperday" min="1" max="100" step="1">
-      <span class="exp">Reviews that are due are always shown; this only limits how many unseen cards get introduced per calendar day.</span>
+      <label for="newperrun">New cards per run</label>
+      <input type="number" id="newperrun" min="0" max="10" step="1">
+      <span class="exp">Every run reserves this many slots for unseen cards (0 = review only). Due reviews always come first; if there is little else to sample, the run tops up with extra unseen cards.</span>
     </div>
     <div class="setrow">
       <label>Storage</label>
@@ -652,7 +652,7 @@ function previewLabel(st,g){
 }
 
 /* ---------- app state ---------- */
-let APP={settings:{newPerDay:10,runSize:10,answerMode:"auto",topics:{elements:true,relations:true,framework:true,viewpoints:true}},
+let APP={settings:{newPerRun:3,runSize:10,answerMode:"auto",topics:{elements:true,relations:true,framework:true,viewpoints:true}},
          intro:{date:todayISO(),count:0}, cards:{}, log:{}};
 let session=[], idx=0, face="q", saveTimer=null;
 let run=false, practiceSet=new Set(), runStats=null;
@@ -663,21 +663,40 @@ function stateKind(st){ if(!st) return "new"; return st.reps>=2?"review":"learn"
 
 /* ---------- session building ---------- */
 function shuffleArr(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function daysBetween(a,b){return Math.round((parseISO(b)-parseISO(a))/86400000);}
 function computeRun(){
   const today=todayISO();
   if(APP.intro.date!==today){APP.intro={date:today,count:0};}
   const on=APP.settings.topics, N=Math.max(1,APP.settings.runSize||10);
+  const quota=Math.max(0,Math.min(APP.settings.newPerRun??3,N));
   const enabled=DECK.filter(c=>on[c.topic]);
+  // 1. due cards: absolute priority — spaced repetition only works if due reviews happen
   const due=shuffleArr(enabled.filter(c=>{const s=cardState(c.id);return s&&s.due<=today;}).map(c=>c.id)).slice(0,N);
-  const budget=Math.max(0,APP.settings.newPerDay-APP.intro.count);
-  const fresh=due.length<N?enabled.filter(c=>!cardState(c.id)).slice(0,Math.min(budget,N-due.length)).map(c=>c.id):[];
+  // 2. unseen quota
+  const unseen=quota>0?shuffleArr(enabled.filter(c=>!cardState(c.id)).map(c=>c.id)):[];
+  let fresh=due.length<N?unseen.slice(0,Math.min(quota,N-due.length)):[];
+  // 3. weighted sample of not-yet-due cards: weight = (elapsed/interval)^2,
+  //    so a card close to its due date is far likelier to appear than one just reviewed
   let prac=[];
-  if(due.length+fresh.length<N){
-    prac=enabled.filter(c=>{const s=cardState(c.id);return s&&s.due>today;})
-      .sort((a,b)=>cardState(a.id).due.localeCompare(cardState(b.id).due))
-      .slice(0,N-due.length-fresh.length).map(c=>c.id);
+  let slots=N-due.length-fresh.length;
+  if(slots>0){
+    const pool=enabled.filter(c=>{const s=cardState(c.id);return s&&s.due>today;})
+      .map(c=>{const st=cardState(c.id);
+        const r=Math.max(0,Math.min(1,(st.ivl-daysBetween(today,st.due))/Math.max(1,st.ivl)));
+        return {id:c.id,w:r*r};});
+    while(slots>0&&pool.length){
+      const tw=pool.reduce((a,x)=>a+x.w,0);
+      if(tw<=0)break;
+      let pick=Math.random()*tw, k=0;
+      while(k<pool.length-1&&(pick-=pool[k].w)>0)k++;
+      prac.push(pool.splice(k,1)[0].id); slots--;
+    }
+    // 4. top up with more unseen cards ("fresh cards in each run")
+    if(slots>0&&quota>0){const extra=unseen.slice(fresh.length,fresh.length+slots);fresh=fresh.concat(extra);slots-=extra.length;}
+    // 5. last resort: uniform re-drill of not-yet-due cards
+    if(slots>0&&pool.length){shuffleArr(pool);while(slots>0&&pool.length){prac.push(pool.pop().id);slots--;}}
   }
-  return {ids:due.concat(fresh,prac),due:due.length,fresh:fresh.length,prac:prac};
+  return {ids:shuffleArr(due.concat(fresh,prac)),due:due.length,fresh:fresh.length,prac:prac};
 }
 function buildRun(){
   const r=computeRun();
@@ -708,7 +727,7 @@ function renderStats(){
   const done=APP.log[today]||0;
   el("stats").innerHTML=
     `<span class="chip">due <b>${due}</b></span>`+
-    `<span class="chip">new today <b>${Math.max(0,APP.settings.newPerDay-APP.intro.count)}</b>/${APP.settings.newPerDay}</span>`+
+    `<span class="chip">unseen <b>${fresh}</b></span>`+
     `<span class="chip">reviewed today <b>${done}</b></span>`+
     `<span class="chip">learning <b>${learn}</b> · review <b>${review}</b> · unseen <b>${fresh}</b></span>`+
     `<span class="chip">${today}</span>`;
@@ -798,7 +817,8 @@ function renderStart(area){
   const short=r.ids.length<N&&!nothing;
   area.innerHTML=`<div class="done"><h2>Ready when you are</h2>
     <p>Next run: <b>${r.due}</b> due · <b>${r.fresh}</b> new · <b>${r.prac.length}</b> practice${short?" — that is all that is available for the selected areas":""}.</p>
-    <p class="note" style="color:var(--muted)">Pick areas above. Practice cards run ahead of schedule: a miss resets the card, a pass changes nothing.</p>
+    <p class="note" style="color:var(--muted)">Pick areas above. Runs mix due reviews, new cards, and a sample of the rest — the closer a card is to its due date, the likelier it shows up. Ahead-of-schedule cards count as practice: a miss resets them, a pass changes nothing.</p>
+
     <div class="controls" style="max-width:280px;margin:16px auto 0"><button class="btn-flip" id="btn-startrun" ${nothing?"disabled":""}>${nothing?"Nothing available":"Start a "+r.ids.length+"-card run"}</button></div>
     ${nothing?'<p class="note">Enable more areas above, or come back when reviews are due.</p>':""}</div>`;
   const b=el("btn-startrun");
@@ -813,7 +833,7 @@ function renderDone(area){
   const unseen=DECK.filter(c=>!cardState(c.id)).length;
   area.innerHTML=`<div class="done"><h2>Run complete</h2>
     <p><b>${rs.pass}</b> passed · <b>${rs.again}</b> missed${rs.introduced?` · <b>${rs.introduced}</b> newly introduced`:""}${rs.practiced?` · <b>${rs.practiced}</b> practice`:""}.</p>
-    <p class="note" style="color:var(--muted)">${unseen>0?unseen+" cards still unseen — the daily new limit is in Settings.":"The whole deck has been introduced."}</p>
+    <p class="note" style="color:var(--muted)">${unseen>0?unseen+" cards still unseen — each run introduces a few more (adjustable in Settings).":"The whole deck has been introduced."}</p>
     <table class="forecast"><tr><th>date</th><th>due</th></tr>${rows}</table>
     <div class="controls" style="max-width:280px;margin:20px auto 0"><button class="btn-flip" id="btn-again-run">Start another run</button></div></div>`;
   el("btn-again-run").addEventListener("click",()=>{run=false;renderStudy();});
@@ -1025,9 +1045,9 @@ function renderBrowse(){
 
 /* ---------- settings ---------- */
 function wireSettings(){
-  const np=el("newperday"), am=el("answermode"), rs=el("runsize");
-  np.value=APP.settings.newPerDay; am.value=APP.settings.answerMode; rs.value=APP.settings.runSize;
-  np.addEventListener("change",()=>{APP.settings.newPerDay=Math.max(1,Math.min(100,Number(np.value)||10));np.value=APP.settings.newPerDay;persist();renderStudy();});
+  const np=el("newperrun"), am=el("answermode"), rs=el("runsize");
+  np.value=APP.settings.newPerRun; am.value=APP.settings.answerMode; rs.value=APP.settings.runSize;
+  np.addEventListener("change",()=>{APP.settings.newPerRun=Math.max(0,Math.min(10,Number(np.value)||0));np.value=APP.settings.newPerRun;persist();renderStudy();});
   rs.addEventListener("change",()=>{APP.settings.runSize=Math.max(3,Math.min(50,Number(rs.value)||10));rs.value=APP.settings.runSize;persist();renderStudy();});
   am.addEventListener("change",()=>{APP.settings.answerMode=am.value;persist();face="q";renderStudy();});
   el("btn-copy").addEventListener("click",()=>{el("io").value=JSON.stringify(APP);});
