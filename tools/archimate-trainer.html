@@ -26,23 +26,24 @@ button{font-family:var(--sans);cursor:pointer}
 
 /* header */
 header{border-bottom:2px solid var(--ink);background:var(--paper);position:sticky;top:0;z-index:5}
-.head-in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px}
+.head-in{max-width:860px;margin:0 auto;padding:7px 16px 5px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px}
 .brand{font-family:var(--serif);font-size:21px;font-weight:700;letter-spacing:.2px}
 .brand small{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400;margin-left:8px}
 .storagemode{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.storagemode.warn{color:var(--again);font-weight:600}
 nav.tabs{max-width:860px;margin:0 auto;padding:0 16px;display:flex;gap:0}
 nav.tabs button{appearance:none;border:0;background:none;padding:8px 14px 10px;font-size:14px;color:var(--muted);border-bottom:3px solid transparent}
 nav.tabs button.on{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
 nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 
 /* stats strip */
-.strip{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 14px;font-family:var(--mono);font-size:12px}
-.chip{border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:4px 12px;color:var(--muted)}
+.strip{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 8px;font-family:var(--mono);font-size:11.5px}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:3px 9px;color:var(--muted)}
 .chip b{color:var(--ink);font-weight:600}
 
 /* topic filters */
-.topics{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
-.topics label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:5px 12px;font-size:13px;user-select:none}
+.topics{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.topics label{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:4px 10px;font-size:12.5px;user-select:none}
 .topics label.off{opacity:.45}
 .topics input{accent-color:var(--accent)}
 
@@ -106,6 +107,7 @@ table.browse button{border:1px solid var(--line);background:none;border-radius:6
 .st-new{background:#eef2f8;color:var(--accent)}
 .st-learn{background:#fbf3e2;color:var(--hard)}
 .st-review{background:#eef6ef;color:var(--good)}
+.st-practice{background:#f0ecf8;color:#6b5b95}
 
 /* settings */
 .setrow{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
@@ -146,7 +148,7 @@ table.placegrid td.cell.wrong{background:#faeeee;border:2px solid var(--again)}
 <body>
 <header>
   <div class="head-in">
-    <div class="brand">ArchiMate Trainer<small>SM-2 spaced repetition · v1</small></div>
+    <div class="brand">ArchiMate Trainer</div>
     <div class="storagemode" id="storagemode"></div>
   </div>
   <nav class="tabs" id="tabs">
@@ -174,6 +176,15 @@ table.placegrid td.cell.wrong{background:#faeeee;border:2px solid var(--again)}
       <label for="newperday">New cards per day</label>
       <input type="number" id="newperday" min="1" max="100" step="1">
       <span class="exp">Reviews that are due are always shown; this only limits how many unseen cards get introduced per calendar day.</span>
+    </div>
+    <div class="setrow">
+      <label>Storage</label>
+      <span class="exp" id="storageinfo"></span>
+    </div>
+    <div class="setrow">
+      <label for="runsize">Cards per run</label>
+      <input type="number" id="runsize" min="3" max="50" step="1">
+      <span class="exp">Each run pulls this many: due reviews first, then new cards (within the daily limit), topped up with ahead-of-schedule practice. A practice miss resets that card to due now; a practice pass changes nothing.</span>
     </div>
     <div class="setrow">
       <label for="answermode">Answer style</label>
@@ -400,18 +411,18 @@ const ELEMENTS=[
 
 /* ---------- relationship data ---------- */
 const RELS=[
- {n:"Composition",cat:"Structural",svg:"composition",notation:"Solid line with a filled diamond at the end of the whole (A is the whole, B the part).",def:"An element consists of one or more other elements. Existential: a part can belong to only one composition and does not exist independently of the whole.",hint:"Filled diamond = the part is 'welded in'."},
- {n:"Aggregation",cat:"Structural",svg:"aggregation",notation:"Solid line with a hollow diamond at the end of the whole.",def:"An element groups one or more other elements. Looser than composition: parts can exist independently and be aggregated by several wholes.",hint:"Hollow diamond = the part can be taken out again."},
- {n:"Assignment",cat:"Structural",svg:"assignment",notation:"Solid line with a filled ball at the source (A) and a filled arrowhead at the target (B).",def:"Allocation of responsibility, performance of behavior, storage, or execution: actor to role, role to process, component to function, node to artifact (deployment).",hint:"Ball at the 'doer', arrow at what it does or carries."},
- {n:"Realization",cat:"Structural",svg:"realization",notation:"Dashed line with a hollow triangle pointing at the more abstract element being realized.",def:"An entity plays a critical role in creating, achieving, or operating a more abstract entity: a process realizes a service; an artifact realizes an application component; a data object realizes a business object.",hint:"Dashed = the abstract thing only becomes real through this."},
- {n:"Serving",cat:"Dependency",svg:"serving",notation:"Solid line with an open arrowhead pointing at the element that is served.",def:"An element provides its functionality to another element — typically a service serving a process, or a lower layer serving a higher one. Called \"used by\" before ArchiMate 3.0.",hint:"Arrow points at the customer, not the provider."},
- {n:"Access",cat:"Dependency",svg:"access",notation:"Dotted line, optionally with a small open arrowhead. Arrow toward the passive element = write; toward the behavior = read; both ends = read/write; none = unspecified.",def:"The ability of behavior and active structure elements to observe or act upon passive structure elements (objects, artifacts, material).",hint:"Dotted line — think of a stream of data dots."},
- {n:"Influence",cat:"Dependency",svg:"influence",notation:"Dashed line with an open arrowhead, optionally annotated with a strength such as +, ++, − or −−.",def:"An element affects the implementation or achievement of a motivation element. The main relationship among goals, drivers, principles, and requirements.",hint:"Motivation elements sway each other; annotate the direction of the push."},
- {n:"Association",cat:"Dependency",svg:"association",notation:"Plain solid line; the directed form has half an arrowhead at the target end.",def:"An unspecified relationship, or one not covered by any other ArchiMate relationship. The fallback when nothing stronger applies.",hint:"No decoration = no committed semantics."},
- {n:"Triggering",cat:"Dynamic",svg:"triggering",notation:"Solid line with a filled arrowhead.",def:"A temporal or causal relationship between behavior elements and/or events: one thing causes or precedes the next.",hint:"Solid line = a hard causal push."},
- {n:"Flow",cat:"Dynamic",svg:"flow",notation:"Dashed line with a filled arrowhead.",def:"Transfer from one element to another: information, goods, or money — without implying causal sequence.",hint:"Dashed = stuff streaming across; label it with what flows."},
- {n:"Specialization",cat:"Other",svg:"specialization",notation:"Solid line with a hollow triangle pointing at the more general element.",def:"An element is a particular kind of another element of the same type — e.g. \"Online Payment Process\" specializes \"Payment Process\".",hint:"Same hollow triangle as realization, but solid line: it IS one, it does not merely realize one."},
- {n:"Junction",cat:"Other",svg:"junction-and",notation:"A small circle connecting several relationships of the same type: filled circle = AND, open circle = OR.",def:"Splits or joins multiple relationships of the same type, with and/or semantics — commonly used with triggering and flow.",hint:"Filled = all branches; open = one or more."}
+ {n:"Composition",cat:"Structural",svg:"composition",notation:"Solid line with a filled diamond at the end of the whole (A is the whole, B the part).",def:"An element consists of one or more other elements. Existential: a part can belong to only one composition and does not exist independently of the whole.",more:"Delete the whole and the parts go with it. Strongest link in the derivation order; may also be drawn by nesting the part inside the whole.",hint:"Filled diamond = the part is 'welded in'."},
+ {n:"Aggregation",cat:"Structural",svg:"aggregation",notation:"Solid line with a hollow diamond at the end of the whole.",def:"An element groups one or more other elements. Looser than composition: parts can exist independently and be aggregated by several wholes.",more:"Parts keep their own lifecycle and may sit in several aggregations at once — one Application Component can be aggregated into two Products. Also drawable as nesting.",hint:"Hollow diamond = the part can be taken out again."},
+ {n:"Assignment",cat:"Structural",svg:"assignment",notation:"Solid line with a filled ball at the source (A) and a filled arrowhead at the target (B).",def:"Allocation of responsibility, performance of behavior, storage, or execution: actor to role, role to process, component to function, node to artifact (deployment).",more:"The ball marks the performer or host. Key patterns: actor→role, role→process, component→function, interface→service, node/device→artifact (deployment).",hint:"Ball at the 'doer', arrow at what it does or carries."},
+ {n:"Realization",cat:"Structural",svg:"realization",notation:"Dashed line with a hollow triangle pointing at the more abstract element being realized.",def:"An entity plays a critical role in creating, achieving, or operating a more abstract entity: a process realizes a service; an artifact realizes an application component; a data object realizes a business object.",more:"Always reads concrete→abstract. Chains cross layers: artifact realizes data object realizes business object; process realizes service; requirement realizes goal.",hint:"Dashed = the abstract thing only becomes real through this."},
+ {n:"Serving",cat:"Dependency",svg:"serving",notation:"Solid line with an open arrowhead pointing at the element that is served.",def:"An element provides its functionality to another element — typically a service serving a process, or a lower layer serving a higher one. Called \"used by\" before ArchiMate 3.0.",more:"Support flows toward the arrowhead: provider at the tail, consumer at the head — typically pointing up the layer stack.",hint:"Arrow points at the customer, not the provider."},
+ {n:"Access",cat:"Dependency",svg:"access",notation:"Dotted line, optionally with a small open arrowhead. Arrow toward the passive element = write; toward the behavior = read; both ends = read/write; none = unspecified.",def:"The ability of behavior and active structure elements to observe or act upon passive structure elements (objects, artifacts, material).",more:"The only relationship between behavior and passive structure. The arrowhead is the read/write switch: arrow at the object = write.",hint:"Dotted line — think of a stream of data dots."},
+ {n:"Influence",cat:"Dependency",svg:"influence",notation:"Dashed line with an open arrowhead, optionally annotated with a strength such as +, ++, − or −−.",def:"An element affects the implementation or achievement of a motivation element. The main relationship among goals, drivers, principles, and requirements.",more:"The only relationship with a strength annotation; used almost exclusively among motivation elements.",hint:"Motivation elements sway each other; annotate the direction of the push."},
+ {n:"Association",cat:"Dependency",svg:"association",notation:"Plain solid line; the directed form has half an arrowhead at the target end.",def:"An unspecified relationship, or one not covered by any other ArchiMate relationship. The fallback when nothing stronger applies.",more:"Weakest link in the derivation order — the 'some connection exists' fallback with no committed semantics.",hint:"No decoration = no committed semantics."},
+ {n:"Triggering",cat:"Dynamic",svg:"triggering",notation:"Solid line with a filled arrowhead.",def:"A temporal or causal relationship between behavior elements and/or events: one thing causes or precedes the next.",more:"Control flow: order and causality, no payload. Combine with junctions for AND/OR splits in process chains.",hint:"Solid line = a hard causal push."},
+ {n:"Flow",cat:"Dynamic",svg:"flow",notation:"Dashed line with a filled arrowhead.",def:"Transfer from one element to another: information, goods, or money — without implying causal sequence.",more:"Payload without ordering claim. Triggering says 'then'; flow says 'sends'. Label it with what is transferred.",hint:"Dashed = stuff streaming across; label it with what flows."},
+ {n:"Specialization",cat:"Other",svg:"specialization",notation:"Solid line with a hollow triangle pointing at the more general element.",def:"An element is a particular kind of another element of the same type — e.g. \"Online Payment Process\" specializes \"Payment Process\".",more:"Both ends must be the same element type; the specialized element inherits the parent's relationships.",hint:"Same hollow triangle as realization, but solid line: it IS one, it does not merely realize one."},
+ {n:"Junction",cat:"Other",svg:"junction-and",notation:"A small circle connecting several relationships of the same type: filled circle = AND, open circle = OR.",def:"Splits or joins multiple relationships of the same type, with and/or semantics — commonly used with triggering and flow.",more:"Technically a relationship connector, not a relationship; everything it connects must be of one type (usually triggering or flow).",hint:"Filled = all branches; open = one or more."}
 ];
 
 /* ---------- viewpoint data ---------- */
@@ -505,7 +516,7 @@ const ORDERS=[
 
 /* ---------- deck builder ---------- */
 function slug(s){return s.toLowerCase().replace(/&amp;/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');}
-const TOPICS={elements:"Elements",relations:"Relationships",framework:"Layers & framework",viewpoints:"Viewpoints"};
+const TOPICS={elements:"Elements",relations:"Relations",framework:"Framework",viewpoints:"Viewpoints"};
 const DECK=[];
 (function buildDeck(){
   const esc=s=>s; // data is authored as safe HTML
@@ -641,26 +652,38 @@ function previewLabel(st,g){
 }
 
 /* ---------- app state ---------- */
-let APP={settings:{newPerDay:10,answerMode:"auto",topics:{elements:true,relations:true,framework:true,viewpoints:true}},
+let APP={settings:{newPerDay:10,runSize:10,answerMode:"auto",topics:{elements:true,relations:true,framework:true,viewpoints:true}},
          intro:{date:todayISO(),count:0}, cards:{}, log:{}};
 let session=[], idx=0, face="q", saveTimer=null;
+let run=false, practiceSet=new Set(), runStats=null;
 
 function persist(){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>{Store.save(APP);},150); }
 function cardState(id){ return APP.cards[id]||null; }
 function stateKind(st){ if(!st) return "new"; return st.reps>=2?"review":"learn"; }
 
 /* ---------- session building ---------- */
-function buildSession(){
+function shuffleArr(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function computeRun(){
   const today=todayISO();
   if(APP.intro.date!==today){APP.intro={date:today,count:0};}
-  const on=APP.settings.topics;
+  const on=APP.settings.topics, N=Math.max(1,APP.settings.runSize||10);
   const enabled=DECK.filter(c=>on[c.topic]);
-  const due=enabled.filter(c=>{const s=cardState(c.id);return s&&s.due<=today;}).map(c=>c.id);
-  // shuffle reviews
-  for(let i=due.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[due[i],due[j]]=[due[j],due[i]];}
+  const due=shuffleArr(enabled.filter(c=>{const s=cardState(c.id);return s&&s.due<=today;}).map(c=>c.id)).slice(0,N);
   const budget=Math.max(0,APP.settings.newPerDay-APP.intro.count);
-  const fresh=enabled.filter(c=>!cardState(c.id)).slice(0,budget).map(c=>c.id);
-  session=due.concat(fresh); idx=0; face="q"; round=null; lastPick=null;
+  const fresh=due.length<N?enabled.filter(c=>!cardState(c.id)).slice(0,Math.min(budget,N-due.length)).map(c=>c.id):[];
+  let prac=[];
+  if(due.length+fresh.length<N){
+    prac=enabled.filter(c=>{const s=cardState(c.id);return s&&s.due>today;})
+      .sort((a,b)=>cardState(a.id).due.localeCompare(cardState(b.id).due))
+      .slice(0,N-due.length-fresh.length).map(c=>c.id);
+  }
+  return {ids:due.concat(fresh,prac),due:due.length,fresh:fresh.length,prac:prac};
+}
+function buildRun(){
+  const r=computeRun();
+  session=r.ids; practiceSet=new Set(r.prac); idx=0; face="q"; round=null; lastPick=null;
+  runStats={pass:0,again:0,practiced:0,introduced:0,due:r.due,fresh:r.fresh};
+  run=true;
 }
 
 /* ---------- rendering helpers ---------- */
@@ -698,12 +721,14 @@ function renderTopics(){
   }).join("");
   el("topicfilter").querySelectorAll("input").forEach(i=>i.addEventListener("change",e=>{
     APP.settings.topics[e.target.dataset.topic]=e.target.checked; persist();
-    buildSession(); renderStudy();
+    renderStudy();
   }));
 }
 function renderStudy(){
   renderStats();
   const area=el("studyarea");
+  if(!run){renderStart(area);return;}
+  el("topicfilter").classList.add("hidden");
   if(idx>=session.length){ renderDone(area); return; }
   const c=CARD_BY_ID[session[idx]];
   if(face==="q"&&!round)maybeStartRound(c);
@@ -711,7 +736,7 @@ function renderStudy(){
   if(c.kind==="place"){renderPlace(area,c);return;}
   if(c.kind==="order"){renderOrder(area,c);return;}
   const st=cardState(c.id);
-  const kind=stateKind(st);
+  const kind=practiceSet.has(c.id)?"practice":stateKind(st);
   const m=APP.settings.answerMode;
   const useChoice=!!(c.pool&&c.pool.length>=3&&(m==="choice"||(m!=="flip"&&c.mc)));
   let html=`<div class="card"><div class="meta"><span>${TOPICS[c.topic]} · <span class="statepill st-${kind}">${kind}</span></span><span>${idx+1} / ${session.length}</span></div>`;
@@ -729,11 +754,14 @@ function renderStudy(){
   }else{
     html+=renderAnswer(c);
     if(face==="a"){
-      html+=`<div class="controls">`+[["again","Again",0],["hard","Hard",1],["good","Good",2],["easy","Easy",3]].map(g=>
-        `<button class="btn-${g[0]}" data-grade="${g[2]}">${g[1]}<span class="sub">${previewLabel(st,g[2])}</span></button>`).join("")+`</div>`;
+      const pr=practiceSet.has(c.id);
+      const gdefs=pr?[["again","Missed",0,"resets"],["good","Knew it",2,"no change"]]
+                    :[["again","Again",0,null],["hard","Hard",1,null],["good","Good",2,null],["easy","Easy",3,null]];
+      html+=`<div class="controls">`+gdefs.map(g=>
+        `<button class="btn-${g[0]}" data-grade="${g[2]}">${g[1]}<span class="sub">${g[3]||previewLabel(st,g[2])}</span></button>`).join("")+`</div>`;
     }else{ // auto-graded by choice; face === 'a-auto-0' or 'a-auto-2'
       const g=Number(face.split("-")[2]);
-      html+=`<div class="controls"><button class="btn-${g===0?"again":"good"}" data-grade="${g}">${g===0?"Again":"Good"} — continue<span class="sub">${previewLabel(st,g)}</span></button></div>`;
+      html+=contBtn(c,st,g);
     }
   }
   html+=`</div>`;
@@ -763,28 +791,57 @@ function gradeCurrent(g){
   applyGrade(session[idx],g);
   idx++; face="q"; lastPick=null; renderStudy();
 }
+function renderStart(area){
+  el("topicfilter").classList.remove("hidden");
+  const r=computeRun(), N=APP.settings.runSize;
+  const nothing=r.ids.length===0;
+  const short=r.ids.length<N&&!nothing;
+  area.innerHTML=`<div class="done"><h2>Ready when you are</h2>
+    <p>Next run: <b>${r.due}</b> due · <b>${r.fresh}</b> new · <b>${r.prac.length}</b> practice${short?" — that is all that is available for the selected areas":""}.</p>
+    <p class="note" style="color:var(--muted)">Pick areas above. Practice cards run ahead of schedule: a miss resets the card, a pass changes nothing.</p>
+    <div class="controls" style="max-width:280px;margin:16px auto 0"><button class="btn-flip" id="btn-startrun" ${nothing?"disabled":""}>${nothing?"Nothing available":"Start a "+r.ids.length+"-card run"}</button></div>
+    ${nothing?'<p class="note">Enable more areas above, or come back when reviews are due.</p>':""}</div>`;
+  const b=el("btn-startrun");
+  if(b&&!nothing)b.addEventListener("click",()=>{buildRun();renderStudy();});
+}
 function renderDone(area){
   const today=todayISO(); const counts={};
   for(const c of DECK){const s=cardState(c.id);if(!s)continue;if(s.due>today)counts[s.due]=(counts[s.due]||0)+1;}
   let rows="";
   for(let i=1;i<=7;i++){const d=addDays(today,i);rows+=`<tr><td>${d}</td><td>${counts[d]||0}</td></tr>`;}
+  const rs=runStats||{pass:0,again:0,practiced:0,introduced:0};
   const unseen=DECK.filter(c=>!cardState(c.id)).length;
-  area.innerHTML=`<div class="done"><h2>Session complete</h2>
-    <p>Nothing more due right now. ${unseen>0?unseen+" cards are still unseen — raise the daily limit in Settings if you want more today.":"The whole deck has been introduced."}</p>
+  area.innerHTML=`<div class="done"><h2>Run complete</h2>
+    <p><b>${rs.pass}</b> passed · <b>${rs.again}</b> missed${rs.introduced?` · <b>${rs.introduced}</b> newly introduced`:""}${rs.practiced?` · <b>${rs.practiced}</b> practice`:""}.</p>
+    <p class="note" style="color:var(--muted)">${unseen>0?unseen+" cards still unseen — the daily new limit is in Settings.":"The whole deck has been introduced."}</p>
     <table class="forecast"><tr><th>date</th><th>due</th></tr>${rows}</table>
-    <div class="controls" style="max-width:260px;margin:20px auto 0"><button class="btn-plain" id="btn-rebuild">Check again</button></div></div>`;
-  el("btn-rebuild").addEventListener("click",()=>{buildSession();renderStudy();});
+    <div class="controls" style="max-width:280px;margin:20px auto 0"><button class="btn-flip" id="btn-again-run">Start another run</button></div></div>`;
+  el("btn-again-run").addEventListener("click",()=>{run=false;renderStudy();});
 }
 
 /* ---------- matching rounds & interactive card kinds ---------- */
 let round=null,lastPick=null;
 function applyGrade(id,g){
+  const t=todayISO(); APP.log[t]=(APP.log[t]||0)+1;
+  if(runStats)runStats[g===0?"again":"pass"]++;
+  if(practiceSet.has(id)){
+    if(runStats)runStats.practiced++;
+    if(g===0){ // a real miss ahead of schedule is real information: reset the card
+      practiceSet.delete(id);
+      APP.cards[id]=schedule(cardState(id)||newState(),0);
+      session.splice(Math.min(idx+1+4,session.length),0,id);
+    } // passes ahead of schedule change nothing
+    persist(); return;
+  }
   const prev=cardState(id), isNew=!prev;
   APP.cards[id]=schedule(prev||newState(),g);
-  if(isNew)APP.intro.count++;
-  const t=todayISO(); APP.log[t]=(APP.log[t]||0)+1;
+  if(isNew){APP.intro.count++; if(runStats)runStats.introduced++;}
   if(g===0)session.splice(Math.min(idx+1+4,session.length),0,id);
   persist();
+}
+function contBtn(c,st,g){
+  const pr=practiceSet.has(c.id)&&g>0;
+  return `<div class="controls"><button class="btn-${g===0?"again":"good"}" data-grade="${g}">${g===0?"Again":(pr?"Knew it":"Good")} — continue<span class="sub">${pr?"no change":previewLabel(st,g)}</span></button></div>`;
 }
 function maybeStartRound(c){
   if(!c.mg||!cardState(c.id))return;
@@ -821,7 +878,7 @@ function renderRound(area){
       :`<button data-mopt="${i}"><kbd>${i+1}</kbd>${o}</button>`).join("")+`</div>`;
   }else{
     const miss=round.items.filter(it=>!it.first).length;
-    h+=`<p class="note">${miss===0?"All matched on the first try — each graded Good.":miss+" missed on the first try — graded Again and re-queued; the rest graded Good."}</p>`;
+    h+=`<p class="note">${miss===0?"All matched on the first try.":miss+" missed on the first try — those come back shortly."}</p>`;
     h+=`<div class="controls"><button class="btn-flip" data-rndcont>Continue</button></div>`;
   }
   h+=`</div>`;
@@ -847,7 +904,7 @@ function renderRound(area){
 const PLACE_ROWS=["strategy","business","application","technology","physical","implementation"];
 const PLACE_COLS=[["passive","Passive structure"],["behavior","Behavior"],["active","Active structure"]];
 function renderPlace(area,c){
-  const st=cardState(c.id),kind=stateKind(st);
+  const st=cardState(c.id),kind=practiceSet.has(c.id)?"practice":stateKind(st);
   const res=face!=="q", pick=lastPick||{};
   const g=res?Number(face.split("-")[2]):null;
   let h=`<div class="card"><div class="meta"><span>${TOPICS[c.topic]} · <span class="statepill st-${kind}">${kind}</span></span><span>${idx+1} / ${session.length}</span></div>`;
@@ -865,7 +922,7 @@ function renderPlace(area,c){
   h+=`</table>`;
   if(res){
     h+=renderAnswer(c);
-    h+=`<div class="controls"><button class="btn-${g===0?"again":"good"}" data-grade="${g}">${g===0?"Again":"Good"} — continue<span class="sub">${previewLabel(st,g)}</span></button></div>`;
+    h+=contBtn(c,st,g);
   }
   h+=`</div>`;
   area.innerHTML=h;
@@ -877,7 +934,7 @@ function renderPlace(area,c){
   area.querySelectorAll("[data-grade]").forEach(b=>b.addEventListener("click",()=>gradeCurrent(Number(b.dataset.grade))));
 }
 function renderOrder(area,c){
-  const st=cardState(c.id),kind=stateKind(st);
+  const st=cardState(c.id),kind=practiceSet.has(c.id)?"practice":stateKind(st);
   const res=face!=="q";
   const g=res?Number(face.split("-")[2]):null;
   let h=`<div class="card"><div class="meta"><span>${TOPICS[c.topic]} · <span class="statepill st-${kind}">${kind}</span></span><span>${idx+1} / ${session.length}</span></div>`;
@@ -899,7 +956,7 @@ function renderOrder(area,c){
       return `<button disabled class="${okp?"right":"wrong"}"><kbd>${i+1}</kbd>${okp?o:(seq[i]||"—")+" → "+o}</button>`;
     }).join("")+`</div>`;
     h+=renderAnswer(c);
-    h+=`<div class="controls"><button class="btn-${g===0?"again":"good"}" data-grade="${g}">${g===0?"Again":"Good"} — continue<span class="sub">${previewLabel(st,g)}</span></button></div>`;
+    h+=contBtn(c,st,g);
   }
   h+=`</div>`;
   area.innerHTML=h;
@@ -926,7 +983,7 @@ function renderReference(){
     grid+=`<tr><td>${layerChip(r)}</td><td>${cell(r,"passive")}</td><td>${cell(r,"behavior")}</td><td>${cell(r,"active")}</td></tr>`;
   }
   grid+=`</table><p class="note" style="color:var(--muted);font-size:12.5px">Composites: Product (business), Plateau (impl. &amp; migration). Motivation aspect: ${ELEMENTS.filter(e=>e.layer==="motivation").map(e=>e.n).join(", ")}. Other: Grouping, Location, Junction.</p>`;
-  let rels=RELS.map(r=>`<div class="relrow"><span class="nm">${r.n}</span>${relSVG(r.svg)}<span class="ds"><b>${r.cat}.</b> ${r.notation}</span></div>`).join("");
+  let rels=RELS.map(r=>`<div class="relrow"><span class="nm">${r.n}</span>${relSVG(r.svg)}<span class="ds"><b>${r.cat}.</b> ${r.def}<br><i>${r.notation}</i>${r.more?`<br><span style="opacity:.85">${r.more}</span>`:""}</span></div>`).join("");
   rels+=`<div class="relrow"><span class="nm">Junction (OR)</span>${relSVG("junction-or")}<span class="ds"><b>Other.</b> Open circle = one or more paths apply.</span></div>`;
   rels+=`<div class="relrow"><span class="nm">Directed association</span>${relSVG("association-directed")}<span class="ds"><b>Dependency.</b> Half arrowhead marks the reading direction.</span></div>`;
   let els=ELEMENTS.map(e=>`<div style="display:inline-block;margin:0 10px 14px;text-align:center;vertical-align:top">${elSVG(e,{label:e.n})}</div>`).join("");
@@ -968,9 +1025,10 @@ function renderBrowse(){
 
 /* ---------- settings ---------- */
 function wireSettings(){
-  const np=el("newperday"), am=el("answermode");
-  np.value=APP.settings.newPerDay; am.value=APP.settings.answerMode;
-  np.addEventListener("change",()=>{APP.settings.newPerDay=Math.max(1,Math.min(100,Number(np.value)||10));np.value=APP.settings.newPerDay;persist();buildSession();renderStudy();});
+  const np=el("newperday"), am=el("answermode"), rs=el("runsize");
+  np.value=APP.settings.newPerDay; am.value=APP.settings.answerMode; rs.value=APP.settings.runSize;
+  np.addEventListener("change",()=>{APP.settings.newPerDay=Math.max(1,Math.min(100,Number(np.value)||10));np.value=APP.settings.newPerDay;persist();renderStudy();});
+  rs.addEventListener("change",()=>{APP.settings.runSize=Math.max(3,Math.min(50,Number(rs.value)||10));rs.value=APP.settings.runSize;persist();renderStudy();});
   am.addEventListener("change",()=>{APP.settings.answerMode=am.value;persist();face="q";renderStudy();});
   el("btn-copy").addEventListener("click",()=>{el("io").value=JSON.stringify(APP);});
   el("btn-export").addEventListener("click",()=>{
@@ -985,14 +1043,14 @@ function wireSettings(){
       const obj=JSON.parse(el("io").value);
       if(!obj||typeof obj.cards!=="object")throw new Error("no cards object");
       APP=Object.assign({settings:APP.settings,intro:{date:todayISO(),count:0},cards:{},log:{}},obj);
-      persist();buildSession();renderStats();renderTopics();renderStudy();
+      persist();run=false;renderStats();renderTopics();renderStudy();
       el("io").value="Imported: "+Object.keys(APP.cards).length+" card states.";
     }catch(err){el("io").value="Import failed: "+err.message;}
   });
   el("btn-reset").addEventListener("click",()=>{
     if(!confirm("Delete all scheduling progress? Settings are kept."))return;
     APP.cards={};APP.log={};APP.intro={date:todayISO(),count:0};
-    persist();buildSession();renderStudy();
+    persist();run=false;renderStudy();
   });
 }
 
@@ -1012,7 +1070,9 @@ function wireKeys(){
   document.addEventListener("keydown",e=>{
     if(e.target.tagName==="TEXTAREA"||e.target.tagName==="INPUT"||e.target.tagName==="SELECT")return;
     if(el("tab-study").classList.contains("hidden"))return;
-    if(idx>=session.length)return;
+    const sb=el("btn-startrun")||el("btn-again-run");
+    if((e.key===" "||e.key==="Enter")&&sb){if(!sb.disabled){e.preventDefault();sb.click();}return;}
+    if(!run||idx>=session.length)return;
     if(e.key===" "||e.key==="Enter"){
       const flip=el("btn-flip-card");
       if(flip){e.preventDefault();flip.click();return;}
@@ -1046,10 +1106,11 @@ async function boot(){
     APP.settings.topics=Object.assign({elements:true,relations:true,framework:true,viewpoints:true},(saved.settings||{}).topics||{});
     APP.intro=saved.intro||APP.intro; APP.cards=saved.cards||{}; APP.log=saved.log||{};
   }
-  const modeLabel={local:"saving to localStorage",artifact:"saving to Claude artifact storage",memory:"in-memory only — progress is lost on reload; download the file and open it locally"}[Store.mode];
-  el("storagemode").textContent=modeLabel;
+  const modeLabel={local:"Progress is saved to this browser's localStorage for this file location. Use export/import below to move it between devices.",artifact:"Progress is saved to Claude artifact storage and persists across sessions here.",memory:"In-memory only — progress is lost on reload. Download the file and open it locally to get persistence."}[Store.mode];
+  const si=el("storageinfo"); if(si)si.textContent=modeLabel;
+  if(Store.mode==="memory"){el("storagemode").textContent="⚠ no persistence";el("storagemode").classList.add("warn");}
   wireTabs();wireKeys();wireSettings();renderTopics();
-  buildSession();renderStudy();
+  renderStudy();
 }
 if(typeof document!=="undefined"&&document.getElementById){
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);
