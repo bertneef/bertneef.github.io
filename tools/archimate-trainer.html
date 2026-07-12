@@ -773,15 +773,16 @@ const ORDERS=[
 
 /* ---------- deck builder ---------- */
 function slug(s){return s.toLowerCase().replace(/&amp;/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');}
-const TOPICS_EN={eldef:"Element meaning",elnot:"Element notation",relnot:"Relationship notation",relrule:"Relationship rules & reading",framework:"Framework",viewpoints:"Viewpoints"};
-const TOPICS_NL={eldef:"Betekenis van elementen",elnot:"Elementnotatie",relnot:"Relatienotatie",relrule:"Relatieregels & diagrammen lezen",framework:"Raamwerk",viewpoints:"Viewpoints"};
-const TOPIC_DEFAULTS={eldef:true,elnot:true,relnot:true,relrule:true,framework:true,viewpoints:true};
+const TOPICS_EN={eldef:"Element meaning",elnot:"Element notation",elplace:"Element placement",relnot:"Relationship notation",relrule:"Relationship rules & reading",framework:"Framework concepts",viewpoints:"Viewpoints"};
+const TOPICS_NL={eldef:"Betekenis van elementen",elnot:"Elementnotatie",elplace:"Plaatsing van elementen",relnot:"Relatienotatie",relrule:"Relatieregels & diagrammen lezen",framework:"Raamwerkbegrippen",viewpoints:"Viewpoints"};
+const TOPIC_DEFAULTS={eldef:true,elnot:true,elplace:true,relnot:true,relrule:true,framework:true,viewpoints:true};
 // old two-topic saves (elements/relations) map onto the split ones
 function migrateTopics(t){
   if(!t)return Object.assign({},TOPIC_DEFAULTS);
   const o=Object.assign({},TOPIC_DEFAULTS);
   if("elements" in t){o.eldef=o.elnot=!!t.elements;}
   if("relations" in t){o.relnot=o.relrule=!!t.relations;}
+  if("framework" in t){o.elplace=!!t.framework;}   // placement used to live under framework
   for(const k in TOPIC_DEFAULTS)if(k in t)o[k]=!!t[k];
   return o;
 }
@@ -860,7 +861,7 @@ function buildDeck(){
     if(e2.aspect==="composite")continue;
     const L2=LLB(e2.layer);
     const asp=e2.aspect==="motivation"?L("motivation (cross-cutting)","motivatie (dwarsdoorsnijdend)"):ASP[e2.aspect];
-    DECK.push({id:"el-place-"+slug(e2.n),topic:"framework",kind:"place",
+    DECK.push({id:"el-place-"+slug(e2.n),topic:"elplace",kind:"place",
       front:{text:L(`Where does <b>${e2.n}</b> sit in the framework? Tap the cell.`,`Waar staat <b>${e2.n}</b> in het raamwerk? Tik de cel aan.`)},
       target:{r:(e2.aspect==="motivation"||e2.aspect==="other")?e2.aspect:e2.layer,c:e2.aspect},
       back:{title:e2.n,body:`<b>${L2} &middot; ${asp}.</b> `+TE(e2,"def"),tell:TE(e2,"tell")}});
@@ -971,7 +972,7 @@ function previewLabel(st,g){
 }
 
 /* ---------- app state ---------- */
-let APP={settings:{lang:"en",theme:"auto",newPerRun:3,runSize:10,answerMode:"auto",topics:{eldef:true,elnot:true,relnot:true,relrule:true,framework:true,viewpoints:true}},
+let APP={settings:{lang:"en",theme:"auto",newPerRun:3,runSize:10,answerMode:"auto",topics:{eldef:true,elnot:true,elplace:true,relnot:true,relrule:true,framework:true,viewpoints:true}},
          intro:{date:todayISO(),count:0}, cards:{}, log:{}};
 let session=[], idx=0, face="q", saveTimer=null;
 let run=false, practiceSet=new Set(), runStats=null;
