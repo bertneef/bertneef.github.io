@@ -773,8 +773,18 @@ const ORDERS=[
 
 /* ---------- deck builder ---------- */
 function slug(s){return s.toLowerCase().replace(/&amp;/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');}
-const TOPICS_EN={elements:"Elements",relations:"Relations",framework:"Framework",viewpoints:"Viewpoints"};
-const TOPICS_NL={elements:"Elementen",relations:"Relaties",framework:"Raamwerk",viewpoints:"Viewpoints"};
+const TOPICS_EN={eldef:"Element meaning",elnot:"Element notation",relnot:"Relationship notation",relrule:"Relationship rules & reading",framework:"Framework",viewpoints:"Viewpoints"};
+const TOPICS_NL={eldef:"Betekenis van elementen",elnot:"Elementnotatie",relnot:"Relatienotatie",relrule:"Relatieregels & diagrammen lezen",framework:"Raamwerk",viewpoints:"Viewpoints"};
+const TOPIC_DEFAULTS={eldef:true,elnot:true,relnot:true,relrule:true,framework:true,viewpoints:true};
+// old two-topic saves (elements/relations) map onto the split ones
+function migrateTopics(t){
+  if(!t)return Object.assign({},TOPIC_DEFAULTS);
+  const o=Object.assign({},TOPIC_DEFAULTS);
+  if("elements" in t){o.eldef=o.elnot=!!t.elements;}
+  if("relations" in t){o.relnot=o.relrule=!!t.relations;}
+  for(const k in TOPIC_DEFAULTS)if(k in t)o[k]=!!t[k];
+  return o;
+}
 const TOPICS=new Proxy({},{get:(_,k)=>(LANG==="nl"?TOPICS_NL:TOPICS_EN)[k],ownKeys:()=>Reflect.ownKeys(TOPICS_EN),getOwnPropertyDescriptor:()=>({enumerable:true,configurable:true})});
 const KIND=k=>LANG==="nl"?({new:"nieuw",learning:"leren",review:"herhaling",practice:"oefening"}[k]||k):k;
 const DECK=[];
@@ -794,7 +804,7 @@ function buildDeck(){
     const LB=LLB(el.layer);
     let dpool=ELEMENTS.filter(x=>x.layer===el.layer&&x.n!==el.n).map(x=>TE(x,"def"));
     if(dpool.length<3)dpool=dpool.concat(ELEMENTS.filter(x=>x.layer!==el.layer).map(x=>TE(x,"def")).slice(0,6));
-    DECK.push({id:"el-def-"+slug(el.n),topic:"elements",mc:1,
+    DECK.push({id:"el-def-"+slug(el.n),topic:"eldef",mc:1,
       front:{text:L(`<b>${el.n}</b> <span style="color:var(--muted)">(${LB} layer)</span> — what does it represent?`,
                    `<b>${el.n}</b> <span style="color:var(--muted)">(${LB}-laag)</span> — wat stelt dit voor?`)},
       back:{title:el.n,body:TE(el,"def"),tell:TE(el,"tell"),svg:{k:"el",el:el,label:el.n},
@@ -806,7 +816,7 @@ function buildDeck(){
     if(!el.rec) continue;
     let pool=ELEMENTS.filter(x=>x.layer===el.layer&&x.n!==el.n).map(x=>x.n);
     if(pool.length<3)pool=pool.concat(ELEMENTS.filter(x=>x.layer!==el.layer&&x.n!==el.n).map(x=>x.n).slice(0,6));
-    DECK.push({id:"el-rec-"+slug(el.n),topic:"elements",
+    DECK.push({id:"el-rec-"+slug(el.n),topic:"elnot",
       front:{text:L("Name this element (the colour gives you the layer).","Benoem dit element (de kleur verraadt de laag)."),svg:{k:"el",el:el,label:null,showApprox:true}},
       back:{title:el.n,body:TE(el,"def"),tell:TE(el,"tell"),svg:{k:"el",el:el,label:el.n}},
       answer:el.n,pool:pool,mg:"el"});
@@ -814,19 +824,19 @@ function buildDeck(){
   // relationship cards
   const relNames=RELS.map(r=>r.n);
   for(const r of RELS){
-    DECK.push({id:"rel-rec-"+slug(r.n),topic:"relations",
+    DECK.push({id:"rel-rec-"+slug(r.n),topic:"relnot",
       front:{text:L("Name this relationship.","Benoem deze relatie."),svg:{k:"rel",kind:r.svg}},
       back:{title:r.n+" ("+CAT[r.cat]+")",body:TR(r,"def"),note:TR(r,"notation"),hint:TR(r,"hint")},
       answer:r.n,pool:relNames.filter(x=>x!==r.n),mg:"rel"});
-    DECK.push({id:"rel-not-"+slug(r.n),topic:"relations",
+    DECK.push({id:"rel-not-"+slug(r.n),topic:"relnot",
       front:{text:L(`How is <b>${r.n}</b> drawn, and what does it mean?`,`Hoe wordt <b>${r.n}</b> getekend, en wat betekent het?`)},
       back:{title:r.n+" ("+CAT[r.cat]+")",body:TR(r,"def"),svg:{k:"rel",kind:r.svg},note:TR(r,"notation"),hint:TR(r,"hint")}});
   }
-  DECK.push({id:"rel-rec-junction-or",topic:"relations",
+  DECK.push({id:"rel-rec-junction-or",topic:"relnot",
     front:{text:L("Name this relationship connector — and its exact variant.","Benoem deze relatieconnector — en de precieze variant."),svg:{k:"rel",kind:"junction-or"}},
     back:{title:"Junction — OR",body:L("An open (unfilled) circle is an OR junction: one or more of the connected same-type relationships apply. A filled circle would be AND.","Een open (niet-gevulde) cirkel is een OR-junction: één of meer van de verbonden relaties van hetzelfde type gelden. Een gevulde cirkel zou AND zijn."),note:L("Open circle = or, filled circle = and.","Open cirkel = or, gevulde cirkel = and.")},
     answer:"Junction — OR",pool:["Junction — AND","Association","Flow","Triggering"],mg:"rel"});
-  DECK.push({id:"rel-rec-assoc-dir",topic:"relations",
+  DECK.push({id:"rel-rec-assoc-dir",topic:"relnot",
     front:{text:L("Name this relationship, including its variant.","Benoem deze relatie, inclusief de variant."),svg:{k:"rel",kind:"association-directed"}},
     back:{title:"Directed association",body:L("An association with a reading direction: the half arrowhead marks the target end. Semantics remain unspecified.","Een associatie met een leesrichting: de halve pijlpunt markeert het doeleinde. De semantiek blijft ongespecificeerd."),note:L("Solid line, half an arrowhead at the target.","Doorgetrokken lijn, halve pijlpunt bij het doel.")},
     answer:"Directed association",pool:["Serving","Triggering","Association (undirected)","Assignment"],mg:"rel"});
@@ -841,7 +851,7 @@ function buildDeck(){
   }
   // concept cards
   for(const c of CONCEPTS){
-    DECK.push({id:c.id,topic:c.t==="relations"?"relations":(c.t==="viewpoints"?"viewpoints":"framework"),
+    DECK.push({id:c.id,topic:c.t==="relations"?"relrule":(c.t==="viewpoints"?"viewpoints":"framework"),
       mc:c.a?1:0,front:{text:TC(c,"f")},back:{title:TC(c,"a")||null,body:TC(c,"b")},
       answer:TC(c,"a"),pool:TC(c,"w")});
   }
@@ -860,7 +870,7 @@ function buildDeck(){
     const rl=TQ(NL.dir,i,"rel",d.rel), fo=TQ(NL.dir,i,"foil",d.foil);
     const mk=(a,r,b)=>a+" <i>"+r+"</i> "+b;
     const ans=mk(d.x,rl,d.y);
-    DECK.push({id:"rel-dir-"+(i+1),topic:"relations",mc:1,
+    DECK.push({id:"rel-dir-"+(i+1),topic:"relrule",mc:1,
       front:{text:L(`<b>${d.x}</b> and <b>${d.y}</b> — which relationship connects them, and in which direction?`,`<b>${d.x}</b> en <b>${d.y}</b> — welke relatie verbindt ze, en in welke richting?`)},
       back:{title:d.x+" "+rl+" "+d.y,body:TQ(NL.dir,i,"why",d.why)},
       answer:ans,pool:[mk(d.y,rl,d.x),mk(d.x,fo,d.y),mk(d.y,fo,d.x)]});
@@ -868,13 +878,13 @@ function buildDeck(){
   // ordering cards
   for(const o of ORDERS){
     const t=(LANG==="nl"&&NL.ord[o.id])||{};
-    DECK.push({id:o.id,topic:o.topic,kind:"order",items:o.items,
+    DECK.push({id:o.id,topic:o.topic==="relations"?"relrule":o.topic,kind:"order",items:o.items,
       front:{text:t.f||o.f},back:{title:null,body:t.b||o.b}});
   }
   // legality drills
   const YES=L("Allowed","Toegestaan"), NO=L("Not allowed","Niet toegestaan");
   LEGALQ.forEach((q,i)=>{
-    DECK.push({id:"legal-"+(i+1),topic:"relations",mc:1,
+    DECK.push({id:"legal-"+(i+1),topic:"relrule",mc:1,
       front:{text:L("Legal in ArchiMate 3.2?<br>","Toegestaan in ArchiMate 3.2?<br>")+TQ(NL.legal,i,"s",q.s)},
       back:{title:q.ok?YES:NO,body:TQ(NL.legal,i,"why",q.why)},
       answer:q.ok?YES:NO,pool:[q.ok?NO:YES]});
@@ -888,7 +898,7 @@ function buildDeck(){
     const body=L(
       `A chain may be replaced by its <b>weakest</b> relationship. ${pr[0]} is strength ${w1+1}, ${pr[1]} is strength ${w2+1} (1 = weakest), so the derived relationship is ${ans.toLowerCase()}. ${both?"Both are structural, so this is a <i>valid</i> derivation — always allowed.":"A dependency relationship is involved, so 3.2 calls this a <i>potential</i> derivation: the weakest still wins, but the result must also be permitted by the Appendix B tables."} Order: association &lt; access &lt; serving &lt; realization &lt; assignment &lt; aggregation &lt; composition.`,
       `Een keten mag vervangen worden door de <b>zwakste</b> relatie erin. ${pr[0]} heeft sterkte ${w1+1}, ${pr[1]} heeft sterkte ${w2+1} (1 = zwakst), dus de afgeleide relatie is ${ans.toLowerCase()}. ${both?"Beide zijn structureel, dus dit is een <i>valide</i> afleiding — altijd toegestaan.":"Er is een afhankelijkheidsrelatie bij betrokken, dus 3.2 noemt dit een <i>potentiële</i> afleiding: de zwakste wint nog steeds, maar het resultaat moet ook in de tabellen van Bijlage B staan."} Volgorde: association &lt; access &lt; serving &lt; realization &lt; assignment &lt; aggregation &lt; composition.`);
-    DECK.push({id:"deriv-"+(i+1),topic:"relations",mc:1,
+    DECK.push({id:"deriv-"+(i+1),topic:"relrule",mc:1,
       front:{text:L(`A <i>${pr[0].toLowerCase()}</i> B, and B <i>${pr[1].toLowerCase()}</i> C.<br>Which relationship may be <b>derived</b> from A to C?`,
                     `A <i>${pr[0].toLowerCase()}</i> B, en B <i>${pr[1].toLowerCase()}</i> C.<br>Welke relatie mag van A naar C worden <b>afgeleid</b>?`)},
       back:{title:ans,body:body},
@@ -896,14 +906,14 @@ function buildDeck(){
   });
   // fragment-reading cards
   FRAGQ.forEach((q,i)=>{
-    DECK.push({id:"frag-"+(i+1),topic:"relations",mc:1,
+    DECK.push({id:"frag-"+(i+1),topic:"relrule",mc:1,
       front:{text:L("What does this fragment assert?","Wat beweert dit fragment?"),svg:{k:"frag",i:i}},
       back:{title:TQ(NL.frag,i,"a",q.a),body:TQ(NL.frag,i,"why",q.why)},
       answer:TQ(NL.frag,i,"a",q.a),pool:TQ(NL.frag,i,"w",q.w)});
   });
   // spot-the-error fragments
   SPOTQ.forEach((q,j)=>{
-    DECK.push({id:"spot-"+(j+1),topic:"relations",mc:1,
+    DECK.push({id:"spot-"+(j+1),topic:"relrule",mc:1,
       front:{text:L("Anything wrong with this fragment?","Klopt er iets niet in dit fragment?"),svg:{k:"frag",i:FRAGQ.length+j}},
       back:{title:TQ(NL.spot,j,"a",q.a),body:TQ(NL.spot,j,"why",q.why)},
       answer:TQ(NL.spot,j,"a",q.a),pool:TQ(NL.spot,j,"w",q.w)});
@@ -961,7 +971,7 @@ function previewLabel(st,g){
 }
 
 /* ---------- app state ---------- */
-let APP={settings:{lang:"en",theme:"auto",newPerRun:3,runSize:10,answerMode:"auto",topics:{elements:true,relations:true,framework:true,viewpoints:true}},
+let APP={settings:{lang:"en",theme:"auto",newPerRun:3,runSize:10,answerMode:"auto",topics:{eldef:true,elnot:true,relnot:true,relrule:true,framework:true,viewpoints:true}},
          intro:{date:todayISO(),count:0}, cards:{}, log:{}};
 let session=[], idx=0, face="q", saveTimer=null;
 let run=false, practiceSet=new Set(), runStats=null;
@@ -1588,7 +1598,7 @@ async function boot(){
   if(saved&&typeof saved==="object"){
     APP.settings=Object.assign(APP.settings,saved.settings||{});
     for(const k in (saved.log||{}))if(typeof saved.log[k]==="number")saved.log[k]={a:saved.log[k],f:0};
-    APP.settings.topics=Object.assign({elements:true,relations:true,framework:true,viewpoints:true},(saved.settings||{}).topics||{});
+    APP.settings.topics=migrateTopics((saved.settings||{}).topics);
     APP.intro=saved.intro||APP.intro; APP.cards=saved.cards||{}; APP.log=saved.log||{};
   }
   const modeLabel={local:"Progress is saved to this browser's localStorage for this file location. Use export/import below to move it between devices.",artifact:"Progress is saved to Claude artifact storage and persists across sessions here.",memory:"In-memory only — progress is lost on reload. Download the file and open it locally to get persistence."}[Store.mode];
