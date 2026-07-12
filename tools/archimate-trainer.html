@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ArchiMate Trainer — spaced repetition</title>
 <style>
+[data-theme="dark"]{
+  --paper:#17191d; --panel:#20232a; --ink:#e7e5e0; --muted:#98a0a8; --line:#3a3f47;
+  --accent:#8ab1da; --accent-ink:#10131a;
+  --again:#e08984; --hard:#d9a75a; --good:#7fbb8a; --easy:#8ab1da;
+  --okbg:#22322a; --badbg:#3a2626; --pickbg:#232c38;
+}
+[data-theme="dark"] .svgbox, [data-theme="dark"] .mtile, [data-theme="dark"] .relrow svg{background:#eceef0;border-radius:6px}
+[data-theme="dark"] .mtile{border-color:#c8ccd2}
 :root{
   --paper:#f4f5f2;      /* cool drafting paper */
   --panel:#ffffff;
@@ -14,6 +22,7 @@
   --accent:#31567d;     /* blueprint slate */
   --accent-ink:#ffffff;
   --again:#b3403a; --hard:#b07716; --good:#3d7a46; --easy:#31567d;
+  --okbg:#eef6ef; --badbg:#faeeee; --pickbg:#eef2f8;
   --serif:Charter,'Bitstream Charter',Cambria,Georgia,serif;
   --sans:ui-sans-serif,system-ui,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
   --mono:ui-monospace,'Cascadia Mono',Consolas,Menlo,monospace;
@@ -65,8 +74,8 @@ nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2p
 .choices{display:grid;gap:8px;margin-top:20px}
 .choices button{text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:10px 14px;font-size:15px}
 .choices button:hover{border-color:var(--accent)}
-.choices button.right{border-color:var(--good);background:#eef6ef}
-.choices button.wrong{border-color:var(--again);background:#faeeee}
+.choices button.right{border-color:var(--good);background:var(--okbg)}
+.choices button.wrong{border-color:var(--again);background:var(--badbg)}
 .choices button:disabled{cursor:default}
 .choices button kbd{font-family:var(--mono);font-size:11px;color:var(--muted);margin-right:8px}
 
@@ -104,9 +113,9 @@ table.browse th{font-family:var(--mono);font-size:11px;color:var(--muted);positi
 table.browse td.mono{font-family:var(--mono);font-size:11.5px;white-space:nowrap}
 table.browse button{border:1px solid var(--line);background:none;border-radius:6px;padding:2px 8px;font-size:11px}
 .statepill{font-family:var(--mono);font-size:10.5px;border-radius:99px;padding:1px 8px;border:1px solid var(--line)}
-.st-new{background:#eef2f8;color:var(--accent)}
+.st-new{background:var(--pickbg);color:var(--accent)}
 .st-learn{background:#fbf3e2;color:var(--hard)}
-.st-review{background:#eef6ef;color:var(--good)}
+.st-review{background:var(--okbg);color:var(--good)}
 .st-practice{background:#f0ecf8;color:#6b5b95}
 
 /* settings */
@@ -123,17 +132,17 @@ footer.note{margin-top:36px;font-size:12px;color:var(--muted);border-top:1px sol
 .mtile{border:1px solid var(--line);border-radius:8px;padding:8px 6px 4px;text-align:center;background:var(--paper);cursor:pointer}
 .mtile svg{max-width:100%;height:auto}
 .mtile.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
-.mtile.right{border-color:var(--good);background:#eef6ef;cursor:default}
-.mtile.wrong{border-color:var(--again);background:#faeeee;cursor:default}
+.mtile.right{border-color:var(--good);background:var(--okbg);cursor:default}
+.mtile.wrong{border-color:var(--again);background:var(--badbg);cursor:default}
 .mtile .mname{font-size:12.5px;min-height:17px;color:var(--muted)}
 table.placegrid{width:100%;border-collapse:collapse;margin:16px 0 4px;background:var(--panel)}
 table.placegrid th{font-family:var(--mono);font-size:10.5px;color:var(--muted);font-weight:400;padding:3px 2px;text-align:center}
 table.placegrid td.cell{border:1px dashed var(--line);height:38px;cursor:pointer;text-align:center;font-size:12.5px;color:var(--muted)}
 table.placegrid td.cell:hover{background:var(--paper)}
 table.placegrid td.rowhead{border:0;padding:2px 6px 2px 0;white-space:nowrap}
-table.placegrid td.cell.right{background:#eef6ef;border:2px solid var(--good)}
-table.placegrid td.cell.wrong{background:#faeeee;border:2px solid var(--again)}
-.choices button.picked{border-color:var(--accent);background:#eef2f8}
+table.placegrid td.cell.right{background:var(--okbg);border:2px solid var(--good)}
+table.placegrid td.cell.wrong{background:var(--badbg);border:2px solid var(--again)}
+.choices button.picked{border-color:var(--accent);background:var(--pickbg)}
 .hidden{display:none !important}
 @media (max-width:520px){
   .card{padding:18px 16px}
@@ -178,6 +187,15 @@ table.placegrid td.cell.wrong{background:#faeeee;border:2px solid var(--again)}
       <span class="exp">Every run reserves this many slots for unseen cards (0 = review only). Due reviews always come first; if there is little else to sample, the run tops up with extra unseen cards.</span>
     </div>
     <div class="setrow">
+      <label for="theme">Theme</label>
+      <select id="theme">
+        <option value="auto">Auto (follow system)</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+      <span class="exp">Diagrams keep a light backing in dark mode so the notation stays readable.</span>
+    </div>
+    <div class="setrow">
       <label>Storage</label>
       <span class="exp" id="storageinfo"></span>
     </div>
@@ -213,7 +231,7 @@ table.placegrid td.cell.wrong{background:#faeeee;border:2px solid var(--again)}
   </section>
 
   <footer class="note" id="footnote">
-    Definitions are paraphrased from the ArchiMate® 3.2 Specification (The Open Group); ArchiMate is a registered trademark of The Open Group.
+    Definitions are paraphrased from the ArchiMate® 3.2 Specification (The Open Group) and were checked on 2026-07-12 against the published 3.2 materials of The Open Group; ArchiMate is a registered trademark of The Open Group.
     Element icons marked ≈ are simplified approximations of the official glyphs — check the specification for exact notation. Colours follow common tool conventions and are not normative.
   </footer>
 </div>
@@ -340,7 +358,7 @@ function relSVG(kind){
 /* ---------- element data (ArchiMate 3.2, defs paraphrased) ---------- */
 const ELEMENTS=[
  // Business
- {n:"Business Actor",layer:"business",aspect:"active",shape:"sq",icon:"actor",rec:1,tell:"A \u201cwho\u201d that exists organizationally (Jane, the Claims Dept). Actors fill roles: Jane (actor) is <i>assigned to</i> Claims Assessor (role).",def:"An organizational entity — a person, team, department, or whole organization — that is capable of performing behavior."},
+ {n:"Business Actor",layer:"business",aspect:"active",shape:"sq",icon:"actor",rec:1,tell:"A \u201cwho\u201d that exists organizationally (Jane, the Claims Dept). Actors fill roles: Jane (actor) is <i>assigned to</i> Claims Assessor (role).",def:"A business entity — a person, team, department, whole organization, or other party — that is capable of performing behavior. (3.2 broadened this from \u201corganizational entity\u201d.)"},
  {n:"Business Role",layer:"business",aspect:"active",shape:"sq",icon:"role",rec:1,tell:"A hat, not a person \u2014 it survives staff changes. On the org chart \u2192 probably an actor; a named responsibility \u2192 a role.",def:"A named responsibility for performing specific behavior. Actors are assigned to roles; roles are assigned to processes and functions."},
  {n:"Business Collaboration",layer:"business",aspect:"active",shape:"sq",icon:"collaboration",rec:1,def:"An aggregate of two or more business roles or actors that work together (often temporarily) to perform collective behavior."},
  {n:"Business Interface",layer:"business",aspect:"active",shape:"sq",icon:"interface",rec:1,def:"A point of access — a channel such as a counter, phone line, or web portal — through which a business service is made available to the environment."},
@@ -370,7 +388,7 @@ const ELEMENTS=[
  {n:"Technology Collaboration",layer:"technology",aspect:"active",shape:"sq",icon:"collaboration",rec:0,def:"An aggregate of two or more nodes that cooperate to perform collective technology behavior."},
  {n:"Technology Interface",layer:"technology",aspect:"active",shape:"sq",icon:"interface",rec:0,def:"A point of access where technology services offered by a node can be used by other nodes or by application components."},
  {n:"Path",layer:"technology",aspect:"active",shape:"sq",icon:"path",rec:1,tell:"The logical \u201ccan exchange with\u201d link; one or more communication networks realize it.",def:"A logical link between two or more nodes through which they can exchange data, energy, or material; realized by one or more networks."},
- {n:"Communication Network",layer:"technology",aspect:"active",shape:"sq",icon:"network",rec:1,def:"A set of physical or logical connection structures (LAN, WAN) for the transmission, routing, and reception of data between nodes."},
+ {n:"Communication Network",layer:"technology",aspect:"active",shape:"sq",icon:"network",rec:1,def:"A set of structures and behaviors that connects devices or system software for the transmission, routing, and reception of data (LAN, WAN)."},
  {n:"Technology Function",layer:"technology",aspect:"behavior",shape:"round",icon:"function",rec:0,def:"A collection of technology behavior that can be performed internally by a node."},
  {n:"Technology Process",layer:"technology",aspect:"behavior",shape:"round",icon:"process",rec:0,def:"A sequence of technology behaviors that achieves a specific result, e.g. a deployment or backup procedure."},
  {n:"Technology Interaction",layer:"technology",aspect:"behavior",shape:"round",icon:"interaction",rec:0,def:"A unit of collective technology behavior performed by two or more cooperating nodes."},
@@ -416,10 +434,10 @@ const RELS=[
  {n:"Assignment",cat:"Structural",svg:"assignment",notation:"Solid line with a filled ball at the source (A) and a filled arrowhead at the target (B).",def:"Allocation of responsibility, performance of behavior, storage, or execution: actor to role, role to process, component to function, node to artifact (deployment).",more:"The ball marks the performer or host. Key patterns: actor→role, role→process, component→function, interface→service, node/device→artifact (deployment).",hint:"Ball at the 'doer', arrow at what it does or carries."},
  {n:"Realization",cat:"Structural",svg:"realization",notation:"Dashed line with a hollow triangle pointing at the more abstract element being realized.",def:"An entity plays a critical role in creating, achieving, or operating a more abstract entity: a process realizes a service; an artifact realizes an application component; a data object realizes a business object.",more:"Always reads concrete→abstract. Chains cross layers: artifact realizes data object realizes business object; process realizes service; requirement realizes goal.",hint:"Dashed = the abstract thing only becomes real through this."},
  {n:"Serving",cat:"Dependency",svg:"serving",notation:"Solid line with an open arrowhead pointing at the element that is served.",def:"An element provides its functionality to another element — typically a service serving a process, or a lower layer serving a higher one. Called \"used by\" before ArchiMate 3.0.",more:"Support flows toward the arrowhead: provider at the tail, consumer at the head — typically pointing up the layer stack.",hint:"Arrow points at the customer, not the provider."},
- {n:"Access",cat:"Dependency",svg:"access",notation:"Dotted line, optionally with a small open arrowhead. Arrow toward the passive element = write; toward the behavior = read; both ends = read/write; none = unspecified.",def:"The ability of behavior and active structure elements to observe or act upon passive structure elements (objects, artifacts, material).",more:"The only relationship between behavior and passive structure. The arrowhead is the read/write switch: arrow at the object = write.",hint:"Dotted line — think of a stream of data dots."},
+ {n:"Access",cat:"Dependency",svg:"access",notation:"Dotted line, optionally with a small open arrowhead. Arrow toward the passive element = write; toward the behavior = read; both ends = read/write; none = unspecified.",def:"The ability of behavior and active structure elements to observe or act upon passive structure elements (objects, artifacts, material).",more:"Runs from behavior <i>and</i> — explicit since 3.2 — active structure elements toward passive structure. The arrowhead is the read/write switch: arrow at the object = write.",hint:"Dotted line — think of a stream of data dots."},
  {n:"Influence",cat:"Dependency",svg:"influence",notation:"Dashed line with an open arrowhead, optionally annotated with a strength such as +, ++, − or −−.",def:"An element affects the implementation or achievement of a motivation element. The main relationship among goals, drivers, principles, and requirements.",more:"The only relationship with a strength annotation; used almost exclusively among motivation elements.",hint:"Motivation elements sway each other; annotate the direction of the push."},
  {n:"Association",cat:"Dependency",svg:"association",notation:"Plain solid line; the directed form has half an arrowhead at the target end.",def:"An unspecified relationship, or one not covered by any other ArchiMate relationship. The fallback when nothing stronger applies.",more:"Weakest link in the derivation order — the 'some connection exists' fallback with no committed semantics.",hint:"No decoration = no committed semantics."},
- {n:"Triggering",cat:"Dynamic",svg:"triggering",notation:"Solid line with a filled arrowhead.",def:"A temporal or causal relationship between behavior elements and/or events: one thing causes or precedes the next.",more:"Control flow: order and causality, no payload. Combine with junctions for AND/OR splits in process chains.",hint:"Solid line = a hard causal push."},
+ {n:"Triggering",cat:"Dynamic",svg:"triggering",notation:"Solid line with a filled arrowhead.",def:"A temporal or causal relationship between elements — typically behavior elements and events: one thing causes or precedes the next.",more:"Control flow: order and causality, no payload. Combine with junctions for AND/OR splits in process chains.",hint:"Solid line = a hard causal push."},
  {n:"Flow",cat:"Dynamic",svg:"flow",notation:"Dashed line with a filled arrowhead.",def:"Transfer from one element to another: information, goods, or money — without implying causal sequence.",more:"Payload without ordering claim. Triggering says 'then'; flow says 'sends'. Label it with what is transferred.",hint:"Dashed = stuff streaming across; label it with what flows."},
  {n:"Specialization",cat:"Other",svg:"specialization",notation:"Solid line with a hollow triangle pointing at the more general element.",def:"An element is a particular kind of another element of the same type — e.g. \"Online Payment Process\" specializes \"Payment Process\".",more:"Both ends must be the same element type; the specialized element inherits the parent's relationships.",hint:"Same hollow triangle as realization, but solid line: it IS one, it does not merely realize one."},
  {n:"Junction",cat:"Other",svg:"junction-and",notation:"A small circle connecting several relationships of the same type: filled circle = AND, open circle = OR.",def:"Splits or joins multiple relationships of the same type, with and/or semantics — commonly used with triggering and flow.",more:"Technically a relationship connector, not a relationship; everything it connects must be of one type (usually triggering or flow).",hint:"Filled = all branches; open = one or more."}
@@ -467,7 +485,7 @@ const CONCEPTS=[
  {id:"c-proc-func",t:"framework",a:"Process = sequence toward a result; function = behavior grouped by competence",w:["Process = behavior grouped by competence; function = sequence toward a result", "Process = automated behavior; function = manual behavior", "Process = the external view; function = the internal view"],f:"<b>Process</b> vs. <b>function</b> — what distinguishes them?",b:"A process is a sequence of behavior aimed at a result (customer-visible, verb-named). A function groups behavior by required skills or resources, regardless of order. The same activities can appear in both decompositions."},
  {id:"c-info-chain",t:"framework",a:"Artifact realizes data object realizes business object; representation = its perceptible form",w:["Business object realizes data object realizes artifact", "Representation realizes the data object; the artifact is its business form", "Data object realizes the artifact; representation lives in the application layer"],f:"How do business object, data object, artifact, and representation relate?",b:"An artifact <i>realizes</i> a data object, which <i>realizes</i> a business object — increasingly concrete across the layers. A representation is the perceptible form (document, form) of a business object at the business layer itself."},
  {id:"c-cross-layer",t:"framework",a:"Serving points upward; realization points from concrete to abstract",w:["Serving points downward; realization points upward", "Assignment and flow are the cross-layer pair", "Serving and realization both point downward"],f:"Which two relationships typically <b>cross layers</b>, and in which direction?",b:"Serving points upward: lower-layer services serve higher-layer behavior (application service serves business process). Realization points from concrete to abstract: artifact realizes application component; process realizes service."},
- {id:"c-derived",t:"relations",a:"The chain may be replaced by its weakest relationship",w:["The chain may be replaced by its strongest relationship", "The chain may only be replaced by an association", "Derived relationships are always compositions"],f:"What is a <b>derived relationship</b>, and what is the strength order?",b:"A chain of structural/dependency relationships between two elements may be replaced by one direct relationship of the <i>weakest</i> type in the chain. Weak → strong: association &lt; access &lt; serving &lt; realization &lt; assignment &lt; aggregation &lt; composition."},
+ {id:"c-derived",t:"relations",a:"The chain may be replaced by its weakest relationship",w:["The chain may be replaced by its strongest relationship", "The chain may only be replaced by an association", "Derived relationships are always compositions"],f:"What is a <b>derived relationship</b>, and what is the strength order?",b:"A chain of structural/dependency relationships between two elements may be replaced by one direct relationship of the <i>weakest</i> type in the chain. Weak → strong: association &lt; access &lt; serving &lt; realization &lt; assignment &lt; aggregation &lt; composition. Since 3.1 the spec splits this: structural-only chains give <i>valid</i> derivations (always allowed); chains involving a dependency relationship give <i>potential</i> derivations, which must also appear in the Appendix&nbsp;B tables."},
  {id:"c-nesting",t:"relations",a:"Composition and aggregation — also allowed for assignment and realization",w:["Any relationship may be drawn nested", "Only composition", "Serving and access"],f:"When may one element be drawn <b>nested inside</b> another?",b:"Nesting is an alternative notation for composition and aggregation (and also allowed for assignment and realization). The enclosing element is the whole/target; the relationship still formally exists in the model."},
  {id:"c-composition-one",t:"relations",a:"Exactly one",w:["Any number", "At most two", "One per layer"],f:"How many compositions can an element be <b>part of</b>?",b:"Exactly one — composition is existential and exclusive. Aggregation has no such limit: an element can be aggregated by many wholes."},
  {id:"c-serving-rename",t:"relations",a:"Used by",w:["Supports", "Depends on", "Provides"],f:"What was <b>Serving</b> called before ArchiMate 3.0?",b:"\"Used by\". Same semantics, reversed reading: knowing this helps when reading pre-2016 models and literature."},
@@ -487,6 +505,216 @@ const CONCEPTS=[
  {id:"c-junction-semantics",t:"relations",a:"Filled = AND, open = OR",w:["Filled = OR, open = AND", "Filled = mandatory, open = optional", "Filled = split, open = join"],f:"Junction: what do a <b>filled</b> vs. an <b>open</b> circle mean?",b:"Filled circle = AND junction (all connected paths apply). Open circle = OR junction (one or more of the paths apply, inclusive or)."}
 ];
 
+/* ---------- composed diagram fragments ---------- */
+function edgeDecor(kind,xa,xb,y){
+  const seg=(a,b,dash)=>`<path d="M${a} ${y} H${b}" stroke="#20232a" stroke-width="1.6" fill="none"${dash?` stroke-dasharray="${dash}"`:''}/>`;
+  const openArrow=(x)=>`<path d="M${x-9} ${y-5.5} L${x} ${y} L${x-9} ${y+5.5}" stroke="#20232a" stroke-width="1.6" fill="none" stroke-linejoin="round"/>`;
+  const filledArrow=(x)=>`<path d="M${x-11} ${y-5.5} L${x} ${y} L${x-11} ${y+5.5} Z" fill="#20232a"/>`;
+  const hollowTri=(x)=>`<path d="M${x-13} ${y-7} L${x} ${y} L${x-13} ${y+7} Z" fill="#fff" stroke="#20232a" stroke-width="1.6"/>`;
+  const diamond=(x,f)=>`<path d="M${x} ${y} L${x+9} ${y-6} L${x+18} ${y} L${x+9} ${y+6} Z" fill="${f?'#20232a':'#fff'}" stroke="#20232a" stroke-width="1.6"/>`;
+  const ball=(x)=>`<circle cx="${x+4}" cy="${y}" r="4" fill="#20232a"/>`;
+  switch(kind){
+    case 'composition': return diamond(xa,true)+seg(xa+18,xb);
+    case 'aggregation': return diamond(xa,false)+seg(xa+18,xb);
+    case 'assignment':  return ball(xa)+seg(xa+8,xb-2)+filledArrow(xb);
+    case 'realization': return seg(xa,xb-13,'7 4')+hollowTri(xb);
+    case 'serving':     return seg(xa,xb-1)+openArrow(xb);
+    case 'access':      return seg(xa,xb-1,'2 3.5')+openArrow(xb);
+    case 'triggering':  return seg(xa,xb-2)+filledArrow(xb);
+    case 'specialization': return seg(xa,xb-13)+hollowTri(xb);
+    case 'influence':   return seg(xa,xb-1,'7 4')+openArrow(xb);
+    case 'flow':        return seg(xa,xb-2,'7 4')+filledArrow(xb);
+    default:            return seg(xa,xb);
+  }
+}
+function placeEl(elm,x,y,w,lbl){
+  const h=Math.round(w*76/200*10)/10;
+  return elSVG(elm,{label:lbl}).replace(/^<svg width="200" height="76"/,
+    `<svg x="${x}" y="${y}" width="${w}" height="${h}"`);
+}
+const EBN=n=>ELEMENTS.find(e=>e.n===n);
+function fragH(a,la,kind,b,lb){ // [A] --kind--> [B], horizontal
+  return `<svg width="470" height="80" viewBox="0 0 470 80" role="img">`+
+    placeEl(EBN(a),0,7,170,la)+placeEl(EBN(b),300,7,170,lb)+
+    edgeDecor(kind,174,296,39)+`</svg>`;
+}
+function fragV(a,la,kind,b,lb,up){ // [A] above [B]; edge points down (or up)
+  const e=up?`<g transform="rotate(-90 100 121)">${edgeDecor(kind,58,142,121)}</g>`
+            :`<g transform="rotate(90 100 121)">${edgeDecor(kind,58,142,121)}</g>`;
+  return `<svg width="200" height="242" viewBox="0 0 200 242" role="img">`+
+    placeEl(EBN(a),0,0,200,la)+placeEl(EBN(b),0,166,200,lb)+e+`</svg>`;
+}
+function fragChain(a,la,k1,b,lb,k2,c,lc){ // vertical 3-chain, edges point down
+  const e1=`<g transform="rotate(90 100 100) ">${edgeDecor(k1,79,121,100)}</g>`;
+  const e2=`<g transform="rotate(90 100 224)">${edgeDecor(k2,203,245,224)}</g>`;
+  return `<svg width="200" height="366" viewBox="0 0 200 366" role="img">`+
+    placeEl(EBN(a),0,0,200,la)+placeEl(EBN(b),0,124,200,lb)+placeEl(EBN(c),0,248,200,lc)+e1+e2+`</svg>`;
+}
+const FRAGQ=[
+ {f:fragH("Business Actor","Claims Dept","assignment","Business Process","Handle Claim"),
+  a:"The Claims Department performs the Handle Claim process",
+  w:["Handle Claim produces the Claims Department","The Claims Department is supported by Handle Claim","Handle Claim reads data owned by the Claims Department"],
+  why:"Ball at the actor, arrow at the behavior: assignment — the active element performs the behavior."},
+ {f:fragV("Business Service","Claim Settlement","realization","Business Process","Handle Claim",true),
+  a:"Handle Claim (internal) realizes the externally offered Claim Settlement service",
+  w:["Claim Settlement triggers Handle Claim","Handle Claim is a part of Claim Settlement","Claim Settlement serves Handle Claim"],
+  why:"Dashed line, hollow triangle at the abstract end: the concrete process realizes the service."},
+ {f:fragH("Application Component","Policy System","assignment","Application Function","Premium Calc"),
+  a:"The Policy System component performs the Premium Calc function",
+  w:["Premium Calc realizes the Policy System","The Policy System accesses Premium Calc","Premium Calc is deployed on the Policy System"],
+  why:"Component (active structure) assigned to its function (behavior)."},
+ {f:fragV("Application Service","Premium Calc Svc","serving","Business Process","Handle Claim",true),
+  a:"An application service supports the business process that uses it",
+  w:["The business process realizes the application service","The application service is part of the business process","The business process writes to the application service"],
+  why:"Open arrow at the consumer: serving points up the layer stack toward the user of the functionality."},
+ {f:fragH("Business Process","Handle Claim","access","Business Object","Claim"),
+  a:"Handle Claim writes/updates the Claim object",
+  w:["The Claim object controls Handle Claim","Handle Claim is triggered by the Claim object","The Claim object realizes Handle Claim"],
+  why:"Dotted line with the arrow at the passive object: access in write direction."},
+ {f:fragV("Artifact","claims.db","realization","Data Object","Claim Record",true),
+  a:"The physical claims.db file realizes the logical Claim Record",
+  w:["Claim Record stores claims.db","claims.db is deployed on Claim Record","Claim Record triggers claims.db"],
+  why:"Concrete artifact realizes the abstract data object — one step up the realization chain."},
+ {f:fragH("Node","App Server","assignment","Artifact","policy.war"),
+  a:"policy.war is deployed on (stored/executed by) the App Server",
+  w:["policy.war realizes the App Server","The App Server reads policy.war's data","policy.war serves the App Server"],
+  why:"Node assigned to artifact is the deployment pattern."},
+ {f:fragChain("Business Event","Claim received","triggering","Business Process","Assess Claim","triggering","Business Process","Pay Claim"),
+  a:"Claim received starts Assess Claim, which then starts Pay Claim",
+  w:["Pay Claim sends data to Assess Claim","Assess Claim and Pay Claim run in parallel","Claim received is produced by Pay Claim"],
+  why:"Solid lines with filled arrowheads: triggering — temporal/causal sequence, top to bottom."},
+ {f:fragH("Business Actor","Jane Doe","assignment","Business Role","Claims Assessor"),
+  a:"Jane Doe fills the Claims Assessor role",
+  w:["Claims Assessor reports to Jane Doe","Jane Doe was created by the Claims Assessor role","Claims Assessor is Jane Doe's manager"],
+  why:"Actor assigned to role: the concrete entity fills the abstract responsibility."},
+ {f:fragV("Capability","Underwriting","realization","Business Process","Assess Risk",true),
+  a:"The Assess Risk process (partly) realizes the Underwriting capability",
+  w:["Underwriting schedules Assess Risk","Assess Risk is a sub-capability of Underwriting","Underwriting accesses Assess Risk"],
+  why:"Core behavior realizes strategy-layer capabilities: concrete toward abstract."},
+ {f:fragH("Application Component","CRM Suite","composition","Application Component","Contact Mgmt"),
+  a:"Contact Mgmt is an integral part of CRM Suite and cannot exist without it",
+  w:["Contact Mgmt can be shared with other suites","CRM Suite depends on an external Contact Mgmt","Contact Mgmt realizes CRM Suite"],
+  why:"Filled diamond at the whole: composition — single parent, lifecycle bound."},
+ {f:fragH("Product","Home Insurance","aggregation","Business Service","Claim Settlement"),
+  a:"The Home Insurance product bundles the Claim Settlement service, which can also exist on its own",
+  w:["Claim Settlement cannot exist outside Home Insurance","Claim Settlement realizes Home Insurance","Home Insurance triggers Claim Settlement"],
+  why:"Hollow diamond: aggregation — the product groups services/objects that keep their own lifecycle."},
+ {f:fragH("Business Process","Assess Claim","flow","Business Process","Pay Claim"),
+  a:"Something (e.g. claim data) is transferred from Assess to Pay — transfer, not sequence",
+  w:["Assess Claim must finish before Pay Claim starts","Pay Claim is an integral part of Assess Claim","Assess Claim realizes Pay Claim"],
+  why:"Dashed line with a filled arrowhead is flow: a payload moves. Triggering (solid line) would be the ordering/causality claim."},
+ {f:fragH("Business Object","Claim","access","Business Process","Handle Claim"),
+  a:"Handle Claim reads the Claim object — the arrowhead at the behavior means read",
+  w:["The Claim object updates Handle Claim","Handle Claim creates or updates the Claim","Illegal — access can never point toward behavior"],
+  why:"Access direction encodes the mode: arrow at the passive element = write, arrow at the behavior = read. The relationship still originates from the behavior; objects never act."},
+ {f:fragH("Business Process","Take out Travel Ins.","specialization","Business Process","Take out Insurance"),
+  a:"Taking out travel insurance is a specific kind of the generic take-out process",
+  w:["The generic process is composed of the travel one","The travel process realizes the generic one","The generic process triggers the travel one"],
+  why:"Hollow triangle on a solid line, pointing at the general end: specialization between two elements of the same type."},
+ {f:fragH("Assessment","Fraud losses rising","influence","Goal","Reduce fraud"),
+  a:"The assessment affects the achievement of the goal (a sign can show + or −)",
+  w:["The assessment realizes the goal","The goal reads the assessment as data","The assessment is a component of the goal"],
+  why:"Dashed line with an open arrowhead: influence — targeting the fulfilment of a motivation element, optionally annotated with strength."},
+ {f:fragH("Business Interface","Phone desk","assignment","Business Service","Claims intake"),
+  a:"The phone desk is where the claims-intake service is made available",
+  w:["The service realizes the phone desk","The phone desk reads the service's data","The service is an integral part of the phone desk"],
+  why:"Interface assigned to service: the point of access carries the externally offered behavior."},
+ {f:fragV("Technology Service","DB storage svc","serving","Application Function","Premium calc",true),
+  a:"The technology-layer storage service supports the application function that uses it",
+  w:["The application function realizes the storage service","The storage service stores the application function","The function is composed of the storage service"],
+  why:"Serving points at the consumer — here upward from technology into the application layer."},
+ {f:fragChain("Application Component","Policy System","assignment","Application Function","Premium calc","realization","Application Service","Premium calc svc"),
+  a:"The component performs the function, which realizes the externally offered service",
+  w:["The service performs the function, which realizes the component","The component serves both the function and the service","All three form one composition"],
+  why:"The canonical internal/external stack: active structure assigned to internal behavior; internal behavior realizing the exposed service."},
+ {f:fragH("Node","Web farm","composition","Node","Web server 1"),
+  a:"Web server 1 is an integral part of the Web farm — it belongs to exactly this one whole",
+  w:["The Web farm is deployed on Web server 1","Web server 1 may also join a second farm via composition","Web server 1 realizes the farm"],
+  why:"Filled diamond at the whole. Every element type may compose elements of its own type; a composed part has exactly one whole."},
+ {f:fragH("Equipment","Filling machine","access","Material","Vaccine"),
+  a:"The machine acts on the material — since 3.2, active structure elements may access passive structure directly",
+  w:["Illegal — only behavior elements may access objects","The vaccine controls the machine","The machine is composed of the vaccine"],
+  why:"3.2 widened access to include active structure sources; the write arrowhead points at the material being manipulated."},
+ {f:fragH("Business Collaboration","Sales + Legal","assignment","Business Interaction","Contract negotiation"),
+  a:"The Sales + Legal collaboration jointly performs the contract negotiation",
+  w:["The negotiation realizes the collaboration","Either party alone performs the negotiation","The collaboration reads the negotiation's data"],
+  why:"Collective behavior (an interaction) is assigned from the collaboration that performs it — one role alone cannot."}
+];
+/* ---------- spot-the-error fragments (three are perfectly valid) ---------- */
+const SPOTQ=[
+ {f:fragH("Business Role","Claims Assessor","assignment","Business Actor","Jane Doe"),
+  a:"Assignment is reversed — the actor fills the role, so the ball belongs at Jane Doe",
+  w:["Nothing — this is valid ArchiMate","Roles and actors can only be associated","It should be realization toward the actor"],
+  why:"Assignment always runs from the concrete entity to the responsibility it fills: actor → role."},
+ {f:fragV("Business Service","Claim Settlement","realization","Business Process","Handle Claim",false),
+  a:"Realization is reversed — the concrete process realizes the abstract service, not the other way round",
+  w:["Nothing — this is valid ArchiMate","Services and processes may only be associated","The triangle should be filled"],
+  why:"Realization points from concrete to abstract; the service is the external, more abstract view."},
+ {f:fragH("Business Object","Claim","serving","Business Process","Handle Claim"),
+  a:"Passive structure cannot serve — the process should access the Claim instead",
+  w:["Nothing — this is valid ArchiMate","The arrow merely points the wrong way","Serving may not cross aspects, so use flow"],
+  why:"Objects have no behavior to offer; behavior accesses them. Serving needs an active, behavior, service, or interface source."},
+ {f:fragH("Artifact","policy.war","assignment","Node","App Server"),
+  a:"Deployment is reversed — the node is assigned to the artifact it stores or executes",
+  w:["Nothing — this is valid ArchiMate","It should be flow from artifact to node","Artifacts may only relate to devices, never nodes"],
+  why:"Assignment starts at the active element; node → artifact is the deployment pattern."},
+ {f:fragV("Data Object","Claim Record","realization","Artifact","claims.db",false),
+  a:"Reversed — the artifact (concrete) realizes the data object (abstract)",
+  w:["Nothing — this is valid ArchiMate","Data objects and artifacts can only be associated","It should be access instead"],
+  why:"The realization chain runs artifact → data object → business object, always concrete to abstract."},
+ {f:fragH("Business Process","Handle Claim","specialization","Business Function","Claims Mgmt"),
+  a:"Specialization needs two elements of the same type — a process cannot specialize a function",
+  w:["Nothing — this is valid ArchiMate","The triangle should point at the process","Only motivation elements may specialize"],
+  why:"Every element may specialize another of its own type; cross-type specialization is not allowed."},
+ {f:fragV("Application Service","Premium calc svc","serving","Business Process","Handle Claim",true),
+  a:"Nothing — this is valid ArchiMate",
+  w:["Serving may not cross layers","The arrow should point at the application service","It must be realization instead of serving"],
+  why:"An application service serving a business process is the standard upward cross-layer support pattern."},
+ {f:fragH("Node","App Server","assignment","Artifact","policy.war"),
+  a:"Nothing — this is valid ArchiMate",
+  w:["Assignment cannot target passive structure","The artifact should be assigned to the node","Deployment requires realization"],
+  why:"Node assigned to artifact — the node stores or executes it — is exactly how deployment is modeled."},
+ {f:fragH("Application Component","Contact Mgmt","composition","Application Component","CRM Suite"),
+  a:"Whole and part are inverted — the diamond marks the whole, so as drawn the module contains the suite",
+  w:["Nothing — this is valid ArchiMate","Components may not compose components","The diamond should be hollow for composition"],
+  why:"The filled diamond sits at the whole end. Same-type composition is fine; the ends are simply swapped here."},
+ {f:fragH("Goal","Reduce fraud","serving","Business Process","Handle Claim"),
+  a:"A motivation element may only associate toward core elements — serving from a goal is not allowed",
+  w:["Nothing — this is valid ArchiMate","Goals can serve, but only other goals","The arrow should point at the goal"],
+  why:"Appendix B restricts relationships from motivation into the core to association; support for goals is modeled the other way, e.g. realization toward the goal."},
+ {f:fragV("Goal","Protect data","realization","Requirement","Encrypt PII",true),
+  a:"Nothing — this is valid ArchiMate",
+  w:["Realization may not be used between motivation elements","The goal should realize the requirement","Requirements may only influence goals"],
+  why:"Requirements realize goals — concrete statements of need toward the more abstract intent."},
+ {f:fragH("Business Process","Handle Claim","access","Business Service","Claim Settlement"),
+  a:"Access targets passive structure — a service is behavior; use serving or realization here",
+  w:["Nothing — this is valid ArchiMate","Access is fine but must be dashed, not dotted","Only application elements may use access"],
+  why:"Access connects behavior/active structure to passive structure (objects, artifacts, material). Behavior-to-behavior support is serving; internal-to-external is realization."}
+];
+const FRAG_SVGS=FRAGQ.concat(SPOTQ).map(q=>q.f);
+/* ---------- legality drills (ArchiMate 3.2 core metamodel rules) ---------- */
+const LEGALQ=[
+ {s:"A <b>Business Object</b> <i>serves</i> a Business Process",ok:false,why:"Passive structure cannot serve — it has no behavior to offer. Objects are accessed; services and active/behavior elements serve."},
+ {s:"A <b>Business Process</b> <i>accesses</i> a Business Object",ok:true,why:"Behavior accessing passive structure is exactly what access is for."},
+ {s:"A <b>Business Object</b> <i>accesses</i> a Business Process",ok:false,why:"Access runs from behavior (or active structure) to passive structure, never from the object."},
+ {s:"A <b>Business Role</b> is <i>assigned to</i> a Business Actor",ok:false,why:"Assignment runs actor → role: the concrete entity fills the responsibility, not the reverse."},
+ {s:"A <b>Business Actor</b> is <i>assigned directly to</i> a Business Process (no role in between)",ok:true,why:"Allowed as a shortcut — the role level may be skipped when it adds nothing."},
+ {s:"A <b>Business Process</b> <i>specializes</i> a Business Function",ok:false,why:"Specialization requires two elements of the same type."},
+ {s:"One <b>junction</b> connects a triggering and a flow relationship",ok:false,why:"Everything a junction connects must be of the same relationship type."},
+ {s:"A <b>Product</b> <i>aggregates</i> an Application Service",ok:true,why:"Products may bundle services and objects across layers — a standard cross-layer aggregation."},
+ {s:"A <b>Grouping</b> <i>aggregates</i> elements of different types",ok:true,why:"Grouping exists precisely to collect arbitrary concepts."},
+ {s:"A <b>Business Object</b> <i>realizes</i> a Data Object",ok:false,why:"Realization points from concrete to abstract: the data object realizes the business object."},
+ {s:"An <b>Artifact</b> is <i>assigned to</i> a Node",ok:false,why:"Assignment starts at the active element: the node is assigned to the artifact it stores or executes."},
+ {s:"An <b>Application Component</b> is <i>assigned to</i> a Business Process",ok:true,why:"Allowed — it models automation: the component performs the business process."},
+ {s:"A <b>Business Event</b> <i>triggers</i> a Business Process",ok:true,why:"Events trigger behavior; behavior triggers events. Both directions are core dynamics."},
+ {s:"An element is a part in <b>two different compositions</b> at once",ok:false,why:"Composition means exactly one whole. Use aggregation for shareable parts."},
+ {s:"An element is a part in <b>two different aggregations</b> at once",ok:true,why:"Aggregated parts keep their own lifecycle and may be shared."},
+ {s:"A <b>Business Process</b> <i>realizes</i> a Business Service",ok:true,why:"The canonical internal-realizes-external pattern."}
+];
+/* ---------- derived-relationship puzzles ---------- */
+const RSTR=["Association","Access","Serving","Realization","Assignment","Aggregation","Composition"];
+const DERIVP=[["Composition","Aggregation"],["Assignment","Composition"],["Realization","Assignment"],["Serving","Realization"],["Access","Serving"],["Association","Composition"],["Composition","Composition"],["Aggregation","Realization"],["Assignment","Serving"],["Realization","Composition"],["Access","Assignment"],["Serving","Aggregation"]];
+
 /* ---------- relationship-direction & ordering data ---------- */
 const DIRQ=[
  {x:"Application Service",y:"Business Process",rel:"serves",foil:"realizes",why:"Serving points from the supporting service to the behavior that uses it — support flows upward across layers."},
@@ -505,7 +733,7 @@ const DIRQ=[
 const ORDERS=[
  {id:"ord-derivation",topic:"relations",f:"Tap the structural/dependency relationships from <b>weakest to strongest</b> (derivation rule).",
   items:["Association","Access","Serving","Realization","Assignment","Aggregation","Composition"],
-  b:"Weak &rarr; strong: association &lt; access &lt; serving &lt; realization &lt; assignment &lt; aggregation &lt; composition. A derived relationship takes the weakest type in its chain."},
+  b:"Weak &rarr; strong: association &lt; access &lt; serving &lt; realization &lt; assignment &lt; aggregation &lt; composition. A derived relationship takes the weakest type in its chain; structural-only chains are <i>valid</i> derivations, chains with a dependency relationship are <i>potential</i> ones."},
  {id:"ord-layers",topic:"framework",f:"Tap the layers of the full framework from <b>top to bottom</b>.",
   items:["Strategy","Business","Application","Technology","Physical","Implementation & Migration"],
   b:"Strategy &middot; Business &middot; Application &middot; Technology &middot; Physical &middot; Implementation &amp; Migration — Motivation sits alongside as a cross-cutting aspect."},
@@ -600,6 +828,37 @@ const DECK=[];
     DECK.push({id:o.id,topic:o.topic,kind:"order",items:o.items,
       front:{text:o.f},back:{title:null,body:o.b}});
   }
+  // legality drills
+  LEGALQ.forEach((q,i)=>{
+    DECK.push({id:"legal-"+(i+1),topic:"relations",mc:1,
+      front:{text:"Legal in ArchiMate 3.2?<br>"+q.s},
+      back:{title:q.ok?"Allowed":"Not allowed",body:q.why},
+      answer:q.ok?"Allowed":"Not allowed",pool:[q.ok?"Not allowed":"Allowed"]});
+  });
+  // derived-relationship puzzles (weakest link wins)
+  DERIVP.forEach((pr,i)=>{
+    const w1=RSTR.indexOf(pr[0]),w2=RSTR.indexOf(pr[1]);
+    const ans=RSTR[Math.min(w1,w2)];
+    const others=RSTR.filter(x=>x!==ans);
+    DECK.push({id:"deriv-"+(i+1),topic:"relations",mc:1,
+      front:{text:`A <i>${pr[0].toLowerCase()}</i> B, and B <i>${pr[1].toLowerCase()}</i> C.<br>Which relationship may be <b>derived</b> from A to C?`},
+      back:{title:ans,body:`A chain may be replaced by its <b>weakest</b> relationship. ${pr[0]} is strength ${w1+1}, ${pr[1]} is strength ${w2+1} (1 = weakest), so the derived relationship is ${ans.toLowerCase()}. ${(w1>=3&&w2>=3)?"Both are structural, so this is a <i>valid</i> derivation — always allowed.":"A dependency relationship is involved, so 3.2 calls this a <i>potential</i> derivation: the weakest still wins, but the result must also be permitted by the Appendix B tables."} Order: association &lt; access &lt; serving &lt; realization &lt; assignment &lt; aggregation &lt; composition.`},
+      answer:ans,pool:others});
+  });
+  // fragment-reading cards
+  FRAGQ.forEach((q,i)=>{
+    DECK.push({id:"frag-"+(i+1),topic:"relations",mc:1,
+      front:{text:"What does this fragment assert?",svg:{k:"frag",i:i}},
+      back:{title:q.a,body:q.why},
+      answer:q.a,pool:q.w});
+  });
+  // spot-the-error fragments
+  SPOTQ.forEach((q,j)=>{
+    DECK.push({id:"spot-"+(j+1),topic:"relations",mc:1,
+      front:{text:"Anything wrong with this fragment?",svg:{k:"frag",i:FRAGQ.length+j}},
+      back:{title:q.a,body:q.why},
+      answer:q.a,pool:q.w});
+  });
 })();
 const CARD_BY_ID={}; DECK.forEach(c=>CARD_BY_ID[c.id]=c);
 
@@ -652,7 +911,7 @@ function previewLabel(st,g){
 }
 
 /* ---------- app state ---------- */
-let APP={settings:{newPerRun:3,runSize:10,answerMode:"auto",topics:{elements:true,relations:true,framework:true,viewpoints:true}},
+let APP={settings:{theme:"auto",newPerRun:3,runSize:10,answerMode:"auto",topics:{elements:true,relations:true,framework:true,viewpoints:true}},
          intro:{date:todayISO(),count:0}, cards:{}, log:{}};
 let session=[], idx=0, face="q", saveTimer=null;
 let run=false, practiceSet=new Set(), runStats=null;
@@ -710,8 +969,10 @@ function svgFor(spec){
   if(!spec) return "";
   if(spec.k==="el") return elSVG(spec.el,{label:spec.label,showApprox:!!spec.showApprox});
   if(spec.k==="rel") return relSVG(spec.kind);
+  if(spec.k==="frag") return FRAG_SVGS[spec.i]||"";
   return "";
 }
+
 function el(id){return document.getElementById(id);}
 
 /* ---------- study tab ---------- */
@@ -724,7 +985,7 @@ function renderStats(){
     if(s.due<=today)due++;
     if(s.reps>=2)review++;else learn++;
   }
-  const done=APP.log[today]||0;
+  const dl=APP.log[today]; const done=dl?(typeof dl==="object"?dl.a:dl):0;
   el("stats").innerHTML=
     `<span class="chip">due <b>${due}</b></span>`+
     `<span class="chip">unseen <b>${fresh}</b></span>`+
@@ -746,6 +1007,7 @@ function renderTopics(){
 function renderStudy(){
   renderStats();
   const area=el("studyarea");
+  if(exam){renderExam(area);return;}
   if(!run){renderStart(area);return;}
   el("topicfilter").classList.add("hidden");
   if(idx>=session.length){ renderDone(area); return; }
@@ -757,15 +1019,13 @@ function renderStudy(){
   const st=cardState(c.id);
   const kind=practiceSet.has(c.id)?"practice":stateKind(st);
   const m=APP.settings.answerMode;
-  const useChoice=!!(c.pool&&c.pool.length>=3&&(m==="choice"||(m!=="flip"&&c.mc)));
-  let html=`<div class="card"><div class="meta"><span>${TOPICS[c.topic]} · <span class="statepill st-${kind}">${kind}</span></span><span>${idx+1} / ${session.length}</span></div>`;
+  const useChoice=!!(c.pool&&c.pool.length>=1&&(m==="choice"||(m!=="flip"&&c.mc)));
+  let html=`<div class="card"><div class="meta"><span>${TOPICS[c.topic]} · <span class="statepill st-${kind}">${kind}</span></span><span>${undoHTML()}${idx+1} / ${session.length}</span></div>`;
   html+=`<div class="qtext">${c.front.text}</div>`;
   if(c.front.svg) html+=`<div class="svgbox">${svgFor(c.front.svg)}</div>`;
   if(face==="q"){
     if(useChoice){
-      const opts=[c.answer]; const pool=c.pool.slice();
-      while(opts.length<4&&pool.length){opts.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]);}
-      for(let i=opts.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[opts[i],opts[j]]=[opts[j],opts[i]];}
+      const opts=buildOpts(c);
       html+=`<div class="choices">`+opts.map((o,i)=>`<button data-choice="${o===c.answer?1:0}"><kbd>${i+1}</kbd>${o}</button>`).join("")+`</div>`;
     }else{
       html+=`<div class="controls"><button class="btn-flip" id="btn-flip-card">Show answer</button></div>`;
@@ -806,7 +1066,21 @@ function renderAnswer(c){
   if(c.back.hint)h+=`<p class="hintline">${c.back.hint}</p>`;
   return h+`</div>`;
 }
+let undoSnap=null;
+function pushUndo(){
+  undoSnap={cards:JSON.parse(JSON.stringify(APP.cards)),intro:Object.assign({},APP.intro),
+    log:JSON.parse(JSON.stringify(APP.log)),session:session.slice(),idx:idx,
+    prac:new Set(practiceSet),rs:runStats?Object.assign({},runStats):null};
+}
+function doUndo(){
+  if(!undoSnap)return;
+  APP.cards=undoSnap.cards;APP.intro=undoSnap.intro;APP.log=undoSnap.log;
+  session=undoSnap.session;idx=undoSnap.idx;practiceSet=undoSnap.prac;runStats=undoSnap.rs;
+  undoSnap=null;face="q";lastPick=null;persist();renderStudy();
+}
+function undoHTML(){return (undoSnap&&run&&!round&&!exam&&face==="q")?`<a href="#" id="undolink" style="margin-right:10px;color:var(--muted)">↩ undo</a>`:"";}
 function gradeCurrent(g){
+  pushUndo();
   applyGrade(session[idx],g);
   idx++; face="q"; lastPick=null; renderStudy();
 }
@@ -820,9 +1094,11 @@ function renderStart(area){
     <p class="note" style="color:var(--muted)">Pick areas above. Runs mix due reviews, new cards, and a sample of the rest — the closer a card is to its due date, the likelier it shows up. Ahead-of-schedule cards count as practice: a miss resets them, a pass changes nothing.</p>
 
     <div class="controls" style="max-width:280px;margin:16px auto 0"><button class="btn-flip" id="btn-startrun" ${nothing?"disabled":""}>${nothing?"Nothing available":"Start a "+r.ids.length+"-card run"}</button></div>
+    <div class="controls" style="max-width:280px;margin:8px auto 0"><button class="btn-plain" id="btn-exam">Mock exam · 20 questions</button></div>
     ${nothing?'<p class="note">Enable more areas above, or come back when reviews are due.</p>':""}</div>`;
   const b=el("btn-startrun");
   if(b&&!nothing)b.addEventListener("click",()=>{buildRun();renderStudy();});
+  el("btn-exam").addEventListener("click",startExam);
 }
 function renderDone(area){
   const today=todayISO(); const counts={};
@@ -842,7 +1118,9 @@ function renderDone(area){
 /* ---------- matching rounds & interactive card kinds ---------- */
 let round=null,lastPick=null;
 function applyGrade(id,g){
-  const t=todayISO(); APP.log[t]=(APP.log[t]||0)+1;
+  const t=todayISO();
+  const L=(APP.log[t]&&typeof APP.log[t]==="object")?APP.log[t]:(APP.log[t]={a:0,f:0});
+  L.a++; if(g===0)L.f++;
   if(runStats)runStats[g===0?"again":"pass"]++;
   if(practiceSet.has(id)){
     if(runStats)runStats.practiced++;
@@ -858,6 +1136,51 @@ function applyGrade(id,g){
   if(isNew){APP.intro.count++; if(runStats)runStats.introduced++;}
   if(g===0)session.splice(Math.min(idx+1+4,session.length),0,id);
   persist();
+}
+function buildOpts(c){
+  const opts=[c.answer]; const pool=c.pool.slice();
+  while(opts.length<4&&pool.length){opts.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]);}
+  for(let i=opts.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[opts[i],opts[j]]=[opts[j],opts[i]];}
+  return opts;
+}
+/* ---------- mock exam (assessment only, never touches the schedule) ---------- */
+let exam=null, examTick=null;
+function startExam(){
+  const on=APP.settings.topics;
+  const pool=shuffleArr(DECK.filter(c=>on[c.topic]&&c.answer&&c.pool&&c.pool.length>=1).map(c=>c.id)).slice(0,20);
+  exam={items:pool.map(id=>({id:id,pick:null,opts:buildOpts(CARD_BY_ID[id])})),i:0,t0:Date.now(),done:false};
+  examTick=setInterval(()=>{const t=el("extime");if(t)t.textContent=examClock();},1000);
+  renderStudy();
+}
+function examClock(){const s=Math.floor((Date.now()-exam.t0)/1000);return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
+function endExam(){exam=null;if(examTick){clearInterval(examTick);examTick=null;}renderStudy();}
+function renderExam(area){
+  el("topicfilter").classList.add("hidden");
+  if(exam.done){
+    const its=exam.items.map(it=>({it:it,c:CARD_BY_ID[it.id],ok:it.pick===CARD_BY_ID[it.id].answer}));
+    const score=its.filter(x=>x.ok).length, pct=Math.round(100*score/its.length);
+    let list=its.map((x,n)=>{
+      const q=x.c.front.text.replace(/<[^>]+>/g," ").slice(0,90);
+      return `<div class="relrow" style="grid-template-columns:20px 1fr"><span class="nm" style="color:${x.ok?"var(--good)":"var(--again)"}">${x.ok?"✓":"✗"}</span><span class="ds"><b>Q${n+1}.</b> ${q}<br>${x.ok?`<span style="opacity:.8">${x.it.pick}</span>`:`Your answer: ${x.it.pick||"—"}<br>Correct: <b>${x.c.answer}</b><br><span style="opacity:.8">${x.c.back.body}</span>`}</span></div>`;
+    }).join("");
+    area.innerHTML=`<div class="done"><h2>Exam result: ${score} / ${its.length} (${pct}%)</h2>
+      <p class="note" style="color:var(--muted)">Time: ${examClock()} · certification pace is roughly 90&nbsp;s per question. Nothing here touched your review schedule.</p></div>${list}
+      <div class="controls" style="max-width:280px;margin:16px auto"><button class="btn-flip" id="btn-exam-exit">Back to study</button></div>`;
+    el("btn-exam-exit").addEventListener("click",endExam);
+    return;
+  }
+  const it=exam.items[exam.i], c=CARD_BY_ID[it.id];
+  let h=`<div class="card"><div class="meta"><span>Mock exam · question ${exam.i+1} / ${exam.items.length}</span><span id="extime">${examClock()}</span></div>`;
+  h+=`<div class="qtext">${c.front.text}</div>`;
+  if(c.front.svg)h+=`<div class="svgbox">${svgFor(c.front.svg)}</div>`;
+  h+=`<div class="choices">`+it.opts.map((o,i)=>`<button data-exopt="${i}"><kbd>${i+1}</kbd>${o}</button>`).join("")+`</div>`;
+  h+=`<p class="note">No feedback until the end — pick and move on.</p></div>`;
+  area.innerHTML=h;
+  area.querySelectorAll("[data-exopt]").forEach(b=>b.addEventListener("click",e=>{
+    it.pick=it.opts[Number(e.currentTarget.dataset.exopt)];
+    exam.i++; if(exam.i>=exam.items.length)exam.done=true;
+    renderStudy(); window.scrollTo({top:0});
+  }));
 }
 function contBtn(c,st,g){
   const pr=practiceSet.has(c.id)&&g>0;
@@ -881,11 +1204,11 @@ function maybeStartRound(c){
   for(const px of src){ if(!seen.has(px)){dec.push(px);seen.add(px);} if(dec.length>=2)break; }
   const opts=answers.concat(dec);
   for(let i=opts.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[opts[i],opts[j]]=[opts[j],opts[i]];}
-  round={items:items,opts:opts,sel:0};
+  round={items:items,opts:opts,sel:0}; undoSnap=null;
 }
 function renderRound(area){
   const allDone=round.items.every(it=>it.done);
-  let h=`<div class="card"><div class="meta"><span>Matching round · <span class="statepill st-review">review</span></span><span>${idx+1} / ${session.length}</span></div>`;
+  let h=`<div class="card"><div class="meta"><span>Matching round · <span class="statepill st-review">review</span></span><span>${undoHTML()}${idx+1} / ${session.length}</span></div>`;
   h+=`<div class="qtext">Match each symbol to its name — tap a symbol, then its name.</div><div class="mtiles">`;
   round.items.forEach((it,i)=>{
     const c=CARD_BY_ID[it.id];
@@ -927,7 +1250,7 @@ function renderPlace(area,c){
   const st=cardState(c.id),kind=practiceSet.has(c.id)?"practice":stateKind(st);
   const res=face!=="q", pick=lastPick||{};
   const g=res?Number(face.split("-")[2]):null;
-  let h=`<div class="card"><div class="meta"><span>${TOPICS[c.topic]} · <span class="statepill st-${kind}">${kind}</span></span><span>${idx+1} / ${session.length}</span></div>`;
+  let h=`<div class="card"><div class="meta"><span>${TOPICS[c.topic]} · <span class="statepill st-${kind}">${kind}</span></span><span>${undoHTML()}${idx+1} / ${session.length}</span></div>`;
   h+=`<div class="qtext">${c.front.text}</div><table class="placegrid"><tr><th></th>${PLACE_COLS.map(x=>`<th>${x[1]}</th>`).join("")}</tr>`;
   for(const r of PLACE_ROWS){
     h+=`<tr><td class="rowhead">${layerChip(r)}</td>`+PLACE_COLS.map(x=>{
@@ -957,7 +1280,7 @@ function renderOrder(area,c){
   const st=cardState(c.id),kind=practiceSet.has(c.id)?"practice":stateKind(st);
   const res=face!=="q";
   const g=res?Number(face.split("-")[2]):null;
-  let h=`<div class="card"><div class="meta"><span>${TOPICS[c.topic]} · <span class="statepill st-${kind}">${kind}</span></span><span>${idx+1} / ${session.length}</span></div>`;
+  let h=`<div class="card"><div class="meta"><span>${TOPICS[c.topic]} · <span class="statepill st-${kind}">${kind}</span></span><span>${undoHTML()}${idx+1} / ${session.length}</span></div>`;
   h+=`<div class="qtext">${c.front.text}</div>`;
   if(!res){
     if(!lastPick||!lastPick.shuffle||lastPick.cardId!==c.id){
@@ -1030,7 +1353,23 @@ function renderBrowse(){
     return {c:c,s:s,k:k,due:s?s.due:"—",txt:frontTxt};
   });
   rows.sort((a,b)=>(a.due==="—"?"9999":a.due).localeCompare(b.due==="—"?"9999":b.due));
-  let h=`<h2 class="sec">All cards (${DECK.length})</h2><table class="browse"><tr><th>card</th><th>topic</th><th>state</th><th>due</th><th>ivl</th><th>EF</th><th>lapses</th><th></th></tr>`;
+  // per-topic table — honest metrics only: what is actually tracked
+  let h=`<h2 class="sec">Per topic</h2><table class="browse"><tr><th>topic</th><th>seen</th><th>avg interval</th><th>lapses</th></tr>`;
+  for(const tk in TOPICS){
+    const tc=rows.filter(r=>r.c.topic===tk), seen=tc.filter(r=>r.s);
+    const avg=seen.length?(seen.reduce((a,r)=>a+r.s.ivl,0)/seen.length):0;
+    const lap=seen.reduce((a,r)=>a+r.s.lapses,0);
+    h+=`<tr><td>${TOPICS[tk]}</td><td class="mono">${seen.length} / ${tc.length}</td><td class="mono">${seen.length?avg.toFixed(1)+"d":"—"}</td><td class="mono">${lap}</td></tr>`;
+  }
+  h+=`</table>`;
+  // trouble cards: repeated lapses = the tell-apart hints to reread
+  const trouble=rows.filter(r=>r.s&&r.s.lapses>=2).sort((a,b)=>b.s.lapses-a.s.lapses||a.s.ivl-b.s.ivl).slice(0,10);
+  if(trouble.length){
+    h+=`<h2 class="sec">Trouble cards</h2><table class="browse"><tr><th>card</th><th>lapses</th><th>interval</th></tr>`;
+    for(const r of trouble)h+=`<tr><td>${r.txt.slice(0,70)}${r.txt.length>70?"…":""}</td><td class="mono">${r.s.lapses}</td><td class="mono">${r.s.ivl}d</td></tr>`;
+    h+=`</table><p class="note" style="color:var(--muted)">Lapse-prone cards already resurface more often via their short intervals — reread their "tell it apart" lines rather than brute-forcing.</p>`;
+  }
+  h+=`<h2 class="sec">All cards (${DECK.length})</h2><table class="browse"><tr><th>card</th><th>topic</th><th>state</th><th>due</th><th>ivl</th><th>EF</th><th>lapses</th><th></th></tr>`;
   for(const r of rows){
     h+=`<tr><td>${r.txt.slice(0,70)}${r.txt.length>70?"…":""}</td><td class="mono">${r.c.topic}</td>
       <td><span class="statepill st-${r.k}">${r.k}</span>${r.s&&r.s.due<=today?" <span class='statepill'>due</span>":""}</td>
@@ -1045,6 +1384,8 @@ function renderBrowse(){
 
 /* ---------- settings ---------- */
 function wireSettings(){
+  const th=el("theme"); th.value=APP.settings.theme||"auto";
+  th.addEventListener("change",()=>{APP.settings.theme=th.value;persist();applyTheme();});
   const np=el("newperrun"), am=el("answermode"), rs=el("runsize");
   np.value=APP.settings.newPerRun; am.value=APP.settings.answerMode; rs.value=APP.settings.runSize;
   np.addEventListener("change",()=>{APP.settings.newPerRun=Math.max(0,Math.min(10,Number(np.value)||0));np.value=APP.settings.newPerRun;persist();renderStudy();});
@@ -1103,6 +1444,7 @@ function wireKeys(){
     }
     if(["1","2","3","4","5","6","7"].includes(e.key)){
       const k=Number(e.key)-1;
+      if(exam&&!exam.done){const eb=document.querySelectorAll("#studyarea [data-exopt]")[k];if(eb){e.preventDefault();eb.click();}return;}
       const mo=document.querySelectorAll("#studyarea [data-mopt]");
       if(round&&mo.length){e.preventDefault();const b=mo[k];if(b)b.click();return;}
       const ords=document.querySelectorAll("#studyarea [data-ord]");
@@ -1118,18 +1460,26 @@ function wireKeys(){
   });
 }
 
+function applyTheme(){
+  const t=APP.settings.theme||"auto";
+  const dark=t==="dark"||(t==="auto"&&typeof matchMedia!=="undefined"&&matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.dataset.theme=dark?"dark":"light";
+}
 /* ---------- boot ---------- */
 async function boot(){
   const saved=await Store.load();
   if(saved&&typeof saved==="object"){
     APP.settings=Object.assign(APP.settings,saved.settings||{});
+    for(const k in (saved.log||{}))if(typeof saved.log[k]==="number")saved.log[k]={a:saved.log[k],f:0};
     APP.settings.topics=Object.assign({elements:true,relations:true,framework:true,viewpoints:true},(saved.settings||{}).topics||{});
     APP.intro=saved.intro||APP.intro; APP.cards=saved.cards||{}; APP.log=saved.log||{};
   }
   const modeLabel={local:"Progress is saved to this browser's localStorage for this file location. Use export/import below to move it between devices.",artifact:"Progress is saved to Claude artifact storage and persists across sessions here.",memory:"In-memory only — progress is lost on reload. Download the file and open it locally to get persistence."}[Store.mode];
   const si=el("storageinfo"); if(si)si.textContent=modeLabel;
   if(Store.mode==="memory"){el("storagemode").textContent="⚠ no persistence";el("storagemode").classList.add("warn");}
+  applyTheme();
   wireTabs();wireKeys();wireSettings();renderTopics();
+  el("studyarea").addEventListener("click",e=>{if(e.target&&e.target.id==="undolink"){e.preventDefault();doUndo();}});
   renderStudy();
 }
 if(typeof document!=="undefined"&&document.getElementById){
