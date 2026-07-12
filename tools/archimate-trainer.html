@@ -57,7 +57,7 @@ nav.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:-2p
 .topics input{accent-color:var(--accent)}
 
 /* card */
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 2px rgba(32,35,42,.05);padding:26px 26px 22px;position:relative}
+.card{overflow-x:hidden;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 2px rgba(32,35,42,.05);padding:26px 26px 22px;position:relative}
 .card .meta{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:16px}
 .card .qtext{font-family:var(--serif);font-size:21px;line-height:1.4}
 .card .qtext b{color:var(--accent)}
@@ -104,6 +104,7 @@ table.grid{width:100%;border-collapse:collapse;background:var(--panel);font-size
 table.grid th,table.grid td{border:1px solid var(--line);padding:7px 9px;vertical-align:top;text-align:left}
 table.grid th{background:var(--paper);font-family:var(--mono);font-size:11.5px}
 .layerchip{display:inline-block;border:1px solid rgba(32,35,42,.25);border-radius:4px;padding:1px 7px;font-size:12px;white-space:nowrap}
+table.placegrid .layerchip{white-space:normal;font-size:11.5px;line-height:1.25;padding:2px 6px}
 .relrow{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:8px;flex-wrap:wrap}
 .relrow .nm{font-weight:600;min-width:120px}
 .relrow .ds{color:var(--muted);font-size:13px;flex:1;min-width:200px}
@@ -135,11 +136,12 @@ footer.note{margin-top:36px;font-size:12px;color:var(--muted);border-top:1px sol
 .mtile.right{border-color:var(--good);background:var(--okbg);cursor:default}
 .mtile.wrong{border-color:var(--again);background:var(--badbg);cursor:default}
 .mtile .mname{font-size:12.5px;min-height:17px;color:var(--muted)}
-table.placegrid{width:100%;border-collapse:collapse;margin:16px 0 4px;background:var(--panel)}
-table.placegrid th{font-family:var(--mono);font-size:10.5px;color:var(--muted);font-weight:400;padding:3px 2px;text-align:center}
+table.placegrid{width:100%;table-layout:fixed;border-collapse:collapse;margin:16px 0 4px;background:var(--panel)}
+table.placegrid th{font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:400;padding:3px 2px;text-align:center;word-break:break-word;hyphens:auto}
+table.placegrid th:first-child{width:31%}
 table.placegrid td.cell{border:1px dashed var(--line);height:38px;cursor:pointer;text-align:center;font-size:12.5px;color:var(--muted)}
 table.placegrid td.cell:hover{background:var(--paper)}
-table.placegrid td.rowhead{border:0;padding:2px 6px 2px 0;white-space:nowrap}
+table.placegrid td.rowhead{border:0;padding:2px 6px 2px 0;width:31%}
 table.placegrid td.cell.right{background:var(--okbg);border:2px solid var(--good)}
 table.placegrid td.cell.wrong{background:var(--badbg);border:2px solid var(--again)}
 .choices button.picked{border-color:var(--accent);background:var(--pickbg)}
@@ -185,6 +187,14 @@ table.placegrid td.cell.wrong{background:var(--badbg);border:2px solid var(--aga
       <label for="newperrun">New cards per run</label>
       <input type="number" id="newperrun" min="0" max="10" step="1">
       <span class="exp">Every run reserves this many slots for unseen cards (0 = review only). Due reviews always come first; if there is little else to sample, the run tops up with extra unseen cards.</span>
+    </div>
+    <div class="setrow">
+      <label for="lang">Language / Taal</label>
+      <select id="lang">
+        <option value="en">English</option>
+        <option value="nl">Nederlands</option>
+      </select>
+      <span class="exp" id="langexp"></span>
     </div>
     <div class="setrow">
       <label for="theme">Theme</label>
@@ -251,15 +261,26 @@ function parseISO(s){const p=s.split('-').map(Number);return new Date(p[0],p[1]-
 function addDays(iso,n){const d=parseISO(iso);d.setDate(d.getDate()+n);return fmtISO(d);}
 
 /* ---------- layers ---------- */
+/* ---------- i18n ---------- */
+let LANG="en";
+const NL={"el": {"Business Actor": {"def": "Een business-entiteit — een persoon, team, afdeling, hele organisatie of andere partij — die in staat is gedrag te vertonen. (3.2 verbreedde dit van “organisatorische entiteit”.)", "tell": "Een “wie” die organisatorisch bestaat (Jane, de claimafdeling). Actors vullen rollen: Jane (actor) is <i>assigned to</i> Claims Assessor (rol)."}, "Business Role": {"def": "Een benoemde verantwoordelijkheid voor het uitvoeren van specifiek gedrag. Actors worden aan rollen toegewezen; rollen worden toegewezen aan processen en functies.", "tell": "Een pet, geen persoon — hij overleeft personeelswissels. Staat het op het organogram → waarschijnlijk een actor; een benoemde verantwoordelijkheid → een rol."}, "Business Collaboration": {"def": "Een samenstel van twee of meer business-rollen of -actors die (vaak tijdelijk) samenwerken om collectief gedrag uit te voeren."}, "Business Interface": {"def": "Een toegangspunt — een kanaal zoals een balie, telefoonlijn of webportaal — waarmee een business service beschikbaar wordt gesteld aan de omgeving."}, "Business Process": {"def": "Een geordende reeks businessgedragingen die een specifiek resultaat oplevert, zoals een gedefinieerde set producten of business services. Meestal benoemd met een werkwoord.", "tell": "Instantietest: je kunt uitvoeringen in een periode tellen (“we hebben dit kwartaal 1.240 claims behandeld”) en elke uitvoering heeft een begin, een eind en een resultaat. Als instanties tellen zinvol is, is het een proces."}, "Business Function": {"def": "Een groepering van businessgedrag op basis van benodigde vaardigheden, kennis of middelen — georganiseerd naar competentie in plaats van naar volgorde richting een resultaat.", "tell": "Loopt continu — “hoeveel Financial Managements zijn er vandaag geweest?” is een zinloze vraag. Gegroepeerd naar competentie/middelen; één functie ondersteunt doorgaans meerdere processen."}, "Business Interaction": {"def": "Een eenheid van collectief businessgedrag uitgevoerd door twee of meer rollen of actors binnen een collaboration.", "tell": "Gedrag dat per definitie niet door één rol alleen kan worden uitgevoerd — collectief, binnen een collaboration."}, "Business Event": {"def": "Iets dat gebeurt — intern of extern — en een organisatorische toestandsverandering markeert; het kan ander gedrag triggeren, onderbreken of eruit voortkomen.", "tell": "Momentaan: het <i>doet</i> geen werk, het markeert een toestandsverandering. Gedrag kost tijd; events gebeuren."}, "Business Service": {"def": "Expliciet gedefinieerd gedrag dat een rol, actor of collaboration aan zijn omgeving toont en dat waarde levert aan de afnemer.", "tell": "De buitenkant vanuit de afnemer — benoemd naar de geleverde waarde (“claimafhandeling”), niet naar de interne stappen. Wordt gerealiseerd door de processen/functies erachter."}, "Business Object": {"def": "Een concept dat binnen een bepaald businessdomein wordt gebruikt (bijv. Factuur, Polis, Claim) — een abstract informatie-element op businessniveau.", "tell": "Abstract concept, los van formaat of systeem. Concrete vorm → Representation; applicatieniveau → Data Object."}, "Contract": {"def": "Een formele of informele specificatie van de afspraak tussen aanbieder en afnemer: rechten, plichten en functionele en niet-functionele parameters."}, "Representation": {"def": "Een waarneembare, concrete vorm van de informatie die een business object draagt — bijv. een geprint formulier of een PDF-document.", "tell": "De waarneembare drager (papieren formulier, PDF). Eén business object kan vele representations hebben."}, "Product": {"def": "Een samenhangend geheel van services en/of passieve structuurelementen, vergezeld van een contract, dat als geheel wordt aangeboden aan interne of externe klanten."}, "Application Component": {"def": "Een modulaire, vervangbare inkapseling van applicatiefunctionaliteit, afgestemd op de implementatiestructuur, die haar gedrag via interfaces beschikbaar stelt.", "tell": "Structuur, geen gedrag: het uitrolbare, vervangbare <i>ding</i>. Wat het doet, modelleer je als application functions/processes."}, "Application Collaboration": {"def": "Een samenstel van twee of meer application components die samenwerken om collectief applicatiegedrag uit te voeren."}, "Application Interface": {"def": "Een toegangspunt — een API of gebruikersinterface — waar application services beschikbaar worden gesteld aan gebruikers, andere componenten of nodes."}, "Application Function": {"def": "Geautomatiseerd gedrag dat intern door een application component wordt uitgevoerd.", "tell": "Dezelfde instantietest als in de business-laag: functies groeperen wat een component continu doet; processen zijn telbare reeksen richting een resultaat."}, "Application Interaction": {"def": "Een eenheid van collectief applicatiegedrag uitgevoerd door twee of meer samenwerkende application components."}, "Application Process": {"def": "Een reeks applicatiegedragingen die een specifiek resultaat oplevert.", "tell": "Telbare uitvoeringen met een gedefinieerd resultaat — de instantietest geldt in elke laag."}, "Application Event": {"def": "Een applicatietoestandsverandering die applicatiegedrag kan triggeren, onderbreken of eruit voortkomt."}, "Application Service": {"def": "Expliciet getoond applicatiegedrag — wat een applicatie aanbiedt aan businessprocessen, gebruikers of andere applicaties."}, "Data Object": {"def": "Data gestructureerd voor geautomatiseerde verwerking (een record, bericht, tabel). De tegenhanger van een business object in de applicatielaag, dat het doorgaans realiseert.", "tell": "Leeft in de applicatielaag, verwerkt door software. Realiseert een business object; wordt gerealiseerd door een technology artifact."}, "Node": {"def": "Een reken- of fysieke resource die andere resources host, manipuleert of ermee interacteert. Kan abstract blijven of verfijnd worden tot devices plus system software.", "tell": "De generieke host — gebruik hem zolang het je niet uitmaakt of het hardware of software is. Device + system software zijn de verfijningen."}, "Device": {"def": "Een fysieke IT-resource (server, router, telefoon) waarop artifacts kunnen worden opgeslagen of uitgerold en system software kan draaien.", "tell": "Hardware die je fysiek kunt aanwijzen."}, "System Software": {"def": "Een softwareomgeving — OS, DBMS, applicatieserver, container-runtime — voor het opslaan, uitvoeren en gebruiken van software of data die erin is uitgerold.", "tell": "Een omgeving waar andere software <i>in</i> draait (OS, DBMS, JVM, container-runtime) — geen eindgebruikersapplicatie."}, "Technology Collaboration": {"def": "Een samenstel van twee of meer nodes die samenwerken om collectief technologiegedrag uit te voeren."}, "Technology Interface": {"def": "Een toegangspunt waar technology services van een node gebruikt kunnen worden door andere nodes of door application components."}, "Path": {"def": "Een logische verbinding tussen twee of meer nodes waarlangs zij data, energie of materiaal kunnen uitwisselen; gerealiseerd door één of meer netwerken.", "tell": "De logische “kan uitwisselen met”-verbinding; één of meer communication networks realiseren hem."}, "Communication Network": {"def": "Een geheel van structuren en gedragingen dat devices of system software verbindt voor transmissie, routering en ontvangst van data (LAN, WAN)."}, "Technology Function": {"def": "Een verzameling technologiegedrag dat intern door een node kan worden uitgevoerd."}, "Technology Process": {"def": "Een reeks technologiegedragingen die een specifiek resultaat oplevert, bijv. een uitrol- of back-upprocedure."}, "Technology Interaction": {"def": "Een eenheid van collectief technologiegedrag uitgevoerd door twee of meer samenwerkende nodes."}, "Technology Event": {"def": "Een technologietoestandsverandering die technologiegedrag kan triggeren, onderbreken of eruit voortkomt."}, "Technology Service": {"def": "Expliciet getoond technologiegedrag — bijv. messaging, opslag of hosting — dat een node aan zijn omgeving aanbiedt."}, "Artifact": {"def": "Een concreet stuk data dat gebruikt of geproduceerd wordt bij ontwikkeling of exploitatie: bestanden, binaries, scripts, schema's. Uitgerold op nodes; realiseert componenten en data objects.", "tell": "Het daadwerkelijke bestand/binary/script. Als je de bestandsnaam kunt noemen, is het een artifact."}, "Equipment": {"def": "Eén of meer fysieke machines, gereedschappen of instrumenten die materialen kunnen maken, gebruiken, opslaan, verplaatsen of transformeren.", "tell": "Bewerkt <i>materiaal</i>, geen data: een CNC-freesmachine is equipment; de server die hem aanstuurt is een device."}, "Facility": {"def": "Een fysieke structuur of omgeving, zoals een fabriek, magazijn of datacentergebouw."}, "Distribution Network": {"def": "Een fysiek netwerk voor het transport van materialen of energie — weg, spoor, pijpleiding, elektriciteitsnet."}, "Material": {"def": "Tastbare fysieke materie of energie: grondstoffen, fysieke producten, brandstof."}, "Stakeholder": {"def": "De rol van een individu, team of organisatie dat zijn belangen in de uitkomst van de architectuur vertegenwoordigt."}, "Driver": {"def": "Een interne of externe conditie — klanttevredenheid, regelgeving, marktdruk — die de organisatie motiveert doelen te stellen en te veranderen.", "tell": "Waarom verandering überhaupt op tafel ligt (“stijgende fraudeverliezen”). Geanalyseerd door assessments, beantwoord door goals."}, "Assessment": {"def": "Het resultaat van een analyse van de stand van zaken ten aanzien van een driver — bijv. een SWOT-bevinding die een sterkte, zwakte, kans of bedreiging blootlegt.", "tell": "Een analyse-<i>bevinding</i> over een driver — een SWOT-achtige uitspraak als “fraudedetectie loopt achter op concurrenten”."}, "Goal": {"def": "Een uitspraak op hoog niveau over intentie, richting of gewenste eindtoestand voor de organisatie en haar stakeholders.", "tell": "Een gewenste richting (“retentie verhogen”). Al bereikt &amp; meetbaar → outcome; toetsbaar en over één systeem → requirement."}, "Outcome": {"def": "Een eindresultaat dat is behaald — concreet en idealiter meetbaar. Goals zijn ambities; outcomes zijn resultaten.", "tell": "Verleden-tijd-test: “verloop met 10% verlaagd” — een behaald, meetbaar resultaat."}, "Principle": {"def": "Een algemene, normatieve eigenschap die zou moeten gelden voor elk systeem in een bepaalde context — bijv. \"data wordt eenmalig vastgelegd, bij de bron\". Algemener dan een requirement.", "tell": "Geldt voor <i>alle</i> systemen binnen de scope (“kopen vóór bouwen”). Toegespitst op één systeem wordt het een requirement."}, "Requirement": {"def": "Een uitspraak over een behoefte waaraan een specifiek systeem moet voldoen. Waar principles algemeen zijn, gelden requirements voor één concreet systeem.", "tell": "Eén systeem, toetsbaar. Bredere normatieve uitspraak → principle; opgelegde beperking → constraint."}, "Constraint": {"def": "Een beperking op hoe de architectuur gerealiseerd mag worden — budget, deadline, voorgeschreven technologie, wettelijke grenzen.", "tell": "Een requirement die je niet zelf koos: opgelegd budget, deadline, regelgeving, voorgeschreven technologie."}, "Meaning": {"def": "De kennis, interpretatie of context die een concept of stuk informatie voor iemand heeft."}, "Value": {"def": "De relatieve waarde, nut of belang van een concept voor een stakeholder."}, "Resource": {"def": "Een bezit dat een individu of organisatie bezit of beheert: mensen, kapitaal, informatie, technologie.", "tell": "Een zelfstandig naamwoord dat je <i>hebt</i>, niet iets wat je <i>doet</i>. Capabilities gebruiken resources."}, "Capability": {"def": "Een vermogen dat een actief structuurelement (organisatie, persoon, systeem) bezit — wat het kan, los van hoe.", "tell": "Strategieniveau: “wat we kunnen”, jarenlang stabiel, zwijgt over het hoe. Business functions zijn de operationele groeperingen die het realiseren."}, "Value Stream": {"def": "Een reeks waardetoevoegende activiteiten die een totaalresultaat oplevert voor een klant, stakeholder of eindgebruiker. Geïntroduceerd in ArchiMate 3.1.", "tell": "Stappen benoemd naar de toegevoegde waarde, end-to-end vanuit de klant gezien; processen realiseren de stappen operationeel."}, "Course of Action": {"def": "Een aanpak of plan — een strategie of tactiek — om capabilities en resources van de onderneming in te richten om een goal te bereiken."}, "Work Package": {"def": "Een reeks acties met een gedefinieerd begin en eind, ontworpen om binnen tijd- en middelenkaders een specifiek resultaat te behalen — een project, programma of taak.", "tell": "Gedraagt zich als een proces maar leeft in Impl &amp; Migration: vast begin–eind, levert deliverables op."}, "Deliverable": {"def": "Een precies gedefinieerd resultaat dat door een work package wordt opgeleverd."}, "Implementation Event": {"def": "Een toestandsverandering rond implementatie of migratie — bijv. \"programma goedgekeurd\" of \"go-live\"."}, "Plateau": {"def": "Een relatief stabiele toestand van de architectuur die gedurende een beperkte periode bestaat — baseline-, transitie- of doelarchitectuur."}, "Gap": {"def": "Een uitspraak over de verschillen tussen twee plateaus — wat er moet veranderen om van het één naar het ander te komen.", "tell": "Hangt altijd tussen twee plateaus — het verschil, niet een toestand."}, "Grouping": {"def": "Aggregeert of componeert willekeurige concepten die om een gemeenschappelijk kenmerk bij elkaar horen; getekend als een gestippelde container met labeltab."}, "Location": {"def": "Een conceptuele of fysieke plaats of positie waar structuurelementen zich bevinden of gedrag wordt uitgevoerd."}}, "rel": {"Composition": {"def": "Een element bestaat uit één of meer andere elementen. Existentieel: een deel kan tot slechts één compositie behoren en bestaat niet onafhankelijk van het geheel.", "notation": "Doorgetrokken lijn met een gevulde ruit aan de kant van het geheel (A is het geheel, B het deel).", "more": "Verwijder het geheel en de delen gaan mee. Sterkste schakel in de afleidingsvolgorde; mag ook getekend worden door het deel in het geheel te nesten.", "hint": "Gevulde ruit = het deel zit 'vastgelast'."}, "Aggregation": {"def": "Een element groepeert één of meer andere elementen. Losser dan compositie: delen kunnen zelfstandig bestaan en door meerdere gehelen geaggregeerd worden.", "notation": "Doorgetrokken lijn met een open ruit aan de kant van het geheel.", "more": "Delen houden hun eigen levenscyclus en mogen in meerdere aggregaties tegelijk zitten — één Application Component kan in twee Products geaggregeerd worden. Ook als nesting te tekenen.", "hint": "Open ruit = het deel kan er weer uit."}, "Assignment": {"def": "Toewijzing van verantwoordelijkheid, uitvoering van gedrag, opslag of executie: actor aan rol, rol aan proces, component aan functie, node aan artifact (deployment).", "notation": "Doorgetrokken lijn met een gevulde bal bij de bron (A) en een gevulde pijlpunt bij het doel (B).", "more": "De bal markeert de uitvoerder of host. Kernpatronen: actor→rol, rol→proces, component→functie, interface→service, node/device→artifact (deployment).", "hint": "Bal bij de 'doener', pijl bij wat hij doet of draagt."}, "Realization": {"def": "Een entiteit speelt een cruciale rol bij het creëren, bereiken of laten werken van een abstractere entiteit: een proces realiseert een service; een artifact realiseert een application component; een data object realiseert een business object.", "notation": "Gestreepte lijn met een open driehoek die wijst naar het abstractere element dat gerealiseerd wordt.", "more": "Leest altijd concreet→abstract. Ketens kruisen lagen: artifact realiseert data object realiseert business object; proces realiseert service; requirement realiseert goal.", "hint": "Gestreept = het abstracte ding wordt hierdoor pas echt."}, "Serving": {"def": "Een element stelt zijn functionaliteit beschikbaar aan een ander element — meestal een service die een proces bedient, of een lagere laag die een hogere bedient. Heette \"used by\" vóór ArchiMate 3.0.", "notation": "Doorgetrokken lijn met een open pijlpunt die wijst naar het element dat bediend wordt.", "more": "Ondersteuning stroomt naar de pijlpunt: aanbieder aan de staart, afnemer aan de kop — meestal omhoog door de lagenstapel.", "hint": "De pijl wijst naar de klant, niet naar de leverancier."}, "Access": {"def": "Het vermogen van gedrags- en actieve structuurelementen om passieve structuurelementen (objecten, artifacts, materiaal) waar te nemen of te bewerken.", "notation": "Gestippelde lijn, optioneel met een kleine open pijlpunt. Pijl naar het passieve element = schrijven; naar het gedrag = lezen; beide uiteinden = lezen/schrijven; geen = ongespecificeerd.", "more": "Loopt van gedrag <i>en</i> — expliciet sinds 3.2 — actieve structuurelementen naar passieve structuur. De pijlpunt is de lees/schrijf-schakelaar: pijl bij het object = schrijven.", "hint": "Gestippelde lijn — denk aan een stroom datapuntjes."}, "Influence": {"def": "Een element beïnvloedt de implementatie of het bereiken van een motivatie-element. De belangrijkste relatie tussen goals, drivers, principles en requirements.", "notation": "Gestreepte lijn met een open pijlpunt, optioneel geannoteerd met een sterkte zoals +, ++, − of −−.", "more": "De enige relatie met een sterkte-annotatie; vrijwel uitsluitend gebruikt tussen motivatie-elementen.", "hint": "Motivatie-elementen beïnvloeden elkaar; annoteer de richting van de duw."}, "Association": {"def": "Een ongespecificeerde relatie, of één die door geen andere ArchiMate-relatie gedekt wordt. De terugval als niets sterkers past.", "notation": "Kale doorgetrokken lijn; de gerichte vorm heeft een halve pijlpunt bij het doeleinde.", "more": "Zwakste schakel in de afleidingsvolgorde — de 'er bestaat enig verband'-terugval zonder vastgelegde semantiek.", "hint": "Geen versiering = geen vastgelegde semantiek."}, "Triggering": {"def": "Een temporele of causale relatie tussen elementen — meestal gedragselementen en events: het één veroorzaakt of gaat vooraf aan het ander.", "notation": "Doorgetrokken lijn met een gevulde pijlpunt.", "more": "Besturingsstroom: volgorde en causaliteit, geen lading. Combineer met junctions voor AND/OR-splitsingen in procesketens.", "hint": "Doorgetrokken lijn = een harde causale duw."}, "Flow": {"def": "Overdracht van het ene element naar het andere: informatie, goederen of geld — zonder causale volgorde te impliceren.", "notation": "Gestreepte lijn met een gevulde pijlpunt.", "more": "Lading zonder volgorde-claim. Triggering zegt 'daarna'; flow zegt 'stuurt'. Label hem met wat er wordt overgedragen.", "hint": "Gestreept = spul dat overstroomt; label het met wat er stroomt."}, "Specialization": {"def": "Een element is een bijzondere soort van een ander element van hetzelfde type — bijv. \"Online Payment Process\" specialiseert \"Payment Process\".", "notation": "Doorgetrokken lijn met een open driehoek die wijst naar het algemenere element.", "more": "Beide uiteinden moeten hetzelfde elementtype zijn; het gespecialiseerde element erft de relaties van de ouder.", "hint": "Dezelfde open driehoek als realization, maar doorgetrokken lijn: het ís er één, het realiseert er niet slechts één."}, "Junction": {"def": "Splitst of voegt meerdere relaties van hetzelfde type samen, met and/or-semantiek — veel gebruikt bij triggering en flow.", "notation": "Een klein cirkeltje dat meerdere relaties van hetzelfde type verbindt: gevulde cirkel = AND, open cirkel = OR.", "more": "Technisch een relatieconnector, geen relatie; alles wat hij verbindt moet van één type zijn (meestal triggering of flow).", "hint": "Gevuld = alle takken; open = één of meer."}}, "vp": {"Organization": {"purpose": "Toon de interne structuur van de organisatie: afdelingen, actors, rollen en hun samenwerkingen, eventueel op locaties.", "els": "Business actor, role, collaboration, interface, location"}, "Business Process Cooperation": {"purpose": "Toon hoe businessprocessen zich tot elkaar en tot hun omgeving verhouden: causale ketens, gedeelde services en data, en de rollen die ze uitvoeren.", "els": "Business processes, events, services, roles/actors, business objects"}, "Product": {"purpose": "Toon waaruit een product bestaat: de geaggregeerde services, het bijbehorende contract, en hoe het product gebruikt wordt.", "els": "Product, contract, business/application services, actors en roles"}, "Application Cooperation": {"purpose": "Toon het applicatielandschap: componenten, hun onderlinge afhankelijkheden, informatiestromen en de services die ze elkaar bieden.", "els": "Application components, interfaces, services, flows, data objects"}, "Application Usage": {"purpose": "Toon hoe applicaties businessprocessen ondersteunen en hoe ze door andere applicaties gebruikt worden.", "els": "Application services/components die businessprocessen, rollen en business objects bedienen"}, "Implementation and Deployment": {"purpose": "Toon hoe applicaties op de technologie worden afgebeeld: welke artifacts welke componenten realiseren en waar ze zijn uitgerold.", "els": "Application components, artifacts, nodes, devices, system software"}, "Technology": {"purpose": "Toon de infrastructuur zelf: hardware, system software en netwerken, en hoe ze verbonden zijn.", "els": "Nodes, devices, system software, technology services, networks, paths"}, "Technology Usage": {"purpose": "Toon hoe technology services de applicatielaag ondersteunen.", "els": "Technology services en nodes die application components bedienen"}, "Information Structure": {"purpose": "Toon de structuur van de informatie in de onderneming, en hoe informatie op businessniveau in lagere lagen wordt gerepresenteerd en gerealiseerd.", "els": "Business objects, data objects, representations, meanings, artifacts"}, "Service Realization": {"purpose": "Toon hoe één of meer services worden gerealiseerd door de onderliggende processen en application components.", "els": "Services, business processes, application components, roles"}, "Physical": {"purpose": "Toon fysieke machines, faciliteiten, en de distributienetwerken en materialen die ze verbinden.", "els": "Equipment, facility, distribution network, material, nodes"}, "Layered": {"purpose": "Toon meerdere lagen van de architectuur in één diagram, verbonden door serving- en realization-relaties — het klassieke full-stack overzichtsplaatje.", "els": "Alle core-elementen, gerangschikt in horizontale lagenbanen"}, "Stakeholder": {"purpose": "Toon wie belang heeft bij de architectuur, de drivers die hen bezighouden, assessments van die drivers, en de eerste goals die eruit volgen.", "els": "Stakeholder, driver, assessment, goal"}, "Goal Realization": {"purpose": "Toon hoe doelen op hoog niveau worden verfijnd tot subdoelen en outcomes en gerealiseerd worden door principles en requirements.", "els": "Goal, outcome, principle, requirement, constraint"}, "Requirements Realization": {"purpose": "Toon hoe requirements en constraints worden gerealiseerd door core-architectuurelementen.", "els": "Requirement, constraint, en de core-elementen die ze realiseren"}, "Motivation": {"purpose": "Toon het volledige motivatie-aspect: de hele keten van stakeholders en drivers via goals naar principles en requirements.", "els": "Alle motivatie-elementen"}, "Strategy": {"purpose": "Geef een strategisch overzicht op hoog niveau: hoe courses of action capabilities en resources inzetten om waarde te leveren.", "els": "Course of action, capability, resource, value stream, goals/outcomes"}, "Capability Map": {"purpose": "Geef een gestructureerd overzicht van de capabilities van de onderneming, meestal als geneste kaart voor planning en heat-mapping.", "els": "Capabilities (genest), eventueel outcomes en resources"}, "Value Stream": {"purpose": "Toon een value stream, de stappen ervan, de gecreëerde waarde, en de capabilities die elke stap bedienen.", "els": "Value stream (stappen), capabilities, value, stakeholders"}, "Outcome Realization": {"purpose": "Toon hoe businessgerichte resultaten (outcomes) worden voortgebracht door capabilities en, daaronder, door core-elementen.", "els": "Outcome, capability, value, core-elementen"}, "Resource Map": {"purpose": "Geef een gestructureerd overzicht van de resources van de onderneming en hun relaties met capabilities.", "els": "Resources (genest), capabilities"}, "Project": {"purpose": "Toon het managen van architectuurverandering: work packages, hun deliverables, en de doelen die ze dienen.", "els": "Work package, deliverable, goal, business actor/role"}, "Migration": {"purpose": "Toon de overgang van baseline- naar doelarchitectuur als een reeks plateaus met de gaps ertussen.", "els": "Plateau, gap"}, "Implementation and Migration": {"purpose": "Relateer programma's en projecten aan de delen van de architectuur die ze implementeren: welke work packages leveren welke plateaus en dichten welke gaps.", "els": "Work package, deliverable, plateau, gap, plus core-elementen"}}, "con": {"c-core-layers": {"f": "Wat zijn de drie <b>core-lagen</b> van ArchiMate?", "b": "Business, Application en Technology. Samen met de drie aspecten vormen ze het 3×3 core-raamwerk.", "a": "Business, Application, Technology", "w": ["Strategy, Business, Technology", "Business, Application, Infrastructure", "Motivation, Business, Technology"]}, "c-full-layers": {"f": "Noem de lagen van het <b>volledige ArchiMate-raamwerk</b>, van boven naar beneden.", "b": "Strategy, Business, Application, Technology, Physical, Implementation &amp; Migration — met Motivation ernaast als dwarsdoorsnijdend aspect. (Physical hoort formeel bij de technologielaag, maar wordt meestal als eigen band getoond.)", "a": "Strategy · Business · Application · Technology · Physical · Implementation & Migration", "w": ["Motivation · Strategy · Business · Application · Technology · Physical", "Business · Application · Technology · Physical · Strategy · Implementation & Migration", "Strategy · Business · Technology · Application · Physical · Implementation & Migration"]}, "c-aspects": {"f": "Wat zijn de drie <b>aspecten</b> (kolommen) van het raamwerk, en wat bevat elk?", "b": "Passieve structuur: de objecten waarop gedrag wordt uitgevoerd. Gedrag: de activiteit die actieve elementen uitvoeren. Actieve structuur: de subjecten die gedrag vertonen. Denk aan een zin: onderwerp (actief) – werkwoord (gedrag) – lijdend voorwerp (passief).", "a": "Passive structure · Behavior · Active structure", "w": ["Data · Process · Organization", "Passive · Active · Motivation", "Structure · Behavior · Information"]}, "c-shapes": {"f": "Wat coderen de <b>hoekvormen</b> van ArchiMate-symbolen?", "b": "Rechte hoeken = structuurelementen (actief en passief). Afgeronde hoeken = gedragselementen. Schuine (afgesneden) hoeken = motivatie-elementen.", "a": "Square = structure, rounded = behavior, cut corners = motivation", "w": ["Square = behavior, rounded = structure, cut corners = motivation", "Square = structure, rounded = motivation, cut corners = behavior", "Rounded = structure, square = behavior, cut corners = strategy"]}, "c-colors": {"f": "Wat is de gebruikelijke <b>kleur</b> per laag — en hoe bindend is die?", "b": "Geel = business, blauw = applicatie, groen = technologie en fysiek, zandkleur = strategie, paars = motivatie, roze = implementatie &amp; migratie. Niet normatief: de standaard laat kleur vrij, maar tools volgen deze conventie.", "a": "Yellow business, blue application, green technology — a convention, not normative", "w": ["Yellow business, blue application, green technology — mandated by the standard", "Blue business, yellow application, green technology — a convention", "Colours encode the aspect, not the layer"]}, "c-active-passive": {"f": "Actieve versus <b>passieve</b> structuur — wat is het verschil?", "b": "Actieve structuurelementen kunnen gedrag uitvoeren (actor, component, node). Passieve structuurelementen zijn dat waarop gedrag wordt uitgevoerd (business object, data object, artifact, materiaal).", "a": "Active performs behavior; passive is what behavior is performed on", "w": ["Passive performs behavior; active is what behavior is performed on", "Active = business layer, passive = technology layer", "Active elements change state, passive elements trigger events"]}, "c-int-ext": {"f": "Intern versus <b>extern</b> gedrag — welke elementen vormen het externe gezicht van een laag?", "b": "Services zijn het externe gedrag en interfaces de externe actieve structuur; processen, functies en componenten zijn intern. Afnemers zouden alleen van services en interfaces afhankelijk moeten zijn — de kern van ArchiMate's service-oriëntatie.", "a": "External = services and interfaces; internal = processes, functions, components", "w": ["External = processes and functions; internal = services", "External = whatever touches a layer boundary", "Internal = motivation elements; external = everything else"]}, "c-svc-if": {"f": "Hoe verhouden een <b>interface</b> en een <b>service</b> zich tot elkaar?", "b": "De interface (externe actieve structuur) is <i>assigned to</i> de service (extern gedrag) die hij ontsluit: de service zegt wát er wordt aangeboden, de interface waar/hoe je erbij komt.", "a": "The interface is assigned to the service it exposes", "w": ["The service is composed of the interface", "The interface realizes the service", "The interface serves the service"]}, "c-actor-role": {"f": "Business <b>actor</b> versus business <b>role</b> — en welke relatie verbindt ze?", "b": "De actor is de entiteit (wie), de rol is de verantwoordelijkheid (welke rol wordt gespeeld). Een actor is <i>assigned to</i> een rol; de rol is op zijn beurt toegewezen aan processen of functies. Dat ontkoppelt het organogram van het gedrag.", "a": "Actor is assigned to role; the role is assigned to the behavior", "w": ["Role is assigned to actor; the actor performs behavior directly", "The actor realizes the role", "They are associated; either may perform behavior"]}, "c-proc-func": {"f": "<b>Proces</b> versus <b>functie</b> — wat onderscheidt ze?", "b": "Een proces is een reeks gedragingen gericht op een resultaat (zichtbaar voor de klant, benoemd met een werkwoord). Een functie groepeert gedrag naar benodigde vaardigheden of middelen, ongeacht volgorde. Dezelfde activiteiten kunnen in beide decomposities voorkomen.", "a": "Process = sequence toward a result; function = behavior grouped by competence", "w": ["Process = behavior grouped by competence; function = sequence toward a result", "Process = automated behavior; function = manual behavior", "Process = the external view; function = the internal view"]}, "c-info-chain": {"f": "Hoe verhouden business object, data object, artifact en representation zich?", "b": "Een artifact <i>realiseert</i> een data object, dat een business object <i>realiseert</i> — steeds concreter door de lagen heen. Een representation is de waarneembare vorm (document, formulier) van een business object, binnen de businesslaag zelf.", "a": "Artifact realizes data object realizes business object; representation = its perceptible form", "w": ["Business object realizes data object realizes artifact", "Representation realizes the data object; the artifact is its business form", "Data object realizes the artifact; representation lives in the application layer"]}, "c-cross-layer": {"f": "Welke twee relaties <b>kruisen lagen</b>, en in welke richting?", "b": "Serving wijst omhoog: services uit een lagere laag bedienen gedrag in een hogere (application service bedient businessproces). Realization wijst van concreet naar abstract: artifact realiseert application component; proces realiseert service.", "a": "Serving points upward; realization points from concrete to abstract", "w": ["Serving points downward; realization points upward", "Assignment and flow are the cross-layer pair", "Serving and realization both point downward"]}, "c-derived": {"f": "Wat is een <b>afgeleide relatie</b>, en wat is de sterkte-volgorde?", "b": "Een keten van structurele/afhankelijkheidsrelaties tussen twee elementen mag vervangen worden door één directe relatie van het <i>zwakste</i> type in de keten. Zwak → sterk: association &lt; access &lt; serving &lt; realization &lt; assignment &lt; aggregation &lt; composition. Sinds 3.1 splitst de spec dit: ketens met alleen structurele relaties geven <i>valide</i> afleidingen (altijd toegestaan); ketens met een afhankelijkheidsrelatie geven <i>potentiële</i> afleidingen, die ook in de tabellen van Bijlage&nbsp;B moeten staan.", "a": "The chain may be replaced by its weakest relationship", "w": ["The chain may be replaced by its strongest relationship", "The chain may only be replaced by an association", "Derived relationships are always compositions"]}, "c-nesting": {"f": "Wanneer mag een element <b>genest</b> in een ander worden getekend?", "b": "Nesting is een alternatieve notatie voor composition en aggregation (en ook toegestaan voor assignment en realization). Het omsluitende element is het geheel/doel; de relatie bestaat formeel gewoon in het model.", "a": "Composition and aggregation — also allowed for assignment and realization", "w": ["Any relationship may be drawn nested", "Only composition", "Serving and access"]}, "c-composition-one": {"f": "Van hoeveel composities kan een element <b>deel</b> uitmaken?", "b": "Precies één — compositie is existentieel en exclusief. Aggregatie kent die grens niet: een element kan door vele gehelen geaggregeerd worden.", "a": "Exactly one", "w": ["Any number", "At most two", "One per layer"]}, "c-serving-rename": {"f": "Hoe heette <b>Serving</b> vóór ArchiMate 3.0?", "b": "\"Used by\". Dezelfde semantiek, omgekeerde lezing: handig bij het lezen van modellen en literatuur van vóór 2016.", "a": "Used by", "w": ["Supports", "Depends on", "Provides"]}, "c-rel-structural": {"f": "Welke vier relaties zijn <b>structureel</b>?", "b": "Composition, Aggregation, Assignment, Realization. Ze scheppen of belichamen een structurele band en worden getekend met doorgetrokken of gestreepte lijnen plus ruit-, bal- of driehoekversieringen.", "a": "Composition, Aggregation, Assignment, Realization", "w": ["Composition, Aggregation, Serving, Access", "Assignment, Realization, Triggering, Flow", "Composition, Specialization, Assignment, Association"]}, "c-rel-dependency": {"f": "Welke vier relaties zijn <b>afhankelijkheidsrelaties</b>?", "b": "Serving, Access, Influence, Association — hier van sterk naar zwak geordend. Ze drukken uit dat een element van een ander afhangt of ermee samenhangt, zonder structurele band.", "a": "Serving, Access, Influence, Association", "w": ["Serving, Access, Triggering, Flow", "Realization, Serving, Access, Influence", "Association, Specialization, Influence, Access"]}, "c-rel-dynamic": {"f": "Welke twee relaties zijn <b>dynamisch</b>?", "b": "Triggering (temporele/causale volgorde) en Flow (overdracht van informatie, goederen of geld). Beide hebben een gevulde pijlpunt; triggering is doorgetrokken, flow gestreept.", "a": "Triggering and Flow", "w": ["Triggering and Serving", "Flow and Access", "Triggering and Junction"]}, "c-rel-other": {"f": "Welke relaties vallen in de categorie <b>Overig</b>?", "b": "Specialization en de Junction (relatieconnector). Specialization geldt tussen elementen van hetzelfde type; junctions splitsen of voegen relaties van hetzelfde type samen met and/or-semantiek.", "a": "Specialization and Junction", "w": ["Association and Junction", "Specialization and Influence", "Grouping and Association"]}, "c-view-vp": {"f": "<b>View</b> versus <b>viewpoint</b> — wat is het verschil?", "b": "Een view is wat je daadwerkelijk ziet: een weergave van de architectuur die een set stakeholder-zorgen adresseert. Een viewpoint is de specificatie van de conventies voor het maken van zulke views — welke elementen, relaties en presentatie je gebruikt.", "a": "The view is the representation; the viewpoint is the conventions for constructing it", "w": ["The viewpoint is the representation; the view is the conventions", "A view is informal, a viewpoint is formal", "They are synonyms in ArchiMate"]}, "c-vp-purpose": {"f": "In welke drie <b>doel</b>-categorieën deelt ArchiMate viewpoints in?", "b": "Designing (ondersteunt architecten/ontwerpers), Deciding (ondersteunt managers bij besluitvorming), Informing (informeert andere stakeholders en creëert draagvlak).", "a": "Designing, Deciding, Informing", "w": ["Planning, Building, Running", "Designing, Documenting, Deciding", "Strategic, Tactical, Operational"]}, "c-vp-abstraction": {"f": "Welke drie <b>abstractieniveaus</b> onderscheidt het viewpoint-mechanisme?", "b": "Details (één laag/aspect, bijv. een enkel proces), Coherence (over meerdere lagen of aspecten heen), Overview (zowel meerdere lagen als meerdere aspecten, voor bestuurders).", "a": "Details, Coherence, Overview", "w": ["Conceptual, Logical, Physical", "Details, Summary, Overview", "Micro, Meso, Macro"]}, "c-version": {"f": "Wie beheert ArchiMate, en wat is de huidige versie?", "b": "The Open Group; de huidige versie is ArchiMate 3.2 (2022). Het is bedoeld als aanvulling op TOGAF: TOGAF levert de methode (ADM), ArchiMate de modelleertaal.", "a": "The Open Group — ArchiMate 3.2 (2022)", "w": ["OMG — ArchiMate 3.2 (2022)", "The Open Group — ArchiMate 4.0 (2024)", "ISO — ArchiMate 3.1 (2019)"]}, "c-scope": {"f": "Waar is ArchiMate bewust <b>niet</b> voor bedoeld?", "b": "Gedetailleerde proceslogica (het werk van BPMN), gedetailleerd softwareontwerp (UML) en gedetailleerde datamodellering (ER). ArchiMate verbindt die domeinen op enterprise-architectuurniveau en blijft bewust grofmazig.", "a": "Detailed process logic, software design, and data models (BPMN/UML/ER territory)", "w": ["Cross-layer dependency modeling", "Motivation and strategy modeling", "Service-oriented modeling"]}, "c-valuestream-31": {"f": "Welk strategie-element is toegevoegd in ArchiMate <b>3.1</b>?", "b": "Value Stream — een reeks waardetoevoegende activiteiten die een resultaat oplevert voor een klant of stakeholder, doorgaans bediend door capabilities.", "a": "Value Stream", "w": ["Course of Action", "Capability", "Outcome"]}, "c-motivation-list": {"f": "Noem de tien <b>motivatie</b>-elementen.", "b": "Stakeholder, Driver, Assessment, Goal, Outcome, Principle, Requirement, Constraint, Meaning, Value."}, "c-strategy-list": {"f": "Noem de vier <b>strategie</b>-elementen.", "b": "Resource (structuur), Capability, Value Stream en Course of Action (alle drie gedrag).", "a": "Resource, Capability, Value Stream, Course of Action", "w": ["Resource, Capability, Goal, Course of Action", "Capability, Value Stream, Driver, Resource", "Resource, Function, Value Stream, Plateau"]}, "c-implmig-list": {"f": "Noem de vijf elementen van <b>implementatie &amp; migratie</b>.", "b": "Work Package, Deliverable, Implementation Event, Plateau, Gap.", "a": "Work Package, Deliverable, Implementation Event, Plateau, Gap", "w": ["Work Package, Deliverable, Milestone, Plateau, Gap", "Project, Deliverable, Event, Baseline, Gap", "Work Package, Artifact, Implementation Event, Plateau, Transition"]}, "c-junction-semantics": {"f": "Junction: wat betekenen een <b>gevulde</b> versus een <b>open</b> cirkel?", "b": "Gevulde cirkel = AND-junction (alle verbonden paden gelden). Open cirkel = OR-junction (één of meer van de paden gelden, inclusieve of).", "a": "Filled = AND, open = OR", "w": ["Filled = OR, open = AND", "Filled = mandatory, open = optional", "Filled = split, open = join"]}}, "dir": [{"rel": "bedient", "foil": "realiseert", "why": "Serving wijst van de ondersteunende service naar het gedrag dat hem gebruikt — ondersteuning stroomt omhoog door de lagen."}, {"rel": "realiseert", "foil": "bedient", "why": "Intern gedrag realiseert de extern zichtbare service; realization wijst van concreet naar abstract."}, {"rel": "is toegewezen aan", "foil": "realiseert", "why": "De entiteit vult de verantwoordelijkheid: actor (balkant) naar rol — nooit andersom."}, {"rel": "is toegewezen aan", "foil": "bedient", "why": "De rol voert het gedrag uit waaraan hij is toegewezen."}, {"rel": "realiseert", "foil": "is toegewezen aan", "why": "Het fysieke bestand realiseert de logische datastructuur — concreet naar abstract."}, {"rel": "realiseert", "foil": "bedient", "why": "Data op applicatieniveau realiseert het businessconcept één abstractieniveau hoger."}, {"rel": "is toegewezen aan", "foil": "realiseert", "why": "Deployment: de node slaat het artifact op of voert het uit, dus de node (actief element) is eraan toegewezen."}, {"rel": "is toegewezen aan", "foil": "realiseert", "why": "De interface ontsluit de service: het waar is toegewezen aan het wat."}, {"rel": "bedient", "foil": "realiseert", "why": "Een service uit een lagere laag bedient het element uit de hogere laag dat hem gebruikt."}, {"rel": "is toegewezen aan", "foil": "realiseert", "why": "Het component (actieve structuur) voert zijn functie (gedrag) uit — is eraan toegewezen."}, {"rel": "realiseert", "foil": "is toegewezen aan", "why": "De waarneembare vorm realiseert het abstracte business object."}, {"rel": "realiseert", "foil": "bedient", "why": "Requirements maken goals concreet; realization wijst naar de abstractere intentie."}], "ord": {"ord-derivation": {"f": "Tik de structurele/afhankelijkheidsrelaties aan van <b>zwakst naar sterkst</b> (afleidingsregel).", "b": "Zwak &rarr; sterk: association &lt; access &lt; serving &lt; realization &lt; assignment &lt; aggregation &lt; composition. Een afgeleide relatie krijgt het zwakste type uit de keten; ketens met alleen structurele relaties zijn <i>valide</i> afleidingen, ketens met een afhankelijkheidsrelatie zijn <i>potentiële</i>."}, "ord-layers": {"f": "Tik de lagen van het volledige raamwerk aan van <b>boven naar beneden</b>.", "b": "Strategy &middot; Business &middot; Application &middot; Technology &middot; Physical &middot; Implementation &amp; Migration — Motivation staat ernaast als dwarsdoorsnijdend aspect."}, "ord-chain": {"f": "Zet de realisatieketen op volgorde van <b>meest concreet naar meest abstract</b>.", "b": "Artifact realiseert Data Object realiseert Business Object — elke stap gaat één abstractieniveau omhoog. Representation is de waarneembare tegenhanger van het business object, geen onderdeel van deze keten."}}, "legal": [{"s": "Een <b>Business Object</b> <i>bedient</i> (serving) een Business Process", "why": "Passieve structuur kan niet bedienen — het heeft geen gedrag te bieden. Objecten worden benaderd (access); services en actieve/gedragselementen bedienen."}, {"s": "Een <b>Business Process</b> <i>benadert</i> (access) een Business Object", "why": "Gedrag dat passieve structuur benadert is precies waar access voor is."}, {"s": "Een <b>Business Object</b> <i>benadert</i> (access) een Business Process", "why": "Access loopt van gedrag (of actieve structuur) naar passieve structuur, nooit vanuit het object."}, {"s": "Een <b>Business Role</b> is <i>toegewezen aan</i> een Business Actor", "why": "Assignment loopt actor → rol: de concrete entiteit vult de verantwoordelijkheid, niet andersom."}, {"s": "Een <b>Business Actor</b> is <i>direct toegewezen aan</i> een Business Process (zonder rol ertussen)", "why": "Toegestaan als kortere weg — het rolniveau mag worden overgeslagen als het niets toevoegt."}, {"s": "Een <b>Business Process</b> <i>specialiseert</i> een Business Function", "why": "Specialization vereist twee elementen van hetzelfde type."}, {"s": "Eén <b>junction</b> verbindt een triggering- en een flow-relatie", "why": "Alles wat een junction verbindt moet van hetzelfde relatietype zijn."}, {"s": "Een <b>Product</b> <i>aggregeert</i> een Application Service", "why": "Producten mogen services en objecten over lagen heen bundelen — een standaard cross-layer aggregatie."}, {"s": "Een <b>Grouping</b> <i>aggregeert</i> elementen van verschillende typen", "why": "Grouping bestaat juist om willekeurige concepten te verzamelen."}, {"s": "Een <b>Business Object</b> <i>realiseert</i> een Data Object", "why": "Realization wijst van concreet naar abstract: het data object realiseert het business object."}, {"s": "Een <b>Artifact</b> is <i>toegewezen aan</i> een Node", "why": "Assignment begint bij het actieve element: de node is toegewezen aan het artifact dat hij opslaat of uitvoert."}, {"s": "Een <b>Application Component</b> is <i>toegewezen aan</i> een Business Process", "why": "Toegestaan — dit modelleert automatisering: het component voert het businessproces uit."}, {"s": "Een <b>Business Event</b> <i>triggert</i> een Business Process", "why": "Events triggeren gedrag; gedrag triggert events. Beide richtingen horen bij de kerndynamiek."}, {"s": "Een element is deel van <b>twee verschillende composities</b> tegelijk", "why": "Compositie betekent precies één geheel. Gebruik aggregatie voor deelbare onderdelen."}, {"s": "Een element is deel van <b>twee verschillende aggregaties</b> tegelijk", "why": "Geaggregeerde delen houden hun eigen levenscyclus en mogen gedeeld worden."}, {"s": "Een <b>Business Process</b> <i>realiseert</i> een Business Service", "why": "Het canonieke patroon: intern realiseert extern."}], "frag": [{"a": "De claimafdeling voert het proces Claim behandelen uit", "w": ["Claim behandelen brengt de claimafdeling voort", "De claimafdeling wordt ondersteund door Claim behandelen", "Claim behandelen leest data die de claimafdeling bezit"], "why": "Bal bij de actor, pijl bij het gedrag: assignment — het actieve element voert het gedrag uit."}, {"a": "Claim behandelen (intern) realiseert de extern aangeboden service Claimafhandeling", "w": ["Claimafhandeling triggert Claim behandelen", "Claim behandelen is een deel van Claimafhandeling", "Claimafhandeling bedient Claim behandelen"], "why": "Gestreepte lijn, open driehoek aan de abstracte kant: het concrete proces realiseert de service."}, {"a": "Het component Polissysteem voert de functie Premieberekening uit", "w": ["Premieberekening realiseert het Polissysteem", "Het Polissysteem benadert Premieberekening", "Premieberekening is uitgerold op het Polissysteem"], "why": "Component (actieve structuur) toegewezen aan zijn functie (gedrag)."}, {"a": "Een application service ondersteunt het businessproces dat hem gebruikt", "w": ["Het businessproces realiseert de application service", "De application service is deel van het businessproces", "Het businessproces schrijft naar de application service"], "why": "Open pijl bij de afnemer: serving wijst omhoog door de lagenstapel, naar de gebruiker van de functionaliteit."}, {"a": "Claim behandelen schrijft/wijzigt het object Claim", "w": ["Het object Claim stuurt Claim behandelen aan", "Claim behandelen wordt getriggerd door het object Claim", "Het object Claim realiseert Claim behandelen"], "why": "Gestippelde lijn met de pijl bij het passieve object: access in schrijfrichting."}, {"a": "Het fysieke bestand claims.db realiseert het logische Claimrecord", "w": ["Claimrecord slaat claims.db op", "claims.db is uitgerold op Claimrecord", "Claimrecord triggert claims.db"], "why": "Concreet artifact realiseert het abstracte data object — één stap omhoog in de realisatieketen."}, {"a": "policy.war is uitgerold op (opgeslagen/uitgevoerd door) de Applicatieserver", "w": ["policy.war realiseert de Applicatieserver", "De Applicatieserver leest de data van policy.war", "policy.war bedient de Applicatieserver"], "why": "Node toegewezen aan artifact is het deployment-patroon."}, {"a": "Claim ontvangen start Claim beoordelen, dat vervolgens Claim uitbetalen start", "w": ["Claim uitbetalen stuurt data naar Claim beoordelen", "Claim beoordelen en Claim uitbetalen lopen parallel", "Claim ontvangen wordt voortgebracht door Claim uitbetalen"], "why": "Doorgetrokken lijnen met gevulde pijlpunten: triggering — temporele/causale volgorde, van boven naar beneden."}, {"a": "Jan Jansen vult de rol Claimbeoordelaar", "w": ["Claimbeoordelaar rapporteert aan Jan Jansen", "Jan Jansen is gecreëerd door de rol Claimbeoordelaar", "Claimbeoordelaar is de manager van Jan Jansen"], "why": "Actor toegewezen aan rol: de concrete entiteit vult de abstracte verantwoordelijkheid."}, {"a": "Het proces Risico beoordelen realiseert (deels) de capability Acceptatie", "w": ["Acceptatie plant Risico beoordelen in", "Risico beoordelen is een sub-capability van Acceptatie", "Acceptatie benadert Risico beoordelen"], "why": "Kerngedrag realiseert capabilities in de strategielaag: concreet richting abstract."}, {"a": "Contactbeheer is een integraal deel van CRM Suite en kan er niet zonder bestaan", "w": ["Contactbeheer kan met andere suites gedeeld worden", "CRM Suite hangt af van een extern Contactbeheer", "Contactbeheer realiseert CRM Suite"], "why": "Gevulde ruit bij het geheel: compositie — één ouder, levenscyclus gebonden."}, {"a": "Het product Woonverzekering bundelt de service Claimafhandeling, die ook zelfstandig kan bestaan", "w": ["Claimafhandeling kan niet buiten Woonverzekering bestaan", "Claimafhandeling realiseert Woonverzekering", "Woonverzekering triggert Claimafhandeling"], "why": "Open ruit: aggregatie — het product groepeert services/objecten die hun eigen levenscyclus houden."}, {"a": "Er wordt iets (bijv. claimgegevens) overgedragen van Beoordelen naar Uitbetalen — overdracht, geen volgorde", "w": ["Claim beoordelen moet klaar zijn vóór Claim uitbetalen begint", "Claim uitbetalen is een integraal deel van Claim beoordelen", "Claim beoordelen realiseert Claim uitbetalen"], "why": "Gestreepte lijn met gevulde pijlpunt is flow: er verplaatst zich lading. Triggering (doorgetrokken lijn) zou de volgorde-/causaliteitsclaim zijn."}, {"a": "Claim behandelen leest het object Claim — de pijlpunt bij het gedrag betekent lezen", "w": ["Het object Claim wijzigt Claim behandelen", "Claim behandelen maakt of wijzigt de Claim", "Onmogelijk — access kan nooit naar gedrag wijzen"], "why": "De richting van access codeert de modus: pijl bij het passieve element = schrijven, pijl bij het gedrag = lezen. De relatie vertrekt nog steeds vanuit het gedrag; objecten handelen nooit."}, {"a": "Reisverzekering afsluiten is een bijzondere soort van het generieke afsluitproces", "w": ["Het generieke proces is samengesteld uit het reisproces", "Het reisproces realiseert het generieke proces", "Het generieke proces triggert het reisproces"], "why": "Open driehoek op een doorgetrokken lijn, wijzend naar de algemene kant: specialization tussen twee elementen van hetzelfde type."}, {"a": "Het assessment beïnvloedt het behalen van het goal (een teken kan + of − tonen)", "w": ["Het assessment realiseert het goal", "Het goal leest het assessment als data", "Het assessment is een onderdeel van het goal"], "why": "Gestreepte lijn met open pijlpunt: influence — gericht op het behalen van een motivatie-element, optioneel geannoteerd met sterkte."}, {"a": "De telefoonbalie is het punt waar de service Claimintake beschikbaar wordt gesteld", "w": ["De service realiseert de telefoonbalie", "De telefoonbalie leest de data van de service", "De service is een integraal deel van de telefoonbalie"], "why": "Interface toegewezen aan service: het toegangspunt draagt het extern aangeboden gedrag."}, {"a": "De opslagservice uit de technologielaag ondersteunt de application function die hem gebruikt", "w": ["De application function realiseert de opslagservice", "De opslagservice slaat de application function op", "De functie is samengesteld uit de opslagservice"], "why": "Serving wijst naar de afnemer — hier omhoog vanuit technologie naar de applicatielaag."}, {"a": "Het component voert de functie uit, die de extern aangeboden service realiseert", "w": ["De service voert de functie uit, die het component realiseert", "Het component bedient zowel de functie als de service", "Alle drie vormen samen één compositie"], "why": "De canonieke interne/externe stapel: actieve structuur toegewezen aan intern gedrag; intern gedrag realiseert de getoonde service."}, {"a": "Webserver 1 is een integraal deel van de Webfarm — hij hoort bij precies dit ene geheel", "w": ["De Webfarm is uitgerold op Webserver 1", "Webserver 1 mag via compositie ook bij een tweede farm horen", "Webserver 1 realiseert de farm"], "why": "Gevulde ruit bij het geheel. Elk elementtype mag elementen van het eigen type componeren; een gecomponeerd deel heeft precies één geheel."}, {"a": "De machine bewerkt het materiaal — sinds 3.2 mogen actieve structuurelementen passieve structuur direct benaderen", "w": ["Onmogelijk — alleen gedragselementen mogen objecten benaderen", "Het vaccin stuurt de machine aan", "De machine is samengesteld uit het vaccin"], "why": "3.2 verbreedde access met actieve structuur als bron; de schrijfpijl wijst naar het materiaal dat bewerkt wordt."}, {"a": "De samenwerking Sales + Juridisch voert de contractonderhandeling gezamenlijk uit", "w": ["De onderhandeling realiseert de samenwerking", "Elk van beide partijen voert de onderhandeling alleen uit", "De samenwerking leest de data van de onderhandeling"], "why": "Collectief gedrag (een interaction) wordt toegewezen vanuit de collaboration die het uitvoert — één rol alleen kan het niet."}], "spot": [{"a": "Assignment staat omgekeerd — de actor vult de rol, dus de bal hoort bij Jan Jansen", "w": ["Niets — dit is geldig ArchiMate", "Rollen en actors mogen alleen geassocieerd worden", "Het zou realization richting de actor moeten zijn"], "why": "Assignment loopt altijd van de concrete entiteit naar de verantwoordelijkheid die hij vult: actor → rol."}, {"a": "Realization staat omgekeerd — het concrete proces realiseert de abstracte service, niet andersom", "w": ["Niets — dit is geldig ArchiMate", "Services en processen mogen alleen geassocieerd worden", "De driehoek zou gevuld moeten zijn"], "why": "Realization wijst van concreet naar abstract; de service is de externe, abstractere kijk."}, {"a": "Passieve structuur kan niet bedienen — het proces zou de Claim moeten benaderen (access)", "w": ["Niets — dit is geldig ArchiMate", "De pijl wijst alleen de verkeerde kant op", "Serving mag geen aspecten kruisen, gebruik dus flow"], "why": "Objecten hebben geen gedrag te bieden; gedrag benadert ze. Serving vereist een actief, gedrags-, service- of interface-bron."}, {"a": "Deployment staat omgekeerd — de node is toegewezen aan het artifact dat hij opslaat of uitvoert", "w": ["Niets — dit is geldig ArchiMate", "Het zou flow van artifact naar node moeten zijn", "Artifacts mogen alleen aan devices gekoppeld worden, nooit aan nodes"], "why": "Assignment begint bij het actieve element; node → artifact is het deployment-patroon."}, {"a": "Omgekeerd — het artifact (concreet) realiseert het data object (abstract)", "w": ["Niets — dit is geldig ArchiMate", "Data objects en artifacts kunnen alleen geassocieerd worden", "Het zou access moeten zijn"], "why": "De realisatieketen loopt artifact → data object → business object, altijd concreet naar abstract."}, {"a": "Specialization vereist twee elementen van hetzelfde type — een proces kan geen functie specialiseren", "w": ["Niets — dit is geldig ArchiMate", "De driehoek zou naar het proces moeten wijzen", "Alleen motivatie-elementen mogen specialiseren"], "why": "Elk element mag een ander van het eigen type specialiseren; specialisatie over typen heen mag niet."}, {"a": "Niets — dit is geldig ArchiMate", "w": ["Serving mag geen lagen kruisen", "De pijl zou naar de application service moeten wijzen", "Het moet realization zijn in plaats van serving"], "why": "Een application service die een businessproces bedient is het standaardpatroon voor ondersteuning omhoog door de lagen."}, {"a": "Niets — dit is geldig ArchiMate", "w": ["Assignment mag niet op passieve structuur richten", "Het artifact zou aan de node toegewezen moeten worden", "Deployment vereist realization"], "why": "Node toegewezen aan artifact — de node slaat het op of voert het uit — is precies hoe deployment gemodelleerd wordt."}, {"a": "Geheel en deel zijn omgedraaid — de ruit markeert het geheel, dus zoals getekend bevat de module de suite", "w": ["Niets — dit is geldig ArchiMate", "Componenten mogen geen componenten componeren", "De ruit zou open moeten zijn voor compositie"], "why": "De gevulde ruit zit aan de kant van het geheel. Compositie tussen gelijke typen mag prima; hier zijn simpelweg de uiteinden verwisseld."}, {"a": "Een motivatie-element mag richting core-elementen alleen associëren — serving vanuit een goal mag niet", "w": ["Niets — dit is geldig ArchiMate", "Goals mogen bedienen, maar alleen andere goals", "De pijl zou naar het goal moeten wijzen"], "why": "Bijlage B beperkt relaties van motivatie naar de core tot association; ondersteuning van goals modelleer je andersom, bijv. met realization richting het goal."}, {"a": "Niets — dit is geldig ArchiMate", "w": ["Realization mag niet tussen motivatie-elementen", "Het goal zou het requirement moeten realiseren", "Requirements mogen goals alleen beïnvloeden (influence)"], "why": "Requirements realiseren goals — concrete uitspraken over behoefte richting de abstractere intentie."}, {"a": "Access richt zich op passieve structuur — een service is gedrag; gebruik hier serving of realization", "w": ["Niets — dit is geldig ArchiMate", "Access mag, maar moet gestreept zijn in plaats van gestippeld", "Alleen applicatie-elementen mogen access gebruiken"], "why": "Access verbindt gedrag/actieve structuur met passieve structuur (objecten, artifacts, materiaal). Ondersteuning tussen gedrag onderling is serving; intern naar extern is realization."}], "lbl": {"Claims Dept": "Claimafdeling", "Handle Claim": "Claim behandelen", "Claim Settlement": "Claimafhandeling", "Policy System": "Polissysteem", "Premium Calc": "Premieberekening", "Premium Calc Svc": "Premieberek.-service", "Claim": "Claim", "claims.db": "claims.db", "Claim Record": "Claimrecord", "App Server": "Applicatieserver", "policy.war": "policy.war", "Claim received": "Claim ontvangen", "Assess Claim": "Claim beoordelen", "Pay Claim": "Claim uitbetalen", "Jane Doe": "Jan Jansen", "Claims Assessor": "Claimbeoordelaar", "Underwriting": "Acceptatie", "Assess Risk": "Risico beoordelen", "CRM Suite": "CRM Suite", "Contact Mgmt": "Contactbeheer", "Home Insurance": "Woonverzekering", "Take out Travel Ins.": "Reisverz. afsluiten", "Take out Insurance": "Verzekering afsluiten", "Fraud losses rising": "Fraudeverlies stijgt", "Reduce fraud": "Fraude terugdringen", "Phone desk": "Telefoonbalie", "Claims intake": "Claimintake", "DB storage svc": "DB-opslagservice", "Premium calc": "Premieberekening", "Premium calc svc": "Premieberek.-service", "Web farm": "Webfarm", "Web server 1": "Webserver 1", "Filling machine": "Vulmachine", "Vaccine": "Vaccin", "Sales + Legal": "Sales + Juridisch", "Contract negotiation": "Contractonderhandeling", "Protect data": "Data beschermen", "Encrypt PII": "PII versleutelen", "Claims Mgmt": "Claimbeheer"}, "ui": {}};
+function L(en,nl){return (LANG==="nl"&&nl)?nl:en;}
+function U(k,en){return (LANG==="nl"&&NL.ui[k])?NL.ui[k]:en;}
+const TE=(e,f)=>(LANG==="nl"&&NL.el[e.n]&&NL.el[e.n][f])||e[f];
+const TR=(r,f)=>(LANG==="nl"&&NL.rel[r.n]&&NL.rel[r.n][f])||r[f];
+const TV=(v,f)=>(LANG==="nl"&&NL.vp[v.n]&&NL.vp[v.n][f])||v[f];
+const TC=(c,f)=>(LANG==="nl"&&NL.con[c.id]&&NL.con[c.id][f])||c[f];
+const TL=x=>(LANG==="nl"&&NL.lbl[x])||x;
+const TQ=(arr,i,f,fb)=>(LANG==="nl"&&arr[i]&&arr[i][f])||fb;
 const LAYER={
-  motivation:{label:'Motivation', color:'#CCCCEF'},
-  strategy:  {label:'Strategy',   color:'#F5DEAA'},
-  business:  {label:'Business',   color:'#FFFFB5'},
-  application:{label:'Application',color:'#B5FFFF'},
-  technology:{label:'Technology', color:'#C9E7B7'},
-  physical:  {label:'Physical',   color:'#C9E7B7'},
-  implementation:{label:'Implementation & Migration', color:'#FFE0E0'},
-  other:     {label:'Other',      color:'#EDEDE6'}
+  motivation:{label:'Motivation', label_nl:'Motivatie', color:'#CCCCEF'},
+  strategy:  {label:'Strategy', label_nl:'Strategie',   color:'#F5DEAA'},
+  business:  {label:'Business', label_nl:'Business',   color:'#FFFFB5'},
+  application:{label:'Application', label_nl:'Applicatie',color:'#B5FFFF'},
+  technology:{label:'Technology', label_nl:'Technologie', color:'#C9E7B7'},
+  physical:  {label:'Physical', label_nl:'Fysiek',   color:'#C9E7B7'},
+  implementation:{label:'Implementation & Migration', label_nl:'Implementatie & Migratie', color:'#FFE0E0'},
+  other:     {label:'Other', label_nl:'Overig',      color:'#EDEDE6'}
 };
 
 /* ---------- icon library (20x20 coordinate space) ----------
@@ -309,6 +330,7 @@ const ICONS={
 
 /* ---------- element rendering ---------- */
 function motPath(w,h,c){return `M${c} 1 H${w-c} L${w-1} ${c} V${h-c} L${w-c} ${h-1} H${c} L1 ${h-c} V${c} Z`;}
+function LLB(k){const x=LAYER[k];return (LANG==="nl"&&x.label_nl)?x.label_nl:x.label;}
 function elSVG(el,opts){
   opts=opts||{}; const w=200,h=76;
   const col=LAYER[el.layer].color, stroke='#5a5e66';
@@ -545,153 +567,160 @@ function fragV(a,la,kind,b,lb,up){ // [A] above [B]; edge points down (or up)
     placeEl(EBN(a),0,0,200,la)+placeEl(EBN(b),0,166,200,lb)+e+`</svg>`;
 }
 function fragChain(a,la,k1,b,lb,k2,c,lc){ // vertical 3-chain, edges point down
-  const e1=`<g transform="rotate(90 100 100) ">${edgeDecor(k1,79,121,100)}</g>`;
-  const e2=`<g transform="rotate(90 100 224)">${edgeDecor(k2,203,245,224)}</g>`;
-  return `<svg width="200" height="366" viewBox="0 0 200 366" role="img">`+
+  // rotate(90 cx cy) maps x-offsets from cx onto y-offsets from cy, so both edges
+  // must be drawn spanning x = cx-21 .. cx+21 at their own cy.
+  const e1=`<g transform="rotate(90 100 100)">${edgeDecor(k1,79,121,100)}</g>`;
+  const e2=`<g transform="rotate(90 100 224)">${edgeDecor(k2,79,121,224)}</g>`;
+  return `<svg width="200" height="328" viewBox="0 0 200 328" role="img">`+
     placeEl(EBN(a),0,0,200,la)+placeEl(EBN(b),0,124,200,lb)+placeEl(EBN(c),0,248,200,lc)+e1+e2+`</svg>`;
 }
 const FRAGQ=[
- {f:fragH("Business Actor","Claims Dept","assignment","Business Process","Handle Claim"),
+ {d:["H","Business Actor","Claims Dept","assignment","Business Process","Handle Claim"],
   a:"The Claims Department performs the Handle Claim process",
   w:["Handle Claim produces the Claims Department","The Claims Department is supported by Handle Claim","Handle Claim reads data owned by the Claims Department"],
   why:"Ball at the actor, arrow at the behavior: assignment — the active element performs the behavior."},
- {f:fragV("Business Service","Claim Settlement","realization","Business Process","Handle Claim",true),
+ {d:["V","Business Service","Claim Settlement","realization","Business Process","Handle Claim",true],
   a:"Handle Claim (internal) realizes the externally offered Claim Settlement service",
   w:["Claim Settlement triggers Handle Claim","Handle Claim is a part of Claim Settlement","Claim Settlement serves Handle Claim"],
   why:"Dashed line, hollow triangle at the abstract end: the concrete process realizes the service."},
- {f:fragH("Application Component","Policy System","assignment","Application Function","Premium Calc"),
+ {d:["H","Application Component","Policy System","assignment","Application Function","Premium Calc"],
   a:"The Policy System component performs the Premium Calc function",
   w:["Premium Calc realizes the Policy System","The Policy System accesses Premium Calc","Premium Calc is deployed on the Policy System"],
   why:"Component (active structure) assigned to its function (behavior)."},
- {f:fragV("Application Service","Premium Calc Svc","serving","Business Process","Handle Claim",true),
+ {d:["V","Application Service","Premium Calc Svc","serving","Business Process","Handle Claim",true],
   a:"An application service supports the business process that uses it",
   w:["The business process realizes the application service","The application service is part of the business process","The business process writes to the application service"],
   why:"Open arrow at the consumer: serving points up the layer stack toward the user of the functionality."},
- {f:fragH("Business Process","Handle Claim","access","Business Object","Claim"),
+ {d:["H","Business Process","Handle Claim","access","Business Object","Claim"],
   a:"Handle Claim writes/updates the Claim object",
   w:["The Claim object controls Handle Claim","Handle Claim is triggered by the Claim object","The Claim object realizes Handle Claim"],
   why:"Dotted line with the arrow at the passive object: access in write direction."},
- {f:fragV("Artifact","claims.db","realization","Data Object","Claim Record",true),
+ {d:["V","Artifact","claims.db","realization","Data Object","Claim Record",true],
   a:"The physical claims.db file realizes the logical Claim Record",
   w:["Claim Record stores claims.db","claims.db is deployed on Claim Record","Claim Record triggers claims.db"],
   why:"Concrete artifact realizes the abstract data object — one step up the realization chain."},
- {f:fragH("Node","App Server","assignment","Artifact","policy.war"),
+ {d:["H","Node","App Server","assignment","Artifact","policy.war"],
   a:"policy.war is deployed on (stored/executed by) the App Server",
   w:["policy.war realizes the App Server","The App Server reads policy.war's data","policy.war serves the App Server"],
   why:"Node assigned to artifact is the deployment pattern."},
- {f:fragChain("Business Event","Claim received","triggering","Business Process","Assess Claim","triggering","Business Process","Pay Claim"),
+ {d:["C","Business Event","Claim received","triggering","Business Process","Assess Claim","triggering","Business Process","Pay Claim"],
   a:"Claim received starts Assess Claim, which then starts Pay Claim",
   w:["Pay Claim sends data to Assess Claim","Assess Claim and Pay Claim run in parallel","Claim received is produced by Pay Claim"],
   why:"Solid lines with filled arrowheads: triggering — temporal/causal sequence, top to bottom."},
- {f:fragH("Business Actor","Jane Doe","assignment","Business Role","Claims Assessor"),
+ {d:["H","Business Actor","Jane Doe","assignment","Business Role","Claims Assessor"],
   a:"Jane Doe fills the Claims Assessor role",
   w:["Claims Assessor reports to Jane Doe","Jane Doe was created by the Claims Assessor role","Claims Assessor is Jane Doe's manager"],
   why:"Actor assigned to role: the concrete entity fills the abstract responsibility."},
- {f:fragV("Capability","Underwriting","realization","Business Process","Assess Risk",true),
+ {d:["V","Capability","Underwriting","realization","Business Process","Assess Risk",true],
   a:"The Assess Risk process (partly) realizes the Underwriting capability",
   w:["Underwriting schedules Assess Risk","Assess Risk is a sub-capability of Underwriting","Underwriting accesses Assess Risk"],
   why:"Core behavior realizes strategy-layer capabilities: concrete toward abstract."},
- {f:fragH("Application Component","CRM Suite","composition","Application Component","Contact Mgmt"),
+ {d:["H","Application Component","CRM Suite","composition","Application Component","Contact Mgmt"],
   a:"Contact Mgmt is an integral part of CRM Suite and cannot exist without it",
   w:["Contact Mgmt can be shared with other suites","CRM Suite depends on an external Contact Mgmt","Contact Mgmt realizes CRM Suite"],
   why:"Filled diamond at the whole: composition — single parent, lifecycle bound."},
- {f:fragH("Product","Home Insurance","aggregation","Business Service","Claim Settlement"),
+ {d:["H","Product","Home Insurance","aggregation","Business Service","Claim Settlement"],
   a:"The Home Insurance product bundles the Claim Settlement service, which can also exist on its own",
   w:["Claim Settlement cannot exist outside Home Insurance","Claim Settlement realizes Home Insurance","Home Insurance triggers Claim Settlement"],
   why:"Hollow diamond: aggregation — the product groups services/objects that keep their own lifecycle."},
- {f:fragH("Business Process","Assess Claim","flow","Business Process","Pay Claim"),
+ {d:["H","Business Process","Assess Claim","flow","Business Process","Pay Claim"],
   a:"Something (e.g. claim data) is transferred from Assess to Pay — transfer, not sequence",
   w:["Assess Claim must finish before Pay Claim starts","Pay Claim is an integral part of Assess Claim","Assess Claim realizes Pay Claim"],
   why:"Dashed line with a filled arrowhead is flow: a payload moves. Triggering (solid line) would be the ordering/causality claim."},
- {f:fragH("Business Object","Claim","access","Business Process","Handle Claim"),
+ {d:["H","Business Object","Claim","access","Business Process","Handle Claim"],
   a:"Handle Claim reads the Claim object — the arrowhead at the behavior means read",
   w:["The Claim object updates Handle Claim","Handle Claim creates or updates the Claim","Illegal — access can never point toward behavior"],
   why:"Access direction encodes the mode: arrow at the passive element = write, arrow at the behavior = read. The relationship still originates from the behavior; objects never act."},
- {f:fragH("Business Process","Take out Travel Ins.","specialization","Business Process","Take out Insurance"),
+ {d:["H","Business Process","Take out Travel Ins.","specialization","Business Process","Take out Insurance"],
   a:"Taking out travel insurance is a specific kind of the generic take-out process",
   w:["The generic process is composed of the travel one","The travel process realizes the generic one","The generic process triggers the travel one"],
   why:"Hollow triangle on a solid line, pointing at the general end: specialization between two elements of the same type."},
- {f:fragH("Assessment","Fraud losses rising","influence","Goal","Reduce fraud"),
+ {d:["H","Assessment","Fraud losses rising","influence","Goal","Reduce fraud"],
   a:"The assessment affects the achievement of the goal (a sign can show + or −)",
   w:["The assessment realizes the goal","The goal reads the assessment as data","The assessment is a component of the goal"],
   why:"Dashed line with an open arrowhead: influence — targeting the fulfilment of a motivation element, optionally annotated with strength."},
- {f:fragH("Business Interface","Phone desk","assignment","Business Service","Claims intake"),
+ {d:["H","Business Interface","Phone desk","assignment","Business Service","Claims intake"],
   a:"The phone desk is where the claims-intake service is made available",
   w:["The service realizes the phone desk","The phone desk reads the service's data","The service is an integral part of the phone desk"],
   why:"Interface assigned to service: the point of access carries the externally offered behavior."},
- {f:fragV("Technology Service","DB storage svc","serving","Application Function","Premium calc",true),
+ {d:["V","Technology Service","DB storage svc","serving","Application Function","Premium calc",true],
   a:"The technology-layer storage service supports the application function that uses it",
   w:["The application function realizes the storage service","The storage service stores the application function","The function is composed of the storage service"],
   why:"Serving points at the consumer — here upward from technology into the application layer."},
- {f:fragChain("Application Component","Policy System","assignment","Application Function","Premium calc","realization","Application Service","Premium calc svc"),
+ {d:["C","Application Component","Policy System","assignment","Application Function","Premium calc","realization","Application Service","Premium calc svc"],
   a:"The component performs the function, which realizes the externally offered service",
   w:["The service performs the function, which realizes the component","The component serves both the function and the service","All three form one composition"],
   why:"The canonical internal/external stack: active structure assigned to internal behavior; internal behavior realizing the exposed service."},
- {f:fragH("Node","Web farm","composition","Node","Web server 1"),
+ {d:["H","Node","Web farm","composition","Node","Web server 1"],
   a:"Web server 1 is an integral part of the Web farm — it belongs to exactly this one whole",
   w:["The Web farm is deployed on Web server 1","Web server 1 may also join a second farm via composition","Web server 1 realizes the farm"],
   why:"Filled diamond at the whole. Every element type may compose elements of its own type; a composed part has exactly one whole."},
- {f:fragH("Equipment","Filling machine","access","Material","Vaccine"),
+ {d:["H","Equipment","Filling machine","access","Material","Vaccine"],
   a:"The machine acts on the material — since 3.2, active structure elements may access passive structure directly",
   w:["Illegal — only behavior elements may access objects","The vaccine controls the machine","The machine is composed of the vaccine"],
   why:"3.2 widened access to include active structure sources; the write arrowhead points at the material being manipulated."},
- {f:fragH("Business Collaboration","Sales + Legal","assignment","Business Interaction","Contract negotiation"),
+ {d:["H","Business Collaboration","Sales + Legal","assignment","Business Interaction","Contract negotiation"],
   a:"The Sales + Legal collaboration jointly performs the contract negotiation",
   w:["The negotiation realizes the collaboration","Either party alone performs the negotiation","The collaboration reads the negotiation's data"],
   why:"Collective behavior (an interaction) is assigned from the collaboration that performs it — one role alone cannot."}
 ];
 /* ---------- spot-the-error fragments (three are perfectly valid) ---------- */
 const SPOTQ=[
- {f:fragH("Business Role","Claims Assessor","assignment","Business Actor","Jane Doe"),
+ {d:["H","Business Role","Claims Assessor","assignment","Business Actor","Jane Doe"],
   a:"Assignment is reversed — the actor fills the role, so the ball belongs at Jane Doe",
   w:["Nothing — this is valid ArchiMate","Roles and actors can only be associated","It should be realization toward the actor"],
   why:"Assignment always runs from the concrete entity to the responsibility it fills: actor → role."},
- {f:fragV("Business Service","Claim Settlement","realization","Business Process","Handle Claim",false),
+ {d:["V","Business Service","Claim Settlement","realization","Business Process","Handle Claim",false],
   a:"Realization is reversed — the concrete process realizes the abstract service, not the other way round",
   w:["Nothing — this is valid ArchiMate","Services and processes may only be associated","The triangle should be filled"],
   why:"Realization points from concrete to abstract; the service is the external, more abstract view."},
- {f:fragH("Business Object","Claim","serving","Business Process","Handle Claim"),
+ {d:["H","Business Object","Claim","serving","Business Process","Handle Claim"],
   a:"Passive structure cannot serve — the process should access the Claim instead",
   w:["Nothing — this is valid ArchiMate","The arrow merely points the wrong way","Serving may not cross aspects, so use flow"],
   why:"Objects have no behavior to offer; behavior accesses them. Serving needs an active, behavior, service, or interface source."},
- {f:fragH("Artifact","policy.war","assignment","Node","App Server"),
+ {d:["H","Artifact","policy.war","assignment","Node","App Server"],
   a:"Deployment is reversed — the node is assigned to the artifact it stores or executes",
   w:["Nothing — this is valid ArchiMate","It should be flow from artifact to node","Artifacts may only relate to devices, never nodes"],
   why:"Assignment starts at the active element; node → artifact is the deployment pattern."},
- {f:fragV("Data Object","Claim Record","realization","Artifact","claims.db",false),
+ {d:["V","Data Object","Claim Record","realization","Artifact","claims.db",false],
   a:"Reversed — the artifact (concrete) realizes the data object (abstract)",
   w:["Nothing — this is valid ArchiMate","Data objects and artifacts can only be associated","It should be access instead"],
   why:"The realization chain runs artifact → data object → business object, always concrete to abstract."},
- {f:fragH("Business Process","Handle Claim","specialization","Business Function","Claims Mgmt"),
+ {d:["H","Business Process","Handle Claim","specialization","Business Function","Claims Mgmt"],
   a:"Specialization needs two elements of the same type — a process cannot specialize a function",
   w:["Nothing — this is valid ArchiMate","The triangle should point at the process","Only motivation elements may specialize"],
   why:"Every element may specialize another of its own type; cross-type specialization is not allowed."},
- {f:fragV("Application Service","Premium calc svc","serving","Business Process","Handle Claim",true),
+ {d:["V","Application Service","Premium calc svc","serving","Business Process","Handle Claim",true],
   a:"Nothing — this is valid ArchiMate",
   w:["Serving may not cross layers","The arrow should point at the application service","It must be realization instead of serving"],
   why:"An application service serving a business process is the standard upward cross-layer support pattern."},
- {f:fragH("Node","App Server","assignment","Artifact","policy.war"),
+ {d:["H","Node","App Server","assignment","Artifact","policy.war"],
   a:"Nothing — this is valid ArchiMate",
   w:["Assignment cannot target passive structure","The artifact should be assigned to the node","Deployment requires realization"],
   why:"Node assigned to artifact — the node stores or executes it — is exactly how deployment is modeled."},
- {f:fragH("Application Component","Contact Mgmt","composition","Application Component","CRM Suite"),
+ {d:["H","Application Component","Contact Mgmt","composition","Application Component","CRM Suite"],
   a:"Whole and part are inverted — the diamond marks the whole, so as drawn the module contains the suite",
   w:["Nothing — this is valid ArchiMate","Components may not compose components","The diamond should be hollow for composition"],
   why:"The filled diamond sits at the whole end. Same-type composition is fine; the ends are simply swapped here."},
- {f:fragH("Goal","Reduce fraud","serving","Business Process","Handle Claim"),
+ {d:["H","Goal","Reduce fraud","serving","Business Process","Handle Claim"],
   a:"A motivation element may only associate toward core elements — serving from a goal is not allowed",
   w:["Nothing — this is valid ArchiMate","Goals can serve, but only other goals","The arrow should point at the goal"],
   why:"Appendix B restricts relationships from motivation into the core to association; support for goals is modeled the other way, e.g. realization toward the goal."},
- {f:fragV("Goal","Protect data","realization","Requirement","Encrypt PII",true),
+ {d:["V","Goal","Protect data","realization","Requirement","Encrypt PII",true],
   a:"Nothing — this is valid ArchiMate",
   w:["Realization may not be used between motivation elements","The goal should realize the requirement","Requirements may only influence goals"],
   why:"Requirements realize goals — concrete statements of need toward the more abstract intent."},
- {f:fragH("Business Process","Handle Claim","access","Business Service","Claim Settlement"),
+ {d:["H","Business Process","Handle Claim","access","Business Service","Claim Settlement"],
   a:"Access targets passive structure — a service is behavior; use serving or realization here",
   w:["Nothing — this is valid ArchiMate","Access is fine but must be dashed, not dotted","Only application elements may use access"],
   why:"Access connects behavior/active structure to passive structure (objects, artifacts, material). Behavior-to-behavior support is serving; internal-to-external is realization."}
 ];
-const FRAG_SVGS=FRAGQ.concat(SPOTQ).map(q=>q.f);
+let FRAG_SVGS=[];
+function buildFrag(sp){
+  if(sp[0]==="H")return fragH(sp[1],TL(sp[2]),sp[3],sp[4],TL(sp[5]));
+  if(sp[0]==="V")return fragV(sp[1],TL(sp[2]),sp[3],sp[4],TL(sp[5]),sp[6]);
+  return fragChain(sp[1],TL(sp[2]),sp[3],sp[4],TL(sp[5]),sp[6],sp[7],TL(sp[8]));
+}
 /* ---------- legality drills (ArchiMate 3.2 core metamodel rules) ---------- */
 const LEGALQ=[
  {s:"A <b>Business Object</b> <i>serves</i> a Business Process",ok:false,why:"Passive structure cannot serve — it has no behavior to offer. Objects are accessed; services and active/behavior elements serve."},
@@ -744,123 +773,144 @@ const ORDERS=[
 
 /* ---------- deck builder ---------- */
 function slug(s){return s.toLowerCase().replace(/&amp;/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');}
-const TOPICS={elements:"Elements",relations:"Relations",framework:"Framework",viewpoints:"Viewpoints"};
+const TOPICS_EN={elements:"Elements",relations:"Relations",framework:"Framework",viewpoints:"Viewpoints"};
+const TOPICS_NL={elements:"Elementen",relations:"Relaties",framework:"Raamwerk",viewpoints:"Viewpoints"};
+const TOPICS=new Proxy({},{get:(_,k)=>(LANG==="nl"?TOPICS_NL:TOPICS_EN)[k],ownKeys:()=>Reflect.ownKeys(TOPICS_EN),getOwnPropertyDescriptor:()=>({enumerable:true,configurable:true})});
+const KIND=k=>LANG==="nl"?({new:"nieuw",learning:"leren",review:"herhaling",practice:"oefening"}[k]||k):k;
 const DECK=[];
-(function buildDeck(){
-  const esc=s=>s; // data is authored as safe HTML
-  // element definition cards — text cards: name shown, recall or pick the definition
+const CARD_BY_ID={};
+function buildDeck(){
+  DECK.length=0; for(const k in CARD_BY_ID)delete CARD_BY_ID[k];
+  FRAG_SVGS=FRAGQ.concat(SPOTQ).map(q=>buildFrag(q.d));
+  const ASP={active:L("active structure","actieve structuur"),passive:L("passive structure","passieve structuur"),
+    behavior:L("behavior","gedrag"),motivation:L("motivation aspect","motivatie-aspect"),
+    composite:L("composite","samengesteld"),other:L("other","overig")};
+  const CAT={Structural:L("Structural","Structureel"),Dependency:L("Dependency","Afhankelijkheid"),
+    Dynamic:L("Dynamic","Dynamisch"),Other:L("Other","Overig")};
+  const VCAT={Basic:L("Basic","Basis"),Motivation:L("Motivation","Motivatie"),Strategy:L("Strategy","Strategie"),
+    "Implementation & Migration":L("Implementation & Migration","Implementatie & Migratie")};
+  // element definition cards
   for(const el of ELEMENTS){
-    const L=LAYER[el.layer].label;
-    let dpool=ELEMENTS.filter(x=>x.layer===el.layer&&x.n!==el.n).map(x=>x.def);
-    if(dpool.length<3)dpool=dpool.concat(ELEMENTS.filter(x=>x.layer!==el.layer).map(x=>x.def).slice(0,6));
+    const LB=LLB(el.layer);
+    let dpool=ELEMENTS.filter(x=>x.layer===el.layer&&x.n!==el.n).map(x=>TE(x,"def"));
+    if(dpool.length<3)dpool=dpool.concat(ELEMENTS.filter(x=>x.layer!==el.layer).map(x=>TE(x,"def")).slice(0,6));
     DECK.push({id:"el-def-"+slug(el.n),topic:"elements",mc:1,
-      front:{text:`<b>${el.n}</b> <span style="color:var(--muted)">(${L} layer)</span> — what does it represent?`},
-      back:{title:el.n,body:esc(el.def),tell:el.tell,svg:{k:"el",el:el,label:el.n},
-            note:L+" layer · "+({active:"active structure",passive:"passive structure",behavior:"behavior",motivation:"motivation aspect",composite:"composite",other:"other"}[el.aspect])},
-      answer:el.def,pool:dpool});
+      front:{text:L(`<b>${el.n}</b> <span style="color:var(--muted)">(${LB} layer)</span> — what does it represent?`,
+                   `<b>${el.n}</b> <span style="color:var(--muted)">(${LB}-laag)</span> — wat stelt dit voor?`)},
+      back:{title:el.n,body:TE(el,"def"),tell:TE(el,"tell"),svg:{k:"el",el:el,label:el.n},
+            note:LB+L(" layer · "," laag · ")+ASP[el.aspect]},
+      answer:TE(el,"def"),pool:dpool});
   }
-  // element recognition cards — visual cards: icon shown, recall the name
+  // element recognition cards
   for(const el of ELEMENTS){
     if(!el.rec) continue;
     let pool=ELEMENTS.filter(x=>x.layer===el.layer&&x.n!==el.n).map(x=>x.n);
     if(pool.length<3)pool=pool.concat(ELEMENTS.filter(x=>x.layer!==el.layer&&x.n!==el.n).map(x=>x.n).slice(0,6));
     DECK.push({id:"el-rec-"+slug(el.n),topic:"elements",
-      front:{text:"Name this element (the colour gives you the layer).",svg:{k:"el",el:el,label:null,showApprox:true}},
-      back:{title:el.n,body:el.def,tell:el.tell,svg:{k:"el",el:el,label:el.n}},
+      front:{text:L("Name this element (the colour gives you the layer).","Benoem dit element (de kleur verraadt de laag)."),svg:{k:"el",el:el,label:null,showApprox:true}},
+      back:{title:el.n,body:TE(el,"def"),tell:TE(el,"tell"),svg:{k:"el",el:el,label:el.n}},
       answer:el.n,pool:pool,mg:"el"});
   }
   // relationship cards
   const relNames=RELS.map(r=>r.n);
   for(const r of RELS){
     DECK.push({id:"rel-rec-"+slug(r.n),topic:"relations",
-      front:{text:"Name this relationship.",svg:{k:"rel",kind:r.svg}},
-      back:{title:r.n+" ("+r.cat+")",body:r.def,note:r.notation,hint:r.hint},
+      front:{text:L("Name this relationship.","Benoem deze relatie."),svg:{k:"rel",kind:r.svg}},
+      back:{title:r.n+" ("+CAT[r.cat]+")",body:TR(r,"def"),note:TR(r,"notation"),hint:TR(r,"hint")},
       answer:r.n,pool:relNames.filter(x=>x!==r.n),mg:"rel"});
     DECK.push({id:"rel-not-"+slug(r.n),topic:"relations",
-      front:{text:`How is <b>${r.n}</b> drawn, and what does it mean?`},
-      back:{title:r.n+" ("+r.cat+")",body:r.def,svg:{k:"rel",kind:r.svg},note:r.notation,hint:r.hint}});
+      front:{text:L(`How is <b>${r.n}</b> drawn, and what does it mean?`,`Hoe wordt <b>${r.n}</b> getekend, en wat betekent het?`)},
+      back:{title:r.n+" ("+CAT[r.cat]+")",body:TR(r,"def"),svg:{k:"rel",kind:r.svg},note:TR(r,"notation"),hint:TR(r,"hint")}});
   }
-  // extra access + or-junction + directed association recognition
   DECK.push({id:"rel-rec-junction-or",topic:"relations",
-    front:{text:"Name this relationship connector — and its exact variant.",svg:{k:"rel",kind:"junction-or"}},
-    back:{title:"Junction — OR",body:"An open (unfilled) circle is an OR junction: one or more of the connected same-type relationships apply. A filled circle would be AND.",note:"Open circle = or, filled circle = and."},
+    front:{text:L("Name this relationship connector — and its exact variant.","Benoem deze relatieconnector — en de precieze variant."),svg:{k:"rel",kind:"junction-or"}},
+    back:{title:"Junction — OR",body:L("An open (unfilled) circle is an OR junction: one or more of the connected same-type relationships apply. A filled circle would be AND.","Een open (niet-gevulde) cirkel is een OR-junction: één of meer van de verbonden relaties van hetzelfde type gelden. Een gevulde cirkel zou AND zijn."),note:L("Open circle = or, filled circle = and.","Open cirkel = or, gevulde cirkel = and.")},
     answer:"Junction — OR",pool:["Junction — AND","Association","Flow","Triggering"],mg:"rel"});
   DECK.push({id:"rel-rec-assoc-dir",topic:"relations",
-    front:{text:"Name this relationship, including its variant.",svg:{k:"rel",kind:"association-directed"}},
-    back:{title:"Directed association",body:"An association with a reading direction: the half arrowhead marks the target end. Semantics remain unspecified.",note:"Solid line, half an arrowhead at the target."},
+    front:{text:L("Name this relationship, including its variant.","Benoem deze relatie, inclusief de variant."),svg:{k:"rel",kind:"association-directed"}},
+    back:{title:"Directed association",body:L("An association with a reading direction: the half arrowhead marks the target end. Semantics remain unspecified.","Een associatie met een leesrichting: de halve pijlpunt markeert het doeleinde. De semantiek blijft ongespecificeerd."),note:L("Solid line, half an arrowhead at the target.","Doorgetrokken lijn, halve pijlpunt bij het doel.")},
     answer:"Directed association",pool:["Serving","Triggering","Association (undirected)","Assignment"],mg:"rel"});
-  // viewpoint cards — text cards: name shown, recall or pick the purpose
+  // viewpoint cards
   for(const v of VIEWPOINTS){
-    let vpool=VIEWPOINTS.filter(x=>x.cat===v.cat&&x.n!==v.n).map(x=>x.purpose);
-    if(vpool.length<3)vpool=vpool.concat(VIEWPOINTS.filter(x=>x.cat!==v.cat).map(x=>x.purpose).slice(0,6));
+    let vpool=VIEWPOINTS.filter(x=>x.cat===v.cat&&x.n!==v.n).map(x=>TV(x,"purpose"));
+    if(vpool.length<3)vpool=vpool.concat(VIEWPOINTS.filter(x=>x.cat!==v.cat).map(x=>TV(x,"purpose")).slice(0,6));
     DECK.push({id:"vp-"+slug(v.n),topic:"viewpoints",mc:1,
-      front:{text:`What is the <b>${v.n}</b> viewpoint for?`},
-      back:{title:v.n+" viewpoint ("+v.cat+")",body:v.purpose,note:"Typical elements: "+v.els},
-      answer:v.purpose,pool:vpool});
+      front:{text:L(`What is the <b>${v.n}</b> viewpoint for?`,`Waarvoor dient het <b>${v.n}</b>-viewpoint?`)},
+      back:{title:v.n+L(" viewpoint (","-viewpoint (")+VCAT[v.cat]+")",body:TV(v,"purpose"),note:L("Typical elements: ","Typische elementen: ")+TV(v,"els")},
+      answer:TV(v,"purpose"),pool:vpool});
   }
-  // concept cards — MC where hand-written options exist (a = answer, w = wrong options)
+  // concept cards
   for(const c of CONCEPTS){
     DECK.push({id:c.id,topic:c.t==="relations"?"relations":(c.t==="viewpoints"?"viewpoints":"framework"),
-      mc:c.a?1:0,front:{text:c.f},back:{title:c.a||null,body:c.b},
-      answer:c.a,pool:c.w});
+      mc:c.a?1:0,front:{text:TC(c,"f")},back:{title:TC(c,"a")||null,body:TC(c,"b")},
+      answer:TC(c,"a"),pool:TC(c,"w")});
   }
-  // placement cards — tap the framework cell (composites excluded)
+  // placement cards
   for(const e2 of ELEMENTS){
     if(e2.aspect==="composite")continue;
-    const L2=LAYER[e2.layer].label;
-    const asp={active:"active structure",passive:"passive structure",behavior:"behavior",motivation:"motivation (cross-cutting)",other:"other"}[e2.aspect];
+    const L2=LLB(e2.layer);
+    const asp=e2.aspect==="motivation"?L("motivation (cross-cutting)","motivatie (dwarsdoorsnijdend)"):ASP[e2.aspect];
     DECK.push({id:"el-place-"+slug(e2.n),topic:"framework",kind:"place",
-      front:{text:`Where does <b>${e2.n}</b> sit in the framework? Tap the cell.`},
+      front:{text:L(`Where does <b>${e2.n}</b> sit in the framework? Tap the cell.`,`Waar staat <b>${e2.n}</b> in het raamwerk? Tik de cel aan.`)},
       target:{r:(e2.aspect==="motivation"||e2.aspect==="other")?e2.aspect:e2.layer,c:e2.aspect},
-      back:{title:e2.n,body:`<b>${L2} &middot; ${asp}.</b> ${e2.def}`,tell:e2.tell}});
+      back:{title:e2.n,body:`<b>${L2} &middot; ${asp}.</b> `+TE(e2,"def"),tell:TE(e2,"tell")}});
   }
   // relationship-direction cards
   DIRQ.forEach((d,i)=>{
+    const rl=TQ(NL.dir,i,"rel",d.rel), fo=TQ(NL.dir,i,"foil",d.foil);
     const mk=(a,r,b)=>a+" <i>"+r+"</i> "+b;
-    const ans=mk(d.x,d.rel,d.y);
+    const ans=mk(d.x,rl,d.y);
     DECK.push({id:"rel-dir-"+(i+1),topic:"relations",mc:1,
-      front:{text:`<b>${d.x}</b> and <b>${d.y}</b> — which relationship connects them, and in which direction?`},
-      back:{title:d.x+" "+d.rel+" "+d.y,body:d.why},
-      answer:ans,pool:[mk(d.y,d.rel,d.x),mk(d.x,d.foil,d.y),mk(d.y,d.foil,d.x)]});
+      front:{text:L(`<b>${d.x}</b> and <b>${d.y}</b> — which relationship connects them, and in which direction?`,`<b>${d.x}</b> en <b>${d.y}</b> — welke relatie verbindt ze, en in welke richting?`)},
+      back:{title:d.x+" "+rl+" "+d.y,body:TQ(NL.dir,i,"why",d.why)},
+      answer:ans,pool:[mk(d.y,rl,d.x),mk(d.x,fo,d.y),mk(d.y,fo,d.x)]});
   });
   // ordering cards
   for(const o of ORDERS){
+    const t=(LANG==="nl"&&NL.ord[o.id])||{};
     DECK.push({id:o.id,topic:o.topic,kind:"order",items:o.items,
-      front:{text:o.f},back:{title:null,body:o.b}});
+      front:{text:t.f||o.f},back:{title:null,body:t.b||o.b}});
   }
   // legality drills
+  const YES=L("Allowed","Toegestaan"), NO=L("Not allowed","Niet toegestaan");
   LEGALQ.forEach((q,i)=>{
     DECK.push({id:"legal-"+(i+1),topic:"relations",mc:1,
-      front:{text:"Legal in ArchiMate 3.2?<br>"+q.s},
-      back:{title:q.ok?"Allowed":"Not allowed",body:q.why},
-      answer:q.ok?"Allowed":"Not allowed",pool:[q.ok?"Not allowed":"Allowed"]});
+      front:{text:L("Legal in ArchiMate 3.2?<br>","Toegestaan in ArchiMate 3.2?<br>")+TQ(NL.legal,i,"s",q.s)},
+      back:{title:q.ok?YES:NO,body:TQ(NL.legal,i,"why",q.why)},
+      answer:q.ok?YES:NO,pool:[q.ok?NO:YES]});
   });
-  // derived-relationship puzzles (weakest link wins)
+  // derived-relationship puzzles
   DERIVP.forEach((pr,i)=>{
     const w1=RSTR.indexOf(pr[0]),w2=RSTR.indexOf(pr[1]);
     const ans=RSTR[Math.min(w1,w2)];
     const others=RSTR.filter(x=>x!==ans);
+    const both=(w1>=3&&w2>=3);
+    const body=L(
+      `A chain may be replaced by its <b>weakest</b> relationship. ${pr[0]} is strength ${w1+1}, ${pr[1]} is strength ${w2+1} (1 = weakest), so the derived relationship is ${ans.toLowerCase()}. ${both?"Both are structural, so this is a <i>valid</i> derivation — always allowed.":"A dependency relationship is involved, so 3.2 calls this a <i>potential</i> derivation: the weakest still wins, but the result must also be permitted by the Appendix B tables."} Order: association &lt; access &lt; serving &lt; realization &lt; assignment &lt; aggregation &lt; composition.`,
+      `Een keten mag vervangen worden door de <b>zwakste</b> relatie erin. ${pr[0]} heeft sterkte ${w1+1}, ${pr[1]} heeft sterkte ${w2+1} (1 = zwakst), dus de afgeleide relatie is ${ans.toLowerCase()}. ${both?"Beide zijn structureel, dus dit is een <i>valide</i> afleiding — altijd toegestaan.":"Er is een afhankelijkheidsrelatie bij betrokken, dus 3.2 noemt dit een <i>potentiële</i> afleiding: de zwakste wint nog steeds, maar het resultaat moet ook in de tabellen van Bijlage B staan."} Volgorde: association &lt; access &lt; serving &lt; realization &lt; assignment &lt; aggregation &lt; composition.`);
     DECK.push({id:"deriv-"+(i+1),topic:"relations",mc:1,
-      front:{text:`A <i>${pr[0].toLowerCase()}</i> B, and B <i>${pr[1].toLowerCase()}</i> C.<br>Which relationship may be <b>derived</b> from A to C?`},
-      back:{title:ans,body:`A chain may be replaced by its <b>weakest</b> relationship. ${pr[0]} is strength ${w1+1}, ${pr[1]} is strength ${w2+1} (1 = weakest), so the derived relationship is ${ans.toLowerCase()}. ${(w1>=3&&w2>=3)?"Both are structural, so this is a <i>valid</i> derivation — always allowed.":"A dependency relationship is involved, so 3.2 calls this a <i>potential</i> derivation: the weakest still wins, but the result must also be permitted by the Appendix B tables."} Order: association &lt; access &lt; serving &lt; realization &lt; assignment &lt; aggregation &lt; composition.`},
+      front:{text:L(`A <i>${pr[0].toLowerCase()}</i> B, and B <i>${pr[1].toLowerCase()}</i> C.<br>Which relationship may be <b>derived</b> from A to C?`,
+                    `A <i>${pr[0].toLowerCase()}</i> B, en B <i>${pr[1].toLowerCase()}</i> C.<br>Welke relatie mag van A naar C worden <b>afgeleid</b>?`)},
+      back:{title:ans,body:body},
       answer:ans,pool:others});
   });
   // fragment-reading cards
   FRAGQ.forEach((q,i)=>{
     DECK.push({id:"frag-"+(i+1),topic:"relations",mc:1,
-      front:{text:"What does this fragment assert?",svg:{k:"frag",i:i}},
-      back:{title:q.a,body:q.why},
-      answer:q.a,pool:q.w});
+      front:{text:L("What does this fragment assert?","Wat beweert dit fragment?"),svg:{k:"frag",i:i}},
+      back:{title:TQ(NL.frag,i,"a",q.a),body:TQ(NL.frag,i,"why",q.why)},
+      answer:TQ(NL.frag,i,"a",q.a),pool:TQ(NL.frag,i,"w",q.w)});
   });
   // spot-the-error fragments
   SPOTQ.forEach((q,j)=>{
     DECK.push({id:"spot-"+(j+1),topic:"relations",mc:1,
-      front:{text:"Anything wrong with this fragment?",svg:{k:"frag",i:FRAGQ.length+j}},
-      back:{title:q.a,body:q.why},
-      answer:q.a,pool:q.w});
+      front:{text:L("Anything wrong with this fragment?","Klopt er iets niet in dit fragment?"),svg:{k:"frag",i:FRAGQ.length+j}},
+      back:{title:TQ(NL.spot,j,"a",q.a),body:TQ(NL.spot,j,"why",q.why)},
+      answer:TQ(NL.spot,j,"a",q.a),pool:TQ(NL.spot,j,"w",q.w)});
   });
-})();
-const CARD_BY_ID={}; DECK.forEach(c=>CARD_BY_ID[c.id]=c);
+  DECK.forEach(c=>CARD_BY_ID[c.id]=c);
+}
+buildDeck();
 
 /* ---------- storage (localStorage → artifact storage → memory) ---------- */
 const Store=(function(){
@@ -905,13 +955,13 @@ function schedule(st,g){ // g: 0 Again, 1 Hard, 2 Good, 3 Easy → returns new s
   return s;
 }
 function previewLabel(st,g){
-  if(g===0) return "now";
+  if(g===0) return L("now","nu");
   const s=schedule(st||newState(),g);
   return s.ivl+" d";
 }
 
 /* ---------- app state ---------- */
-let APP={settings:{theme:"auto",newPerRun:3,runSize:10,answerMode:"auto",topics:{elements:true,relations:true,framework:true,viewpoints:true}},
+let APP={settings:{lang:"en",theme:"auto",newPerRun:3,runSize:10,answerMode:"auto",topics:{elements:true,relations:true,framework:true,viewpoints:true}},
          intro:{date:todayISO(),count:0}, cards:{}, log:{}};
 let session=[], idx=0, face="q", saveTimer=null;
 let run=false, practiceSet=new Set(), runStats=null;
@@ -987,10 +1037,10 @@ function renderStats(){
   }
   const dl=APP.log[today]; const done=dl?(typeof dl==="object"?dl.a:dl):0;
   el("stats").innerHTML=
-    `<span class="chip">due <b>${due}</b></span>`+
-    `<span class="chip">unseen <b>${fresh}</b></span>`+
-    `<span class="chip">reviewed today <b>${done}</b></span>`+
-    `<span class="chip">learning <b>${learn}</b> · review <b>${review}</b> · unseen <b>${fresh}</b></span>`+
+    `<span class="chip">${L("due","te doen")} <b>${due}</b></span>`+
+    `<span class="chip">${L("unseen","ongezien")} <b>${fresh}</b></span>`+
+    `<span class="chip">${L("reviewed today","vandaag gedaan")} <b>${done}</b></span>`+
+    `<span class="chip">${L("learning","leren")} <b>${learn}</b> · ${L("review","herhaling")} <b>${review}</b> · ${L("unseen","ongezien")} <b>${fresh}</b></span>`+
     `<span class="chip">${today}</span>`;
 }
 function renderTopics(){
@@ -1020,7 +1070,7 @@ function renderStudy(){
   const kind=practiceSet.has(c.id)?"practice":stateKind(st);
   const m=APP.settings.answerMode;
   const useChoice=!!(c.pool&&c.pool.length>=1&&(m==="choice"||(m!=="flip"&&c.mc)));
-  let html=`<div class="card"><div class="meta"><span>${TOPICS[c.topic]} · <span class="statepill st-${kind}">${kind}</span></span><span>${undoHTML()}${idx+1} / ${session.length}</span></div>`;
+  let html=`<div class="card"><div class="meta"><span>${TOPICS[c.topic]} · <span class="statepill st-${kind}">${KIND(kind)}</span></span><span>${undoHTML()}${idx+1} / ${session.length}</span></div>`;
   html+=`<div class="qtext">${c.front.text}</div>`;
   if(c.front.svg) html+=`<div class="svgbox">${svgFor(c.front.svg)}</div>`;
   if(face==="q"){
@@ -1028,14 +1078,14 @@ function renderStudy(){
       const opts=buildOpts(c);
       html+=`<div class="choices">`+opts.map((o,i)=>`<button data-choice="${o===c.answer?1:0}"><kbd>${i+1}</kbd>${o}</button>`).join("")+`</div>`;
     }else{
-      html+=`<div class="controls"><button class="btn-flip" id="btn-flip-card">Show answer</button></div>`;
+      html+=`<div class="controls"><button class="btn-flip" id="btn-flip-card">${L("Show answer","Toon antwoord")}</button></div>`;
     }
   }else{
     html+=renderAnswer(c);
     if(face==="a"){
       const pr=practiceSet.has(c.id);
-      const gdefs=pr?[["again","Missed",0,"resets"],["good","Knew it",2,"no change"]]
-                    :[["again","Again",0,null],["hard","Hard",1,null],["good","Good",2,null],["easy","Easy",3,null]];
+      const gdefs=pr?[["again",L("Missed","Fout"),0,L("resets","zet terug")],["good",L("Knew it","Wist ik"),2,L("no change","geen wijziging")]]
+                    :[["again",L("Again","Opnieuw"),0,null],["hard",L("Hard","Lastig"),1,null],["good",L("Good","Goed"),2,null],["easy",L("Easy","Makkelijk"),3,null]];
       html+=`<div class="controls">`+gdefs.map(g=>
         `<button class="btn-${g[0]}" data-grade="${g[2]}">${g[1]}<span class="sub">${g[3]||previewLabel(st,g[2])}</span></button>`).join("")+`</div>`;
     }else{ // auto-graded by choice; face === 'a-auto-0' or 'a-auto-2'
@@ -1089,13 +1139,13 @@ function renderStart(area){
   const r=computeRun(), N=APP.settings.runSize;
   const nothing=r.ids.length===0;
   const short=r.ids.length<N&&!nothing;
-  area.innerHTML=`<div class="done"><h2>Ready when you are</h2>
-    <p>Next run: <b>${r.due}</b> due · <b>${r.fresh}</b> new · <b>${r.prac.length}</b> practice${short?" — that is all that is available for the selected areas":""}.</p>
-    <p class="note" style="color:var(--muted)">Pick areas above. Runs mix due reviews, new cards, and a sample of the rest — the closer a card is to its due date, the likelier it shows up. Ahead-of-schedule cards count as practice: a miss resets them, a pass changes nothing.</p>
+  area.innerHTML=`<div class="done"><h2>${L("Ready when you are","Klaar wanneer jij het bent")}</h2>
+    <p>${L("Next run","Volgende ronde")}: <b>${r.due}</b> ${L("due","te doen")} · <b>${r.fresh}</b> ${L("new","nieuw")} · <b>${r.prac.length}</b> ${L("practice","oefening")}${short?L(" — that is all that is available for the selected areas"," — meer is er niet voor de gekozen onderdelen"):""}.</p>
+    <p class="note" style="color:var(--muted)">${L("Pick areas above. Runs mix due reviews, new cards, and a sample of the rest — the closer a card is to its due date, the likelier it shows up. Ahead-of-schedule cards count as practice: a miss resets them, a pass changes nothing.","Kies hierboven de onderdelen. Een ronde mengt te herhalen kaarten, nieuwe kaarten en een steekproef uit de rest — hoe dichter een kaart bij zijn herhaaldatum zit, hoe waarschijnlijker hij verschijnt. Kaarten vóór hun tijd tellen als oefening: een fout zet ze terug, een goed antwoord verandert niets.")}</p>
 
-    <div class="controls" style="max-width:280px;margin:16px auto 0"><button class="btn-flip" id="btn-startrun" ${nothing?"disabled":""}>${nothing?"Nothing available":"Start a "+r.ids.length+"-card run"}</button></div>
-    <div class="controls" style="max-width:280px;margin:8px auto 0"><button class="btn-plain" id="btn-exam">Mock exam · 20 questions</button></div>
-    ${nothing?'<p class="note">Enable more areas above, or come back when reviews are due.</p>':""}</div>`;
+    <div class="controls" style="max-width:280px;margin:16px auto 0"><button class="btn-flip" id="btn-startrun" ${nothing?"disabled":""}>${nothing?L("Nothing available","Niets beschikbaar"):L("Start a "+r.ids.length+"-card run","Start een ronde van "+r.ids.length)}</button></div>
+    <div class="controls" style="max-width:280px;margin:8px auto 0"><button class="btn-plain" id="btn-exam">${L("Mock exam · 20 questions","Proefexamen · 20 vragen")}</button></div>
+    ${nothing?`<p class="note">${L("Enable more areas above, or come back when reviews are due.","Zet hierboven meer onderdelen aan, of kom terug wanneer er herhalingen klaarstaan.")}</p>`:""}</div>`;
   const b=el("btn-startrun");
   if(b&&!nothing)b.addEventListener("click",()=>{buildRun();renderStudy();});
   el("btn-exam").addEventListener("click",startExam);
@@ -1107,11 +1157,11 @@ function renderDone(area){
   for(let i=1;i<=7;i++){const d=addDays(today,i);rows+=`<tr><td>${d}</td><td>${counts[d]||0}</td></tr>`;}
   const rs=runStats||{pass:0,again:0,practiced:0,introduced:0};
   const unseen=DECK.filter(c=>!cardState(c.id)).length;
-  area.innerHTML=`<div class="done"><h2>Run complete</h2>
-    <p><b>${rs.pass}</b> passed · <b>${rs.again}</b> missed${rs.introduced?` · <b>${rs.introduced}</b> newly introduced`:""}${rs.practiced?` · <b>${rs.practiced}</b> practice`:""}.</p>
-    <p class="note" style="color:var(--muted)">${unseen>0?unseen+" cards still unseen — each run introduces a few more (adjustable in Settings).":"The whole deck has been introduced."}</p>
-    <table class="forecast"><tr><th>date</th><th>due</th></tr>${rows}</table>
-    <div class="controls" style="max-width:280px;margin:20px auto 0"><button class="btn-flip" id="btn-again-run">Start another run</button></div></div>`;
+  area.innerHTML=`<div class="done"><h2>${L("Run complete","Ronde afgerond")}</h2>
+    <p><b>${rs.pass}</b> ${L("passed","goed")} · <b>${rs.again}</b> ${L("missed","fout")}${rs.introduced?` · <b>${rs.introduced}</b> ${L("newly introduced","nieuw geleerd")}`:""}${rs.practiced?` · <b>${rs.practiced}</b> ${L("practice","oefening")}`:""}.</p>
+    <p class="note" style="color:var(--muted)">${unseen>0?L(unseen+" cards still unseen — each run introduces a few more (adjustable in Settings).",unseen+" kaarten nog ongezien — elke ronde introduceert er een paar (instelbaar bij Instellingen)."):L("The whole deck has been introduced.","Het hele pak kaarten is geïntroduceerd.")}</p>
+    <table class="forecast"><tr><th>${L("date","datum")}</th><th>${L("due","te doen")}</th></tr>${rows}</table>
+    <div class="controls" style="max-width:280px;margin:20px auto 0"><button class="btn-flip" id="btn-again-run">${L("Start another run","Nog een ronde")}</button></div></div>`;
   el("btn-again-run").addEventListener("click",()=>{run=false;renderStudy();});
 }
 
@@ -1161,20 +1211,20 @@ function renderExam(area){
     const score=its.filter(x=>x.ok).length, pct=Math.round(100*score/its.length);
     let list=its.map((x,n)=>{
       const q=x.c.front.text.replace(/<[^>]+>/g," ").slice(0,90);
-      return `<div class="relrow" style="grid-template-columns:20px 1fr"><span class="nm" style="color:${x.ok?"var(--good)":"var(--again)"}">${x.ok?"✓":"✗"}</span><span class="ds"><b>Q${n+1}.</b> ${q}<br>${x.ok?`<span style="opacity:.8">${x.it.pick}</span>`:`Your answer: ${x.it.pick||"—"}<br>Correct: <b>${x.c.answer}</b><br><span style="opacity:.8">${x.c.back.body}</span>`}</span></div>`;
+      return `<div class="relrow" style="grid-template-columns:20px 1fr"><span class="nm" style="color:${x.ok?"var(--good)":"var(--again)"}">${x.ok?"✓":"✗"}</span><span class="ds"><b>Q${n+1}.</b> ${q}<br>${x.ok?`<span style="opacity:.8">${x.it.pick}</span>`:`${L("Your answer","Jouw antwoord")}: ${x.it.pick||"—"}<br>${L("Correct","Juist")}: <b>${x.c.answer}</b><br><span style="opacity:.8">${x.c.back.body}</span>`}</span></div>`;
     }).join("");
-    area.innerHTML=`<div class="done"><h2>Exam result: ${score} / ${its.length} (${pct}%)</h2>
-      <p class="note" style="color:var(--muted)">Time: ${examClock()} · certification pace is roughly 90&nbsp;s per question. Nothing here touched your review schedule.</p></div>${list}
-      <div class="controls" style="max-width:280px;margin:16px auto"><button class="btn-flip" id="btn-exam-exit">Back to study</button></div>`;
+    area.innerHTML=`<div class="done"><h2>${L("Exam result","Examenresultaat")}: ${score} / ${its.length} (${pct}%)</h2>
+      <p class="note" style="color:var(--muted)">${L("Time","Tijd")}: ${examClock()} · ${L("certification pace is roughly 90&nbsp;s per question. Nothing here touched your review schedule.","het examentempo is ongeveer 90&nbsp;s per vraag. Dit heeft je herhaalschema niet aangeraakt.")}</p></div>${list}
+      <div class="controls" style="max-width:280px;margin:16px auto"><button class="btn-flip" id="btn-exam-exit">${L("Back to study","Terug naar studeren")}</button></div>`;
     el("btn-exam-exit").addEventListener("click",endExam);
     return;
   }
   const it=exam.items[exam.i], c=CARD_BY_ID[it.id];
-  let h=`<div class="card"><div class="meta"><span>Mock exam · question ${exam.i+1} / ${exam.items.length}</span><span id="extime">${examClock()}</span></div>`;
+  let h=`<div class="card"><div class="meta"><span>${L("Mock exam","Proefexamen")} · ${L("question","vraag")} ${exam.i+1} / ${exam.items.length}</span><span id="extime">${examClock()}</span></div>`;
   h+=`<div class="qtext">${c.front.text}</div>`;
   if(c.front.svg)h+=`<div class="svgbox">${svgFor(c.front.svg)}</div>`;
   h+=`<div class="choices">`+it.opts.map((o,i)=>`<button data-exopt="${i}"><kbd>${i+1}</kbd>${o}</button>`).join("")+`</div>`;
-  h+=`<p class="note">No feedback until the end — pick and move on.</p></div>`;
+  h+=`<p class="note">${L("No feedback until the end — pick and move on.","Geen feedback tot het eind — kiezen en door.")}</p></div>`;
   area.innerHTML=h;
   area.querySelectorAll("[data-exopt]").forEach(b=>b.addEventListener("click",e=>{
     it.pick=it.opts[Number(e.currentTarget.dataset.exopt)];
@@ -1184,7 +1234,7 @@ function renderExam(area){
 }
 function contBtn(c,st,g){
   const pr=practiceSet.has(c.id)&&g>0;
-  return `<div class="controls"><button class="btn-${g===0?"again":"good"}" data-grade="${g}">${g===0?"Again":(pr?"Knew it":"Good")} — continue<span class="sub">${pr?"no change":previewLabel(st,g)}</span></button></div>`;
+  return `<div class="controls"><button class="btn-${g===0?"again":"good"}" data-grade="${g}">${g===0?L("Again","Opnieuw"):(pr?L("Knew it","Wist ik"):L("Good","Goed"))} — ${L("continue","door")}<span class="sub">${pr?L("no change","geen wijziging"):previewLabel(st,g)}</span></button></div>`;
 }
 function maybeStartRound(c){
   if(!c.mg||!cardState(c.id))return;
@@ -1208,8 +1258,8 @@ function maybeStartRound(c){
 }
 function renderRound(area){
   const allDone=round.items.every(it=>it.done);
-  let h=`<div class="card"><div class="meta"><span>Matching round · <span class="statepill st-review">review</span></span><span>${undoHTML()}${idx+1} / ${session.length}</span></div>`;
-  h+=`<div class="qtext">Match each symbol to its name — tap a symbol, then its name.</div><div class="mtiles">`;
+  let h=`<div class="card"><div class="meta"><span>${L("Matching round","Matchronde")} · <span class="statepill st-review">${KIND("review")}</span></span><span>${undoHTML()}${idx+1} / ${session.length}</span></div>`;
+  h+=`<div class="qtext">${L("Match each symbol to its name — tap a symbol, then its name.","Koppel elk symbool aan zijn naam — tik een symbool aan, daarna de naam.")}</div><div class="mtiles">`;
   round.items.forEach((it,i)=>{
     const c=CARD_BY_ID[it.id];
     h+=`<div class="mtile ${it.done?(it.first?"right":"wrong"):""} ${(!it.done&&round.sel===i)?"sel":""}" data-mtile="${i}">${svgFor(c.front.svg)}<div class="mname">${it.done?c.answer:"?"}</div></div>`;
@@ -1221,8 +1271,8 @@ function renderRound(area){
       :`<button data-mopt="${i}"><kbd>${i+1}</kbd>${o}</button>`).join("")+`</div>`;
   }else{
     const miss=round.items.filter(it=>!it.first).length;
-    h+=`<p class="note">${miss===0?"All matched on the first try.":miss+" missed on the first try — those come back shortly."}</p>`;
-    h+=`<div class="controls"><button class="btn-flip" data-rndcont>Continue</button></div>`;
+    h+=`<p class="note">${miss===0?L("All matched on the first try.","Alles in één keer goed."):L(miss+" missed on the first try — those come back shortly.",miss+" in één keer misgegaan — die komen zo terug.")}</p>`;
+    h+=`<div class="controls"><button class="btn-flip" data-rndcont>${L("Continue","Doorgaan")}</button></div>`;
   }
   h+=`</div>`;
   area.innerHTML=h;
@@ -1250,7 +1300,7 @@ function renderPlace(area,c){
   const st=cardState(c.id),kind=practiceSet.has(c.id)?"practice":stateKind(st);
   const res=face!=="q", pick=lastPick||{};
   const g=res?Number(face.split("-")[2]):null;
-  let h=`<div class="card"><div class="meta"><span>${TOPICS[c.topic]} · <span class="statepill st-${kind}">${kind}</span></span><span>${undoHTML()}${idx+1} / ${session.length}</span></div>`;
+  let h=`<div class="card"><div class="meta"><span>${TOPICS[c.topic]} · <span class="statepill st-${kind}">${KIND(kind)}</span></span><span>${undoHTML()}${idx+1} / ${session.length}</span></div>`;
   h+=`<div class="qtext">${c.front.text}</div><table class="placegrid"><tr><th></th>${PLACE_COLS.map(x=>`<th>${x[1]}</th>`).join("")}</tr>`;
   for(const r of PLACE_ROWS){
     h+=`<tr><td class="rowhead">${layerChip(r)}</td>`+PLACE_COLS.map(x=>{
@@ -1280,7 +1330,7 @@ function renderOrder(area,c){
   const st=cardState(c.id),kind=practiceSet.has(c.id)?"practice":stateKind(st);
   const res=face!=="q";
   const g=res?Number(face.split("-")[2]):null;
-  let h=`<div class="card"><div class="meta"><span>${TOPICS[c.topic]} · <span class="statepill st-${kind}">${kind}</span></span><span>${undoHTML()}${idx+1} / ${session.length}</span></div>`;
+  let h=`<div class="card"><div class="meta"><span>${TOPICS[c.topic]} · <span class="statepill st-${kind}">${KIND(kind)}</span></span><span>${undoHTML()}${idx+1} / ${session.length}</span></div>`;
   h+=`<div class="qtext">${c.front.text}</div>`;
   if(!res){
     if(!lastPick||!lastPick.shuffle||lastPick.cardId!==c.id){
@@ -1291,7 +1341,7 @@ function renderOrder(area,c){
     h+=`<div class="choices">`+lastPick.shuffle.map((o,i)=>{
       const n=lastPick.seq.indexOf(o);
       return `<button data-ord="${i}" class="${n>=0?"picked":""}"><kbd>${n>=0?(n+1):"·"}</kbd>${o}</button>`;
-    }).join("")+`</div><p class="note">Tap in order — tap a chosen item again to remove it.</p>`;
+    }).join("")+`</div><p class="note">${L("Tap in order — tap a chosen item again to remove it.","Tik op volgorde — tik een gekozen item nogmaals aan om het te verwijderen.")}</p>`;
   }else{
     const seq=lastPick.seq||[];
     h+=`<div class="choices">`+c.items.map((o,i)=>{
@@ -1318,28 +1368,29 @@ function renderOrder(area,c){
 /* ---------- reference tab ---------- */
 function layerChip(key){const L=LAYER[key];return `<span class="layerchip" style="background:${L.color}">${L.label}</span>`;}
 function renderReference(){
-  const t=el("tab-reference"); if(t.dataset.done)return; t.dataset.done="1";
+  const t=el("tab-reference"); if(t.dataset.done===LANG)return; t.dataset.done=LANG;
   const rows=["strategy","business","application","technology","physical","implementation"];
   const cell=(layer,aspect)=>ELEMENTS.filter(e=>e.layer===layer&&e.aspect===aspect).map(e=>e.n).join(", ")||"—";
-  let grid=`<table class="grid"><tr><th>Layer</th><th>Passive structure</th><th>Behavior</th><th>Active structure</th></tr>`;
+  let grid=`<table class="grid"><tr><th>${L("Layer","Laag")}</th><th>${L("Passive structure","Passieve structuur")}</th><th>${L("Behavior","Gedrag")}</th><th>${L("Active structure","Actieve structuur")}</th></tr>`;
   for(const r of rows){
     grid+=`<tr><td>${layerChip(r)}</td><td>${cell(r,"passive")}</td><td>${cell(r,"behavior")}</td><td>${cell(r,"active")}</td></tr>`;
   }
-  grid+=`</table><p class="note" style="color:var(--muted);font-size:12.5px">Composites: Product (business), Plateau (impl. &amp; migration). Motivation aspect: ${ELEMENTS.filter(e=>e.layer==="motivation").map(e=>e.n).join(", ")}. Other: Grouping, Location, Junction.</p>`;
-  let rels=RELS.map(r=>`<div class="relrow"><span class="nm">${r.n}</span>${relSVG(r.svg)}<span class="ds"><b>${r.cat}.</b> ${r.def}<br><i>${r.notation}</i>${r.more?`<br><span style="opacity:.85">${r.more}</span>`:""}</span></div>`).join("");
-  rels+=`<div class="relrow"><span class="nm">Junction (OR)</span>${relSVG("junction-or")}<span class="ds"><b>Other.</b> Open circle = one or more paths apply.</span></div>`;
-  rels+=`<div class="relrow"><span class="nm">Directed association</span>${relSVG("association-directed")}<span class="ds"><b>Dependency.</b> Half arrowhead marks the reading direction.</span></div>`;
+  grid+=`</table><p class="note" style="color:var(--muted);font-size:12.5px">${L("Composites","Samengesteld")}: Product (business), Plateau (impl. &amp; migration). ${L("Motivation aspect","Motivatie-aspect")}: ${ELEMENTS.filter(e=>e.layer==="motivation").map(e=>e.n).join(", ")}. ${L("Other","Overig")}: Grouping, Location, Junction.</p>`;
+  const RCAT={Structural:L("Structural","Structureel"),Dependency:L("Dependency","Afhankelijkheid"),Dynamic:L("Dynamic","Dynamisch"),Other:L("Other","Overig")};
+  let rels=RELS.map(r=>`<div class="relrow"><span class="nm">${r.n}</span>${relSVG(r.svg)}<span class="ds"><b>${RCAT[r.cat]}.</b> ${TR(r,"def")}<br><i>${TR(r,"notation")}</i>${TR(r,"more")?`<br><span style="opacity:.85">${TR(r,"more")}</span>`:""}</span></div>`).join("");
+  rels+=`<div class="relrow"><span class="nm">Junction (OR)</span>${relSVG("junction-or")}<span class="ds"><b>${RCAT.Other}.</b> ${L("Open circle = one or more paths apply.","Open cirkel = één of meer paden gelden.")}</span></div>`;
+  rels+=`<div class="relrow"><span class="nm">Directed association</span>${relSVG("association-directed")}<span class="ds"><b>${RCAT.Dependency}.</b> ${L("Half arrowhead marks the reading direction.","Halve pijlpunt markeert de leesrichting.")}</span></div>`;
   let els=ELEMENTS.map(e=>`<div style="display:inline-block;margin:0 10px 14px;text-align:center;vertical-align:top">${elSVG(e,{label:e.n})}</div>`).join("");
   let vps="";
   for(const cat of ["Basic","Motivation","Strategy","Implementation & Migration"]){
     vps+=`<h3 style="font-family:var(--serif);margin:14px 0 6px">${cat}</h3>`+
-      VIEWPOINTS.filter(v=>v.cat===cat).map(v=>`<p style="margin:4px 0"><b>${v.n}.</b> ${v.purpose} <span style="color:var(--muted)">(${v.els})</span></p>`).join("");
+      VIEWPOINTS.filter(v=>v.cat===cat).map(v=>`<p style="margin:4px 0"><b>${v.n}.</b> ${TV(v,"purpose")} <span style="color:var(--muted)">(${TV(v,"els")})</span></p>`).join("");
   }
-  t.innerHTML=`<h2 class="sec">Framework — layers × aspects</h2>${grid}
-    <h2 class="sec">Relationships</h2>${rels}
-    <p class="note" style="color:var(--muted);font-size:12.5px">Derivation strength, weak → strong: association &lt; access &lt; serving &lt; realization &lt; assignment &lt; aggregation &lt; composition.</p>
-    <h2 class="sec">Element notation</h2><div>${els}</div>
-    <p class="note" style="color:var(--muted);font-size:12.5px">Icons marked ≈ in study mode are simplified; shapes and colours follow the usual conventions.</p>
+  t.innerHTML=`<h2 class="sec">${L("Framework — layers × aspects","Raamwerk — lagen × aspecten")}</h2>${grid}
+    <h2 class="sec">${L("Relationships","Relaties")}</h2>${rels}
+    <p class="note" style="color:var(--muted);font-size:12.5px">${L("Derivation strength, weak → strong","Afleidingssterkte, zwak → sterk")}: association &lt; access &lt; serving &lt; realization &lt; assignment &lt; aggregation &lt; composition.</p>
+    <h2 class="sec">${L("Element notation","Elementnotatie")}</h2><div>${els}</div>
+    <p class="note" style="color:var(--muted);font-size:12.5px">${L("Icons marked ≈ in study mode are simplified; shapes and colours follow the usual conventions.","Iconen met ≈ in studiemodus zijn vereenvoudigd; vormen en kleuren volgen de gebruikelijke conventies.")}</p>
     <h2 class="sec">Viewpoints</h2>${vps}`;
 }
 
@@ -1354,7 +1405,7 @@ function renderBrowse(){
   });
   rows.sort((a,b)=>(a.due==="—"?"9999":a.due).localeCompare(b.due==="—"?"9999":b.due));
   // per-topic table — honest metrics only: what is actually tracked
-  let h=`<h2 class="sec">Per topic</h2><table class="browse"><tr><th>topic</th><th>seen</th><th>avg interval</th><th>lapses</th></tr>`;
+  let h=`<h2 class="sec">${L("Per topic","Per onderdeel")}</h2><table class="browse"><tr><th>${L("topic","onderdeel")}</th><th>${L("seen","gezien")}</th><th>${L("avg interval","gem. interval")}</th><th>${L("lapses","fouten")}</th></tr>`;
   for(const tk in TOPICS){
     const tc=rows.filter(r=>r.c.topic===tk), seen=tc.filter(r=>r.s);
     const avg=seen.length?(seen.reduce((a,r)=>a+r.s.ivl,0)/seen.length):0;
@@ -1365,16 +1416,16 @@ function renderBrowse(){
   // trouble cards: repeated lapses = the tell-apart hints to reread
   const trouble=rows.filter(r=>r.s&&r.s.lapses>=2).sort((a,b)=>b.s.lapses-a.s.lapses||a.s.ivl-b.s.ivl).slice(0,10);
   if(trouble.length){
-    h+=`<h2 class="sec">Trouble cards</h2><table class="browse"><tr><th>card</th><th>lapses</th><th>interval</th></tr>`;
+    h+=`<h2 class="sec">${L("Trouble cards","Probleemkaarten")}</h2><table class="browse"><tr><th>${L("card","kaart")}</th><th>${L("lapses","fouten")}</th><th>${L("interval","interval")}</th></tr>`;
     for(const r of trouble)h+=`<tr><td>${r.txt.slice(0,70)}${r.txt.length>70?"…":""}</td><td class="mono">${r.s.lapses}</td><td class="mono">${r.s.ivl}d</td></tr>`;
-    h+=`</table><p class="note" style="color:var(--muted)">Lapse-prone cards already resurface more often via their short intervals — reread their "tell it apart" lines rather than brute-forcing.</p>`;
+    h+=`</table><p class="note" style="color:var(--muted)">${L('Lapse-prone cards already resurface more often via their short intervals — reread their "tell it apart" lines rather than brute-forcing.','Kaarten die vaak fout gaan komen door hun korte interval vanzelf vaker terug — herlees hun "hoe herken je het"-regel in plaats van stampen.')}</p>`;
   }
-  h+=`<h2 class="sec">All cards (${DECK.length})</h2><table class="browse"><tr><th>card</th><th>topic</th><th>state</th><th>due</th><th>ivl</th><th>EF</th><th>lapses</th><th></th></tr>`;
+  h+=`<h2 class="sec">${L("All cards","Alle kaarten")} (${DECK.length})</h2><table class="browse"><tr><th>${L("card","kaart")}</th><th>${L("topic","onderdeel")}</th><th>${L("state","status")}</th><th>${L("due","te doen")}</th><th>ivl</th><th>EF</th><th>${L("lapses","fouten")}</th><th></th></tr>`;
   for(const r of rows){
     h+=`<tr><td>${r.txt.slice(0,70)}${r.txt.length>70?"…":""}</td><td class="mono">${r.c.topic}</td>
-      <td><span class="statepill st-${r.k}">${r.k}</span>${r.s&&r.s.due<=today?" <span class='statepill'>due</span>":""}</td>
+      <td><span class="statepill st-${r.k}">${KIND(r.k)}</span>${r.s&&r.s.due<=today?" <span class='statepill'>"+L("due","te doen")+"</span>":""}</td>
       <td class="mono">${r.due}</td><td class="mono">${r.s?r.s.ivl+"d":"—"}</td><td class="mono">${r.s?r.s.ef.toFixed(2):"—"}</td><td class="mono">${r.s?r.s.lapses:"—"}</td>
-      <td>${r.s?`<button data-resetcard="${r.c.id}">reset</button>`:""}</td></tr>`;
+      <td>${r.s?`<button data-resetcard="${r.c.id}">${L("reset","herstel")}</button>`:""}</td></tr>`;
   }
   t.innerHTML=h+`</table>`;
   t.querySelectorAll("[data-resetcard]").forEach(b=>b.addEventListener("click",e=>{
@@ -1384,6 +1435,8 @@ function renderBrowse(){
 
 /* ---------- settings ---------- */
 function wireSettings(){
+  const lg=el("lang"); lg.value=APP.settings.lang||"en";
+  lg.addEventListener("change",()=>setLang(lg.value));
   const th=el("theme"); th.value=APP.settings.theme||"auto";
   th.addEventListener("change",()=>{APP.settings.theme=th.value;persist();applyTheme();});
   const np=el("newperrun"), am=el("answermode"), rs=el("runsize");
@@ -1404,7 +1457,7 @@ function wireSettings(){
       const obj=JSON.parse(el("io").value);
       if(!obj||typeof obj.cards!=="object")throw new Error("no cards object");
       APP=Object.assign({settings:APP.settings,intro:{date:todayISO(),count:0},cards:{},log:{}},obj);
-      persist();run=false;renderStats();renderTopics();renderStudy();
+      persist();LANG=APP.settings.lang||"en";run=false;buildDeck();applyLang();renderStats();renderTopics();renderStudy();
       el("io").value="Imported: "+Object.keys(APP.cards).length+" card states.";
     }catch(err){el("io").value="Import failed: "+err.message;}
   });
@@ -1460,6 +1513,70 @@ function wireKeys(){
   });
 }
 
+const STATIC=[
+ ['[data-tab="study"]','Study','Studeren'],
+ ['[data-tab="reference"]','Reference','Naslag'],
+ ['[data-tab="browse"]','Browse','Overzicht'],
+ ['[data-tab="settings"]','Settings','Instellingen'],
+ ['label[for="lang"]','Language / Taal','Taal / Language'],
+ ['#langexp','ArchiMate\u2019s own terms (Business Process, Serving, viewpoint names) stay in English in both languages: they are the normative vocabulary of the standard and of the exam. Everything else \u2014 definitions, hints, questions, explanations \u2014 follows this setting. Your progress is kept when you switch.','De ArchiMate-termen zelf (Business Process, Serving, viewpoint-namen) blijven in beide talen Engels: dat is het normatieve vocabulaire van de standaard en van het examen. Al het andere \u2014 definities, hints, vragen, uitleg \u2014 volgt deze instelling. Je voortgang blijft behouden bij het wisselen.'],
+ ['label[for="theme"]','Theme','Thema'],
+ ['label[for="newperrun"]','New cards per run','Nieuwe kaarten per ronde'],
+ ['label[for="runsize"]','Cards per run','Kaarten per ronde'],
+ ['label[for="answermode"]','Answer style','Antwoordstijl'],
+ ['#btn-export','Export progress (JSON)','Voortgang exporteren (JSON)'],
+ ['#btn-import','Import from textarea','Importeren uit tekstvak'],
+ ['#btn-copy','Copy state to textarea','Status naar tekstvak kopi\u00ebren'],
+ ['#btn-reset','Reset all progress','Alle voortgang wissen'],
+ ['#kbdhint','<kbd>Space</kbd> show answer \u00b7 <kbd>1</kbd>\u2013<kbd>4</kbd> grade / pick choice','<kbd>Spatie</kbd> toon antwoord \u00b7 <kbd>1</kbd>\u2013<kbd>4</kbd> beoordelen / kiezen'],
+];
+const STATIC_HTML=['#kbdhint'];
+function applyLang(){
+  document.documentElement.lang=LANG;
+  for(const [sel,en,nl] of STATIC){
+    const n=document.querySelector(sel); if(!n)continue;
+    const v=L(en,nl);
+    if(STATIC_HTML.includes(sel))n.innerHTML=v; else n.textContent=v;
+  }
+  const secs=document.querySelectorAll("#tab-settings h2.sec");
+  const sl=[["Scheduling","Planning"],["Data","Gegevens"],["About the algorithm","Over het algoritme"]];
+  secs.forEach((n,i)=>{if(sl[i])n.textContent=L(sl[i][0],sl[i][1]);});
+  // option labels
+  const opt=(sel,pairs)=>{const n=document.querySelector(sel);if(!n)return;
+    [...n.options].forEach(o=>{const p=pairs[o.value];if(p)o.textContent=L(p[0],p[1]);});};
+  opt("#theme",{auto:["Auto (follow system)","Automatisch (volgt systeem)"],light:["Light","Licht"],dark:["Dark","Donker"]});
+  opt("#answermode",{auto:["Automatic — visual cards flip, text cards multiple choice","Automatisch — visuele kaarten omdraaien, tekstkaarten meerkeuze"],
+    flip:["Everything flip & self-grade (recall)","Alles omdraaien & zelf beoordelen (actief ophalen)"],
+    choice:["Multiple choice wherever possible (recognition)","Meerkeuze waar mogelijk (herkennen)"]});
+  // explanation spans (by owning control)
+  const exp=(sel,en,nl)=>{const c=document.querySelector(sel);if(!c)return;
+    const e=c.closest(".setrow").querySelector(".exp");if(e)e.textContent=L(en,nl);};
+  exp("#newperrun","Every run reserves this many slots for unseen cards (0 = review only). Due reviews always come first; if there is little else to sample, the run tops up with extra unseen cards.",
+      "Elke ronde reserveert dit aantal plekken voor ongeziene kaarten (0 = alleen herhalen). Kaarten die aan de beurt zijn gaan altijd voor; is er weinig anders te trekken, dan vult de ronde aan met extra ongeziene kaarten.");
+  exp("#runsize","Each run pulls this many: due reviews first, then new cards, topped up with a weighted sample of everything not yet due.",
+      "Elke ronde trekt dit aantal: eerst kaarten die aan de beurt zijn, dan nieuwe kaarten, aangevuld met een gewogen steekproef uit alles wat nog niet aan de beurt is.");
+  exp("#theme","Diagrams keep a light backing in dark mode so the notation stays readable.",
+      "Diagrammen houden in donkere modus een lichte ondergrond, zodat de notatie leesbaar blijft.");
+  exp("#answermode","Automatic (default): notation cards stay flip-style flashcards so you actually recall the symbols; definitions, viewpoints, and framework questions run as multiple choice. Placement, direction, and ordering cards always use their own tap interaction; matching rounds appear when several notation reviews are due.",
+      "Automatisch (standaard): notatiekaarten blijven omdraaikaarten, zodat je de symbolen echt uit je hoofd ophaalt; definities, viewpoints en raamwerkvragen zijn meerkeuze. Plaatsings-, richtings- en volgordekaarten hebben hun eigen tik-interactie; matchrondes verschijnen als er meerdere notatiekaarten aan de beurt zijn.");
+  const dexp=document.querySelector("#btn-reset")&&document.querySelector("#btn-reset").closest(".setrow").querySelector(".exp");
+  if(dexp)dexp.textContent=L("State lives in this browser's localStorage (keyed to where the file is opened from). Export before switching browsers or machines; import to restore. Filenames use YYYYMMDD.",
+    "De status staat in de localStorage van deze browser (gekoppeld aan de plek waar het bestand vandaan komt). Exporteer voordat je van browser of machine wisselt; importeer om te herstellen. Bestandsnamen gebruiken YYYYMMDD.");
+  const alg=document.querySelector("#tab-settings .setrow:last-child .exp");
+  if(alg)alg.innerHTML=L("Modified SM-2 (Anki-flavoured). Each card keeps an ease factor (EF, start 2.5, floor 1.3), an interval in days, and a due date. Again: card is relearned now and re-queued this session. Hard: interval ×1.2, EF −0.14. Good: 1 d → 6 d → interval ×EF. Easy: first pass jumps to 4 d, afterwards interval ×EF ×1.3, EF +0.10. Due dates are stored and displayed as ISO YYYY-MM-DD.",
+    "Aangepaste SM-2 (Anki-stijl). Elke kaart houdt een ease factor bij (EF, start 2,5, ondergrens 1,3), een interval in dagen en een datum. Opnieuw: kaart wordt nu herleerd en komt deze sessie terug. Lastig: interval ×1,2, EF −0,14. Goed: 1 d → 6 d → interval ×EF. Makkelijk: eerste keer naar 4 d, daarna interval ×EF ×1,3, EF +0,10. Datums worden opgeslagen en getoond als ISO JJJJ-MM-DD.");
+  const fn=el("footnote");
+  if(fn)fn.textContent=L("Definitions are paraphrased from the ArchiMate® 3.2 Specification (The Open Group) and were checked on 2026-07-12 against the published 3.2 materials of The Open Group; ArchiMate is a registered trademark of The Open Group. Element icons marked ≈ are simplified approximations of the official glyphs. Colours follow common tool conventions and are not normative.",
+    "Definities zijn geparafraseerd uit de ArchiMate® 3.2 Specification (The Open Group) en zijn op 2026-07-12 gecontroleerd tegen de gepubliceerde 3.2-materialen van The Open Group; ArchiMate is een geregistreerd handelsmerk van The Open Group. Elementiconen met ≈ zijn vereenvoudigde benaderingen van de officiële symbolen. Kleuren volgen gangbare toolconventies en zijn niet normatief.");
+}
+function setLang(v){
+  LANG=v; APP.settings.lang=v; persist();
+  exam=null; if(examTick){clearInterval(examTick);examTick=null;}
+  run=false; round=null; undoSnap=null; session=[]; idx=0; face="q";
+  buildDeck(); applyLang(); renderTopics(); renderStudy();
+  const rt=el("tab-reference"); rt.dataset.done=""; renderReference();
+  renderBrowse();
+}
 function applyTheme(){
   const t=APP.settings.theme||"auto";
   const dark=t==="dark"||(t==="auto"&&typeof matchMedia!=="undefined"&&matchMedia("(prefers-color-scheme: dark)").matches);
@@ -1477,8 +1594,9 @@ async function boot(){
   const modeLabel={local:"Progress is saved to this browser's localStorage for this file location. Use export/import below to move it between devices.",artifact:"Progress is saved to Claude artifact storage and persists across sessions here.",memory:"In-memory only — progress is lost on reload. Download the file and open it locally to get persistence."}[Store.mode];
   const si=el("storageinfo"); if(si)si.textContent=modeLabel;
   if(Store.mode==="memory"){el("storagemode").textContent="⚠ no persistence";el("storagemode").classList.add("warn");}
-  applyTheme();
-  wireTabs();wireKeys();wireSettings();renderTopics();
+  LANG=APP.settings.lang||"en";
+  applyTheme();applyLang();
+  wireTabs();wireKeys();wireSettings();buildDeck();renderTopics();
   el("studyarea").addEventListener("click",e=>{if(e.target&&e.target.id==="undolink"){e.preventDefault();doUndo();}});
   renderStudy();
 }
