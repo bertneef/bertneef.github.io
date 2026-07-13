@@ -990,11 +990,14 @@ function computeRun(){
   const on=APP.settings.topics, N=Math.max(1,APP.settings.runSize||10);
   const quota=Math.max(0,Math.min(APP.settings.newPerRun??3,N));
   const enabled=DECK.filter(c=>on[c.topic]);
-  // 1. due cards: absolute priority — spaced repetition only works if due reviews happen
-  const due=shuffleArr(enabled.filter(c=>{const s=cardState(c.id);return s&&s.due<=today;}).map(c=>c.id)).slice(0,N);
-  // 2. unseen quota
+  // 1. reserve the unseen quota FIRST. Giving due cards absolute priority starves new
+  //    cards forever as soon as the due backlog reaches the run size.
   const unseen=quota>0?shuffleArr(enabled.filter(c=>!cardState(c.id)).map(c=>c.id)):[];
-  let fresh=due.length<N?unseen.slice(0,Math.min(quota,N-due.length)):[];
+  const reserve=Math.min(quota,unseen.length);
+  // 2. due cards fill the rest — they keep priority over practice, and any surplus
+  //    simply waits for the next run rather than crowding out new material.
+  const due=shuffleArr(enabled.filter(c=>{const s=cardState(c.id);return s&&s.due<=today;}).map(c=>c.id)).slice(0,N-reserve);
+  let fresh=unseen.slice(0,Math.min(reserve,N-due.length));
   // 3. weighted sample of not-yet-due cards: weight = (elapsed/interval)^2,
   //    so a card close to its due date is far likelier to appear than one just reviewed
   let prac=[];
@@ -1016,7 +1019,8 @@ function computeRun(){
     // 5. last resort: uniform re-drill of not-yet-due cards
     if(slots>0&&pool.length){shuffleArr(pool);while(slots>0&&pool.length){prac.push(pool.pop().id);slots--;}}
   }
-  return {ids:shuffleArr(due.concat(fresh,prac)),due:due.length,fresh:fresh.length,prac:prac};
+  const backlog=enabled.filter(c=>{const s=cardState(c.id);return s&&s.due<=today;}).length;
+  return {ids:shuffleArr(due.concat(fresh,prac)),due:due.length,fresh:fresh.length,prac:prac,backlog:backlog};
 }
 function unseenIds(){
   const on=APP.settings.topics;
@@ -1163,6 +1167,7 @@ function renderStart(area){
   const short=r.ids.length<N&&!nothing;
   area.innerHTML=`<div class="done"><h2>${L("Ready when you are","Klaar wanneer jij het bent")}</h2>
     <p>${L("Next run","Volgende ronde")}: <b>${r.due}</b> ${L("due","te doen")} · <b>${r.fresh}</b> ${L("new","nieuw")} · <b>${r.prac.length}</b> ${L("practice","oefening")}${short?L(" — that is all that is available for the selected areas"," — meer is er niet voor de gekozen onderdelen"):""}.</p>
+    ${r.backlog>r.due?`<p class="note" style="color:var(--muted)">${L(r.backlog+" cards are due in total — the rest carry over to the next runs.",r.backlog+" kaarten staan in totaal klaar — de rest schuift door naar volgende rondes.")}</p>`:""}
     <p class="note" style="color:var(--muted)">${L("Pick areas above. Runs mix due reviews, new cards, and a sample of the rest — the closer a card is to its due date, the likelier it shows up. Ahead-of-schedule cards count as practice: a miss resets them, a pass changes nothing.","Kies hierboven de onderdelen. Een ronde mengt te herhalen kaarten, nieuwe kaarten en een steekproef uit de rest — hoe dichter een kaart bij zijn herhaaldatum zit, hoe waarschijnlijker hij verschijnt. Kaarten vóór hun tijd tellen als oefening: een fout zet ze terug, een goed antwoord verandert niets.")}</p>
 
     <div class="controls" style="max-width:280px;margin:16px auto 0"><button class="btn-flip" id="btn-startrun" ${nothing?"disabled":""}>${nothing?L("Nothing available","Niets beschikbaar"):L("Start a "+r.ids.length+"-card run","Start een ronde van "+r.ids.length)}</button></div>
