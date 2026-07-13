@@ -1018,6 +1018,17 @@ function computeRun(){
   }
   return {ids:shuffleArr(due.concat(fresh,prac)),due:due.length,fresh:fresh.length,prac:prac};
 }
+function unseenIds(){
+  const on=APP.settings.topics;
+  return DECK.filter(c=>on[c.topic]&&!cardState(c.id)).map(c=>c.id);
+}
+function buildNewRun(){
+  const N=Math.max(1,APP.settings.runSize||10);
+  const ids=shuffleArr(unseenIds()).slice(0,N);
+  session=ids; practiceSet=new Set(); idx=0; face="q"; round=null; lastPick=null;
+  runStats={pass:0,again:0,practiced:0,introduced:0,due:0,fresh:ids.length};
+  run=true;
+}
 function buildRun(){
   const r=computeRun();
   session=r.ids; practiceSet=new Set(r.prac); idx=0; face="q"; round=null; lastPick=null;
@@ -1147,7 +1158,7 @@ function gradeCurrent(g){
 }
 function renderStart(area){
   el("topicfilter").classList.remove("hidden");
-  const r=computeRun(), N=APP.settings.runSize;
+  const r=computeRun(), N=APP.settings.runSize, unseen=unseenIds().length;
   const nothing=r.ids.length===0;
   const short=r.ids.length<N&&!nothing;
   area.innerHTML=`<div class="done"><h2>${L("Ready when you are","Klaar wanneer jij het bent")}</h2>
@@ -1155,10 +1166,14 @@ function renderStart(area){
     <p class="note" style="color:var(--muted)">${L("Pick areas above. Runs mix due reviews, new cards, and a sample of the rest — the closer a card is to its due date, the likelier it shows up. Ahead-of-schedule cards count as practice: a miss resets them, a pass changes nothing.","Kies hierboven de onderdelen. Een ronde mengt te herhalen kaarten, nieuwe kaarten en een steekproef uit de rest — hoe dichter een kaart bij zijn herhaaldatum zit, hoe waarschijnlijker hij verschijnt. Kaarten vóór hun tijd tellen als oefening: een fout zet ze terug, een goed antwoord verandert niets.")}</p>
 
     <div class="controls" style="max-width:280px;margin:16px auto 0"><button class="btn-flip" id="btn-startrun" ${nothing?"disabled":""}>${nothing?L("Nothing available","Niets beschikbaar"):L("Start a "+r.ids.length+"-card run","Start een ronde van "+r.ids.length)}</button></div>
+    <div class="controls" style="max-width:280px;margin:8px auto 0"><button class="btn-plain" id="btn-newrun" ${unseen?"":"disabled"}>${unseen?L("Unseen cards only · "+Math.min(unseen,APP.settings.runSize),"Alleen ongeziene kaarten · "+Math.min(unseen,APP.settings.runSize)):L("No unseen cards left","Geen ongeziene kaarten meer")}</button></div>
+    ${(unseen&&r.due)?`<p class="note" style="color:var(--muted)">${L("An unseen-only run skips the "+r.due+" card(s) due for review — they stay due, they just wait.","Een ronde met alleen ongeziene kaarten slaat de "+r.due+" te herhalen kaart(en) over — die blijven staan, ze wachten alleen.")}</p>`:""}
     <div class="controls" style="max-width:280px;margin:8px auto 0"><button class="btn-plain" id="btn-exam">${L("Mock exam · 20 questions","Proefexamen · 20 vragen")}</button></div>
     ${nothing?`<p class="note">${L("Enable more areas above, or come back when reviews are due.","Zet hierboven meer onderdelen aan, of kom terug wanneer er herhalingen klaarstaan.")}</p>`:""}</div>`;
   const b=el("btn-startrun");
   if(b&&!nothing)b.addEventListener("click",()=>{buildRun();renderStudy();});
+  const nb=el("btn-newrun");
+  if(nb&&unseen)nb.addEventListener("click",()=>{buildNewRun();renderStudy();});
   el("btn-exam").addEventListener("click",startExam);
 }
 function renderDone(area){
