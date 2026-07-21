@@ -107,6 +107,9 @@ table.grid th{background:var(--paper);font-family:var(--mono);font-size:11.5px}
 .layerchip{display:inline-block;border:1px solid rgba(32,35,42,.25);border-radius:4px;padding:1px 7px;font-size:12px;white-space:nowrap}
 table.placegrid .layerchip{white-space:normal;font-size:11.5px;line-height:1.25;padding:2px 6px}
 .relrow{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:8px;flex-wrap:wrap}
+.elrow{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:8px;flex-wrap:wrap}
+.elrow .ds{color:var(--muted);font-size:13px;flex:1;min-width:210px;line-height:1.45}
+.elrow svg{flex:0 0 auto}
 .relrow .nm{font-weight:600;min-width:120px}
 .relrow .ds{color:var(--muted);font-size:13px;flex:1;min-width:200px}
 table.browse{width:100%;border-collapse:collapse;background:var(--panel);font-size:12.5px}
@@ -295,7 +298,7 @@ const ICONS={
   process:{d:`<path d="M2 7.2 H11.5 V4.2 L18 10 L11.5 15.8 V12.8 H2 Z" ${S}/>`},
   'function':{d:`<path d="M10 2 L17 9 H13.2 V17 L10 13.2 L6.8 17 V9 H3 Z" ${S}/>`},
   interaction:{d:`<path d="M8.6 3.8 A6.2 6.2 0 0 0 8.6 16.2 Z" ${S}/><path d="M11.4 3.8 A6.2 6.2 0 0 1 11.4 16.2 Z" ${S}/>`},
-  event:{d:`<path d="M3 6.4 H12 L17 10 L12 13.6 H3 Z" ${S}/>`},
+  event:{d:`<path d="M4 6.2 H11.8 Q16.8 10 11.8 13.8 H4 Q7.6 10 4 6.2 Z" ${S}/>`},
   service:{d:`<rect x="3" y="6" width="14" height="8" rx="4" ${S}/>`},
   object:{d:`<rect x="3" y="4" width="14" height="12" ${S}/><path d="M3 7.6 H17" ${S}/>`},
   contract:{d:`<rect x="3" y="4" width="14" height="12" ${S}/><path d="M3 7.6 H17 M3 12.6 H17" ${S}/>`},
@@ -318,6 +321,9 @@ const ICONS={
   outcome:{d:`<circle cx="9" cy="11" r="4.8" ${S}/><circle cx="9" cy="11" r="1.5" fill="#33363d" stroke="none"/><path d="M18 2 L10.4 9.6 M18 2 L14.6 2.6 M18 2 L17.4 5.4" ${S}/>`},
   principle:{d:`<rect x="5.6" y="3" width="8.8" height="14" rx="1.6" ${S}/><path d="M10 6 V11" ${S}/><circle cx="10" cy="13.6" r=".9" fill="#33363d" stroke="none"/>`},
   meaning:{d:`<path d="M5.4 13.6 a3 3 0 0 1 .8-5.9 a4.2 4.2 0 0 1 8.1 -.6 a3.1 3.1 0 0 1 .5 6.2 Z" ${S}/>`},
+  requirement:{d:`<path d="M4 12.5 L7.5 6.5 H16 L12.5 12.5 Z" ${S}/>`},
+  constraint:{d:`<path d="M4 12.5 L7.5 6.5 H16 L12.5 12.5 Z" ${S}/><path d="M6.2 9.5 H13.8" ${S}/>`},
+  value:{d:`<ellipse cx="10" cy="10" rx="6.6" ry="4.3" ${S}/>`},
   capability:{d:`<rect x="3.5" y="11" width="5.5" height="5.5" ${S}/><rect x="11" y="11" width="5.5" height="5.5" ${S}/><rect x="11" y="3.5" width="5.5" height="5.5" ${S}/>`},
   resource:{d:`<rect x="4" y="5" width="12" height="10" rx="1.5" ${S}/><path d="M6.5 8 H13.5 M6.5 10.5 H13.5 M6.5 13 H13.5" ${S}/>`},
   valuestream:{d:`<path d="M3 5 H12 L17 10 L12 15 H3 L7.5 10 Z" ${S}/>`},
@@ -430,10 +436,10 @@ const ELEMENTS=[
  {n:"Goal",layer:"motivation",aspect:"motivation",shape:"mot",icon:"goal",rec:1,tell:"A desired direction (\u201cincrease retention\u201d). Already achieved &amp; measurable \u2192 outcome; testable and about one system \u2192 requirement.",def:"A high-level statement of intent, direction, or desired end state for the organization and its stakeholders."},
  {n:"Outcome",layer:"motivation",aspect:"motivation",shape:"mot",icon:"outcome",rec:1,tell:"Past-tense test: \u201cchurn reduced by 10%\u201d \u2014 an achieved, measurable result.",def:"An end result that has been achieved — concrete and ideally measurable. Goals are aspirations; outcomes are results."},
  {n:"Principle",layer:"motivation",aspect:"motivation",shape:"mot",icon:"principle",rec:1,tell:"Applies to <i>all</i> systems in scope (\u201cbuy before build\u201d). Narrowed to one system it becomes a requirement.",def:"A general, normative property that should hold for any system in a given context — e.g. \"data is captured once, at the source\". More general than a requirement."},
- {n:"Requirement",layer:"motivation",aspect:"motivation",shape:"mot",icon:null,rec:0,tell:"One system, testable. Broader normative statement \u2192 principle; imposed limit \u2192 constraint.",def:"A statement of need that a specific system must meet. Where principles are general, requirements apply to one concrete system."},
- {n:"Constraint",layer:"motivation",aspect:"motivation",shape:"mot",icon:null,rec:0,tell:"A requirement you didn\u2019t choose: imposed budget, deadline, regulation, mandated technology.",def:"A restriction on how the architecture may be realized — budget, deadline, mandated technology, legal limits."},
+ {n:"Requirement",layer:"motivation",aspect:"motivation",shape:"mot",icon:"requirement",rec:0,tell:"One system, testable. Broader normative statement \u2192 principle; imposed limit \u2192 constraint.",def:"A statement of need that a specific system must meet. Where principles are general, requirements apply to one concrete system."},
+ {n:"Constraint",layer:"motivation",aspect:"motivation",shape:"mot",icon:"constraint",rec:0,tell:"A requirement you didn\u2019t choose: imposed budget, deadline, regulation, mandated technology.",def:"A restriction on how the architecture may be realized — budget, deadline, mandated technology, legal limits."},
  {n:"Meaning",layer:"motivation",aspect:"motivation",shape:"mot",icon:"meaning",rec:1,def:"The knowledge, interpretation, or context that a concept or piece of information has for someone."},
- {n:"Value",layer:"motivation",aspect:"motivation",shape:"mot",icon:null,rec:0,def:"The relative worth, utility, or importance of a concept to a stakeholder."},
+ {n:"Value",layer:"motivation",aspect:"motivation",shape:"mot",icon:"value",rec:0,def:"The relative worth, utility, or importance of a concept to a stakeholder."},
  // Strategy
  {n:"Resource",layer:"strategy",aspect:"active",shape:"sq",icon:"resource",rec:1,tell:"A noun you <i>have</i>, not something you <i>do</i>. Capabilities use resources.",def:"An asset owned or controlled by an individual or organization: people, capital, information, technology."},
  {n:"Capability",layer:"strategy",aspect:"behavior",shape:"round",icon:"capability",rec:1,tell:"Strategy-level \u201cwhat we can do\u201d, stable over years, silent on how. Business functions are the operational groupings that realize it.",def:"An ability that an active structure element (organization, person, system) possesses — what it can do, independent of how."},
@@ -1147,7 +1153,7 @@ function renderAnswer(c){
   if(c.back.title)h+=`<h3>${c.back.title}</h3>`;
   h+=`<p>${c.back.body}</p>`;
   if(c.back.svg)h+=`<div class="svgbox">${svgFor(c.back.svg)}</div>`;
-  if(c.back.tell)h+=`<p class="hintline">Tell it apart — ${c.back.tell}</p>`;
+  if(c.back.tell)h+=`<p class="hintline">${L("Tell it apart","Hoe herken je het")} — ${c.back.tell}</p>`;
   if(c.back.note)h+=`<p class="note">${c.back.note}</p>`;
   if(c.back.hint)h+=`<p class="hintline">${c.back.hint}</p>`;
   return h+`</div>`;
@@ -1421,7 +1427,17 @@ function renderReference(){
   let rels=RELS.map(r=>`<div class="relrow"><span class="nm">${r.n}</span>${relSVG(r.svg)}<span class="ds"><b>${RCAT[r.cat]}.</b> ${TR(r,"def")}<br><i>${TR(r,"notation")}</i>${TR(r,"more")?`<br><span style="opacity:.85">${TR(r,"more")}</span>`:""}</span></div>`).join("");
   rels+=`<div class="relrow"><span class="nm">Junction (OR)</span>${relSVG("junction-or")}<span class="ds"><b>${RCAT.Other}.</b> ${L("Open circle = one or more paths apply.","Open cirkel = één of meer paden gelden.")}</span></div>`;
   rels+=`<div class="relrow"><span class="nm">Directed association</span>${relSVG("association-directed")}<span class="ds"><b>${RCAT.Dependency}.</b> ${L("Half arrowhead marks the reading direction.","Halve pijlpunt markeert de leesrichting.")}</span></div>`;
-  let els=ELEMENTS.map(e=>`<div style="display:inline-block;margin:0 10px 14px;text-align:center;vertical-align:top">${elSVG(e,{label:e.n})}</div>`).join("");
+  const LORDER=["strategy","business","application","technology","physical","motivation","implementation","other"];
+  const ASPL={active:L("active structure","actieve structuur"),passive:L("passive structure","passieve structuur"),
+    behavior:L("behavior","gedrag"),motivation:L("motivation","motivatie"),
+    composite:L("composite","samengesteld"),other:L("composite","samengesteld")};
+  let els="";
+  for(const lk of LORDER){
+    const group=ELEMENTS.filter(e=>e.layer===lk);
+    if(!group.length)continue;
+    els+=`<h3 style="font-family:var(--serif);margin:16px 0 6px">${LLB(lk)}</h3>`;
+    els+=group.map(e=>`<div class="elrow">${elSVG(e,{label:e.n}).replace(/^<svg width="200" height="76"/,'<svg width="150" height="57"')}<span class="ds"><span style="font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;opacity:.8">${ASPL[e.aspect]}</span><br>${TE(e,"def")}${TE(e,"tell")?`<br><i>${L("Tell it apart","Hoe herken je het")} — ${TE(e,"tell")}</i>`:""}</span></div>`).join("");
+  }
   let vps="";
   for(const cat of ["Basic","Motivation","Strategy","Implementation & Migration"]){
     vps+=`<h3 style="font-family:var(--serif);margin:14px 0 6px">${cat}</h3>`+
