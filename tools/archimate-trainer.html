@@ -760,6 +760,56 @@ const LEGALQ=[
 const RSTR=["Association","Access","Serving","Realization","Assignment","Aggregation","Composition"];
 const DERIVP=[["Composition","Aggregation"],["Assignment","Composition"],["Realization","Assignment"],["Serving","Realization"],["Access","Serving"],["Association","Composition"],["Composition","Composition"],["Aggregation","Realization"],["Assignment","Serving"],["Realization","Composition"],["Access","Assignment"],["Serving","Aggregation"]];
 
+/* ---------- Risk & Security Overlay (The Open Group W172, 2017) ----------
+   NOT part of the ArchiMate 3.2 specification: an overlay that reuses existing
+   elements with «stereotypes». Kept out of VIEWPOINTS on purpose. */
+const RSO_MAP=[
+ {c:"Threat agent",e:"Business Role / Actor",l:"Business",en:"Something or someone that can act against an asset, causing harm.",nl:"Iets of iemand dat tegen een asset kan handelen, met schade als gevolg."},
+ {c:"Threat (integral)",e:"Driver",l:"Motivation",en:"Alternative to splitting into threat agent + threat event.",nl:"Alternatief voor het ontleden in threat agent + threat event."},
+ {c:"Attack method",e:"Business Process (or Function)",l:"Business",en:"The standard way the threat agent carries out the threat.",nl:"De standaardwijze waarop de threat agent de dreiging uitvoert."},
+ {c:"Threat event",e:"Business Event",l:"Business",en:"Event that can adversely affect an asset, attacks included.",nl:"Gebeurtenis die een asset nadelig kan raken, inclusief aanvallen."},
+ {c:"Loss event",e:"Business Event",l:"Business",en:"Circumstance that causes loss or damage to an asset.",nl:"Omstandigheid die verlies of schade aan een asset veroorzaakt."},
+ {c:"Vulnerability",e:"Assessment",l:"Motivation",en:"Weakness that stops an asset withstanding the threat.",nl:"Zwakte waardoor een asset de dreiging niet kan weerstaan."},
+ {c:"Risk",e:"Assessment",l:"Motivation",en:"Probable frequency and magnitude of future loss.",nl:"Waarschijnlijke frequentie en omvang van toekomstig verlies."},
+ {c:"Asset at risk",e:"Resource or core element",l:"any",en:"Business asset (business layer) or IS asset (application/technology).",nl:"Business asset (business-laag) of IS-asset (applicatie/technologie)."},
+ {c:"Control objective",e:"Goal",l:"Motivation",en:"What must be achieved in risk-control terms — an end.",nl:"Wat qua risicobeheersing bereikt moet worden — een doel."},
+ {c:"Security requirement",e:"Requirement",l:"Motivation",en:"Desired property that realizes a control objective — a means.",nl:"Gewenste eigenschap die een control objective realiseert — een middel."},
+ {c:"Control measure",e:"Requirement",l:"Motivation",en:"Concrete measure; specializes the security requirement.",nl:"Concrete maatregel; specialiseert de security requirement."},
+ {c:"Security principle",e:"Principle",l:"Motivation",en:"General, guiding security tenet.",nl:"Algemeen, sturend beveiligingsuitgangspunt."},
+ {c:"Implemented control measure",e:"Core element",l:"any",en:"The implementation; associated with the asset at risk.",nl:"De implementatie; geassocieerd met het asset at risk."},
+ {c:"Stakeholder / risk owner",e:"Stakeholder",l:"Motivation",en:"Party with an interest in, or ownership of, the risk.",nl:"Partij met belang bij of eigenaar van het risico."},
+ {c:"Concern / interest at stake",e:"Driver",l:"Motivation",en:"What the risk is assessed against (availability, compliance).",nl:"Waar het risico tegen wordt beoordeeld (beschikbaarheid, compliance)."}
+];
+const RSO_APPROX=[
+ {c:"Security criterion (CIA)",e:"Driver or Assessment",en:"EAM-ISSRM mapping, not W172 core.",nl:"EAM-ISSRM-koppeling, geen W172-kern."},
+ {c:"Impact",e:"Assessment (or Value)",en:"Approximate.",nl:"Benaderend."},
+ {c:"Risk treatment",e:"Course of Action or Requirement",en:"From the ROSE redesign; disputed.",nl:"Uit de ROSE-redesign; betwist."}
+];
+const RSO_REL=[
+ {f:"Threat agent \u2192 threat event",r:"Association",en:"The agent causes, or is responsible for, the threat event.",nl:"De agent veroorzaakt de dreigingsgebeurtenis of is ervoor verantwoordelijk."},
+ {f:"Threat event \u2192 loss event",r:"Triggering",en:"The threat triggers the loss event \u2014 behavior to behavior.",nl:"De dreiging triggert de verliesgebeurtenis \u2014 gedrag naar gedrag."},
+ {f:"Vulnerability \u2192 threat / loss event",r:"Association",en:"The vulnerability is exploited by the event.",nl:"De kwetsbaarheid wordt door de gebeurtenis ge\u00ebxploiteerd."},
+ {f:"Vulnerability \u2192 asset at risk",r:"Association",en:"The vulnerability is a weakness of the asset.",nl:"De kwetsbaarheid is een zwakte van het asset."},
+ {f:"Loss event \u2192 risk",r:"Influence (+)",en:"The loss raises the assessed risk.",nl:"Het verlies verhoogt de beoordeelde risicoscore."},
+ {f:"Risk \u2192 control objective",r:"Influence (+)",en:"The risk motivates the control objective.",nl:"Het risico motiveert het beheersdoel."},
+ {f:"Control measure / security requirement \u2192 control objective",r:"Realization",en:"The means realizes the end \u2014 concrete realizes abstract.",nl:"Het middel realiseert het doel \u2014 concreet realiseert abstract."},
+ {f:"Implemented control measure \u2192 control measure",r:"Realization",en:"The implementation realizes the measure.",nl:"De implementatie realiseert de maatregel."},
+ {f:"Implemented control measure \u2192 asset at risk",r:"Association",en:"The control protects the asset at risk.",nl:"De control beschermt het asset at risk."},
+ {f:"Implemented control measure \u2192 vulnerability",r:"Influence (\u2212)",en:"The control reduces the vulnerability.",nl:"De control verkleint de kwetsbaarheid."},
+ {f:"Security principle \u2192 control objective",r:"Realization",en:"Per W172; the direction is disputed in the literature.",nl:"Volgens W172; de richting is in de literatuur betwist."}
+];
+const RSO_NOTES=[
+ {en:"Association on the analysis side is inherent to the overlay (a documented construct deficit). Use a specific relationship where one fits \u2014 triggering, influence, realization \u2014 and fall back on association only where the RSO itself does.",
+  nl:"Association aan de analysekant is inherent aan de overlay (een gedocumenteerd construct-deficit). Gebruik een specifieke relatie waar dat kan \u2014 triggering, influence, realization \u2014 en val alleen terug op association waar de RSO dat zelf doet."},
+ {en:"Driver carries two different jobs here: an integral threat, and the interest the risk is assessed against. That is concept overload in the overlay, not a clean one-to-one mapping.",
+  nl:"Driver draagt hier twee verschillende rollen: een integrale dreiging \u00e9n het belang waartegen het risico wordt beoordeeld. Dat is concept-overload van de overlay, geen nette 1-op-1."},
+ {en:"Quantification is not native. Model likelihood and impact as properties on the Assessment and as influence strengths, aligned to a scale (ISO 27005, FAIR).",
+  nl:"Kwantificering is niet native. Modelleer kans en impact via properties op de Assessment en via influence-sterktes, afgestemd op een schaal (ISO 27005, FAIR)."},
+ {en:"The position of Security principle is disputed: W172 has the principle realize the control objective, yet a Principle is more abstract than a Goal, which suggests the reverse. Choose deliberately and document the choice.",
+  nl:"De positie van Security principle is betwist: W172 laat het principe het control objective realiseren, terwijl een Principle juist abstracter is dan een Goal \u2014 wat de omgekeerde richting suggereert. Kies bewust en documenteer de keuze."},
+ {en:"Reuse existing core elements as the asset at risk rather than creating duplicates, and integrate risk elements into existing views in moderation \u2014 the overlay has no view or palette of its own.",
+  nl:"Hergebruik bestaande core-elementen als asset at risk in plaats van duplicaten te maken, en integreer risico-elementen met mate in bestaande views \u2014 de overlay heeft geen eigen view of palet."}
+];
 /* ---------- relationship-direction & ordering data ---------- */
 const DIRQ=[
  {x:"Application Service",y:"Business Process",rel:"serves",foil:"realizes",why:"Serving points from the supporting service to the behavior that uses it — support flows upward across layers."},
@@ -1443,12 +1493,32 @@ function renderReference(){
     vps+=`<h3 style="font-family:var(--serif);margin:14px 0 6px">${cat}</h3>`+
       VIEWPOINTS.filter(v=>v.cat===cat).map(v=>`<p style="margin:4px 0"><b>${v.n}.</b> ${TV(v,"purpose")} <span style="color:var(--muted)">(${TV(v,"els")})</span></p>`).join("");
   }
+  // Risk & Security Overlay — clearly separated from the normative spec content
+  const TX=o=>L(o.en,o.nl);
+  let rso=`<p class="note" style="color:var(--muted);font-size:12.5px;border-left:3px solid var(--line);padding-left:10px">${L(
+    "<b>Not part of the ArchiMate 3.2 specification.</b> The Risk &amp; Security Overlay is a guideline from The Open Group (whitepaper W172, 2017, aligned to ArchiMate 3.1), not a language extension. It introduces no notation: it reuses existing elements and specializes them with \u00abstereotypes\u00bb. Not exam material \u2014 included here for practice.",
+    "<b>Geen onderdeel van de ArchiMate 3.2-specificatie.</b> De Risk &amp; Security Overlay is een richtlijn van The Open Group (whitepaper W172, 2017, afgestemd op ArchiMate 3.1), geen taaluitbreiding. Er wordt geen notatie ge\u00efntroduceerd: bestaande elementen worden hergebruikt en gespecialiseerd met \u00abstereotypes\u00bb. Geen examenstof \u2014 hier opgenomen voor de praktijk.")}</p>`;
+  rso+=`<h3 style="font-family:var(--serif);margin:16px 0 6px">${L("Concept \u2192 element mapping","Concept \u2192 element-mapping")}</h3>`;
+  rso+=`<table class="grid"><tr><th>${L("RSO concept","RSO-concept")}</th><th>${L("ArchiMate element","ArchiMate-element")}</th><th>${L("Layer","Laag")}</th><th>${L("Meaning","Betekenis")}</th></tr>`;
+  rso+=RSO_MAP.map(m=>`<tr><td><b>${m.c}</b></td><td>${m.e}</td><td style="color:var(--muted)">${m.l==="any"?L("any","elke"):m.l}</td><td>${TX(m)}</td></tr>`).join("");
+  rso+=`</table>`;
+  rso+=`<p class="note" style="color:var(--muted);font-size:12.5px;margin-top:10px">${L("Approximate mappings from outside the W172 core \u2014 disputed in places, so treat them as indicative:","Benaderende mappings van buiten de W172-kern \u2014 op punten betwist, dus indicatief:")}</p>`;
+  rso+=`<table class="grid">`+RSO_APPROX.map(m=>`<tr><td><b>${m.c}</b></td><td>${m.e}</td><td style="color:var(--muted)">${TX(m)}</td></tr>`).join("")+`</table>`;
+  rso+=`<h3 style="font-family:var(--serif);margin:16px 0 6px">${L("The risk chain","De risicoketen")}</h3>`;
+  rso+=`<p class="note" style="color:var(--muted);font-size:12.5px">${L("The analysis half (threat \u2192 event \u2192 loss \u2192 risk) runs on association, triggering, and influence; the control half (objective \u2192 measure \u2192 implementation) runs on realization. The implemented control closes the loop: it protects the asset and reduces the vulnerability.","De analysekant (dreiging \u2192 gebeurtenis \u2192 verlies \u2192 risico) draait op association, triggering en influence; de beheerskant (doel \u2192 maatregel \u2192 implementatie) op realization. De ge\u00efmplementeerde control sluit de lus: hij beschermt het asset en verkleint de kwetsbaarheid.")}</p>`;
+  rso+=`<table class="grid"><tr><th>${L("From \u2192 to","Van \u2192 naar")}</th><th>${L("Relationship","Relatie")}</th><th>${L("Meaning","Betekenis")}</th></tr>`;
+  rso+=RSO_REL.map(r=>`<tr><td>${r.f}</td><td><b>${r.r}</b></td><td>${TX(r)}</td></tr>`).join("");
+  rso+=`</table>`;
+  rso+=`<h3 style="font-family:var(--serif);margin:16px 0 6px">${L("Points to watch","Aandachtspunten")}</h3>`;
+  rso+=`<ul style="margin:6px 0 0 18px;padding:0;font-size:13px;color:var(--muted);line-height:1.5">`+RSO_NOTES.map(n=>`<li style="margin-bottom:6px">${TX(n)}</li>`).join("")+`</ul>`;
+  rso+=`<p class="note" style="color:var(--muted);font-size:12px;margin-top:10px">${L("Sources: The Open Group W172 (2017); Sales et al., Ontology-based security modeling in ArchiMate (2024) and the ROSE redesign; Mayer et al. (2017).","Bronnen: The Open Group W172 (2017); Sales e.a., Ontology-based security modeling in ArchiMate (2024) en de ROSE-redesign; Mayer e.a. (2017).")}</p>`;
   t.innerHTML=`<h2 class="sec">${L("Framework — layers × aspects","Raamwerk — lagen × aspecten")}</h2>${grid}
     <h2 class="sec">${L("Relationships","Relaties")}</h2>${rels}
     <p class="note" style="color:var(--muted);font-size:12.5px">${L("Derivation strength, weak → strong","Afleidingssterkte, zwak → sterk")}: association &lt; access &lt; serving &lt; realization &lt; assignment &lt; aggregation &lt; composition.</p>
     <h2 class="sec">${L("Element notation","Elementnotatie")}</h2><div>${els}</div>
     <p class="note" style="color:var(--muted);font-size:12.5px">${L("Notation follows Appendix A of the ArchiMate 3.2 specification; colours follow common tool conventions and are not normative.","Notatie volgt Bijlage A van de ArchiMate 3.2-specificatie; kleuren volgen gangbare toolconventies en zijn niet normatief.")}</p>
-    <h2 class="sec">Viewpoints</h2>${vps}`;
+    <h2 class="sec">Viewpoints</h2>${vps}
+    <h2 class="sec">Risk &amp; Security Overlay</h2>${rso}`;
 }
 
 /* ---------- browse tab ---------- */
