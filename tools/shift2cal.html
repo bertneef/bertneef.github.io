@@ -855,7 +855,7 @@
           const fullDayOption = document.getElementById('full-day-option');
           if (template.startTime && template.duration) {
             fullDayOption.classList.remove('hidden');
-            document.getElementById('template-full-day').checked = template.fullDay || false;
+            document.getElementById('template-full-day').checked = template.fullDay !== undefined ? template.fullDay : true;
           } else {
             fullDayOption.classList.add('hidden');
             document.getElementById('template-full-day').checked = false;
@@ -1348,6 +1348,12 @@
         lines.push(shift.fullDay ? 'TRANSP:TRANSPARENT' : 'TRANSP:OPAQUE');
         lines.push('CLASS:PUBLIC');
 
+        // Color (Apple Calendar / RFC 7986 compatible clients)
+        if (shift.color) {
+          lines.push(`X-APPLE-CALENDAR-COLOR:${shift.color.toUpperCase()}`);
+          lines.push(`COLOR:${shift.color.toUpperCase()}`);
+        }
+
         lines.push('END:VEVENT');
       });
 
@@ -1447,6 +1453,7 @@
         const fullDayOption = document.getElementById('full-day-option');
         if (startTimeInput.value && durationInput.value) {
           fullDayOption.classList.remove('hidden');
+          document.getElementById('template-full-day').checked = true;
         } else {
           fullDayOption.classList.add('hidden');
           document.getElementById('template-full-day').checked = false;
