@@ -129,6 +129,13 @@ h1{font-size:clamp(1.65rem,1.1rem + 2.2vw,2.45rem);line-height:1.12;letter-spaci
 .four .lbl{font-size:12px;padding:0 3px 2px}
 .five .lbl{font-size:11.5px;padding:0 2px 2px}
 .lgroups{display:grid;margin-bottom:3px}
+.dscroll{overflow-x:auto;overscroll-behavior-x:contain}
+.hint-scroll{display:none;font-size:12px;color:var(--muted);margin:0 2px 8px}
+@media (max-width:520px){
+  .four-lanes .dinner{min-width:420px}
+  .five-lanes .dinner{min-width:480px}
+  .four-lanes .hint-scroll{display:block}
+}
 .lgroup{text-align:center;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);border:1.5px solid var(--accent);border-bottom:0;border-radius:6px 6px 0 0;padding:1px 0 2px}
 .lane.grp{background:var(--accent-soft);border-color:var(--accent)}
 .arr.self.flip{justify-self:end}
@@ -170,6 +177,11 @@ h1{font-size:clamp(1.65rem,1.1rem + 2.2vw,2.45rem);line-height:1.12;letter-spaci
 .pipe .pi span{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-weight:500}
 .pipe .pa{color:var(--muted)}
 .pipe .btn{margin-left:4px}
+.src{display:inline-block;font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:lowercase;line-height:1.5;padding:0 6px;border-radius:999px;vertical-align:1px;white-space:nowrap}
+.src-inf{background:var(--warn-bg);color:var(--ink-2);border:1px solid var(--warn-line)}
+.src-simp{background:var(--band);color:var(--muted);border:1px solid var(--line)}
+.srcnote{font-size:12.5px;color:var(--muted);margin:10px 0 0;max-width:80ch}
+.pipe-note{font-size:12.5px;color:var(--muted);margin:-4px 0 10px;max-width:70ch}
 .copyfb{display:block;width:100%;height:5.5em;margin:0 0 10px;font-family:var(--font-mono);font-size:11.5px;border:1px solid var(--line);border-radius:6px;background:var(--code-bg);color:var(--ink);padding:6px}
 
 .vlegend{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 8px;font-size:12px;color:var(--muted)}
@@ -210,6 +222,18 @@ h1{font-size:clamp(1.65rem,1.1rem + 2.2vw,2.45rem);line-height:1.12;letter-spaci
 .ck-r em{font-style:normal;font-weight:600;color:var(--risk)}
 
 /* ---------- outro ---------- */
+.overview{margin-top:40px}
+.overview h2{font-size:1.1rem;font-weight:600;margin:0 0 .4em}
+.overview>p{max-width:72ch;margin:0 0 12px;color:var(--ink-2)}
+.vt-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.vt{border-collapse:collapse;width:100%;min-width:780px;font-size:13.5px;line-height:1.45}
+.vt th,.vt td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+.vt thead th{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--code-bg)}
+.vt tbody th{font-weight:600;white-space:nowrap}
+.vt tbody tr:last-child td,.vt tbody tr:last-child th{border-bottom:0}
+.vt .grp td{background:var(--code-bg);font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:6px 12px}
+.vt-go{border:0;background:transparent;padding:0;font:inherit;font-weight:600;color:var(--accent);cursor:pointer;text-align:left}
+.vt-go:hover{text-decoration:underline}
 .outro{display:grid;grid-template-columns:minmax(0,1fr);gap:28px;margin-top:40px}
 @media (min-width:900px){.outro{grid-template-columns:repeat(3,minmax(0,1fr));gap:36px}}
 .outro section{border-top:2px solid var(--ink);padding-top:12px}
@@ -223,13 +247,14 @@ h1{font-size:clamp(1.65rem,1.1rem + 2.2vw,2.45rem);line-height:1.12;letter-spaci
   <header>
     <p class="eyebrow">SAML 2.0 · OpenID Connect · OAuth 2.0</p>
     <h1>Inloggen, bericht voor bericht</h1>
-    <p class="lede">Een medewerker opent een webapplicatie en logt in via de identity provider van de gemeente. Kies een stap in het diagram om te zien wat er over de lijn gaat, wat elk veld betekent en waarom het er staat. Bovenaan het diagram kies je het protocol en de variant: SAML direct, via een broker (govConext, Keycloak) of met Nubus als eigen identiteitsbron achter govConext, of OpenID Connect met OAuth 2.0. Hostnamen en waarden zijn fictief; de OIDC-tokens zijn echt ondertekend met demosleutels, zodat je ze kunt controleren.</p>
+    <p class="lede">Een medewerker opent een webapplicatie en logt in via de identity provider van de gemeente. Kies een stap in het diagram om te zien wat er over de lijn gaat, wat elk veld betekent en waarom het er staat. Bovenaan het diagram kies je het protocol en de variant: SAML direct, via een broker (govConext, Keycloak) of met Nubus als eigen identiteitsbron achter govConext, of OpenID Connect met OAuth 2.0. Hostnamen en waarden zijn fictief; de SAML-response en de OIDC-tokens zijn echt ondertekend met demosleutels, zodat je ze kunt controleren.</p>
     <div class="legend" aria-label="Legenda">
       <span><i class="sw"></i>protocolbericht via de browser</span>
       <span><i class="sw back"></i>direct tussen servers</span>
       <span><i class="sw http"></i>gewone HTTP</span>
       <span><i class="sw meta"></i>vooraf ingericht</span>
     </div>
+    <p class="srcnote">Labels in de toelichting: <span class="src src-inf">afgeleid</span> betekent niet gevonden in de documentatie van govroam of Nubus, maar afgeleid van OpenConext of Keycloak. <span class="src src-simp">vereenvoudigd</span> is een voorbeeld dat de vorm toont, niet letterlijk wat over de lijn gaat. Al het andere volgt de standaarden en productdocumentatie.</p>
   </header>
 
   <main class="layout">
@@ -240,22 +265,47 @@ h1{font-size:clamp(1.65rem,1.1rem + 2.2vw,2.45rem);line-height:1.12;letter-spaci
       </div>
       <div class="modes sub" role="group" aria-label="Variant" id="variants"></div>
       <p class="mode-note" id="mode-note"></p>
+      <p class="hint-scroll">Schuif het diagram opzij om alle lanes te zien.</p>
+      <div class="dscroll"><div class="dinner">
       <div class="lgroups" id="lgroups" hidden></div>
       <div class="lanes" id="lanes"></div>
       <div class="seq" id="seq"></div>
+      </div></div>
       <p class="hint">Pijltjestoetsen ← → bladeren door de stappen.</p>
     </section>
     <section class="detail" id="detail" aria-label="Berichtdetails"></section>
   </main>
 
+  <section class="overview" aria-labelledby="ov-h">
+    <h2 id="ov-h">Wat de app uiteindelijk ziet</h2>
+    <p>Per variant: wie het antwoord voor de app ondertekent, aan welke identifier de app de gebruiker herkent, of de app ziet dat er met MFA is ingelogd, en hoe een blokkade bij de bron de app bereikt. Kies een variant om hem in het diagram te openen.</p>
+    <div class="vt-wrap">
+      <table class="vt">
+        <thead><tr><th scope="col">Variant</th><th scope="col">App vertrouwt</th><th scope="col">Identifier voor de app</th><th scope="col">MFA zichtbaar voor de app</th><th scope="col">Blokkade bij de bron bereikt de app</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="5">SAML 2.0</td></tr>
+          <tr><th scope="row"><button type="button" class="vt-go" data-m="direct">Direct</button></th><td>Jouw IdP</td><td>NameID van jouw IdP</td><td>Via AuthnContextClassRef, als de IdP het zo meldt. Entra ID gebruikt een apart attribuut.</td><td>Bij een nieuwe login; eerder alleen via Single Logout of provisioning.</td></tr>
+          <tr><th scope="row"><button type="button" class="vt-go" data-m="govconext">Via govConext</button></th><td>govConext</td><td>Pseudoniem per SP, plus uid als dat is vrijgegeven. Beide volgen uit uid en schacHomeOrganization <span class="src src-inf" title="Afgeleid van OpenConext">afgeleid</span>; bij Entra ID is uid de UPN.</td><td>Alleen als govConext het niveau doorgeeft, of via step-up met govSecureID.</td><td>Bij een nieuwe login via govConext.</td></tr>
+          <tr><th scope="row"><button type="button" class="vt-go" data-m="keycloak">Via Keycloak</button></th><td>Keycloak</td><td>Lokaal Keycloak-account, gekoppeld bij de eerste login</td><td>Alleen als Keycloak het vertaalt.</td><td>Bij een nieuwe login nadat de Keycloak-sessie is verlopen.</td></tr>
+          <tr><th scope="row"><button type="button" class="vt-go" data-m="nubus">govConext + Nubus</button></th><td>govConext</td><td>Pseudoniem per SP <span class="src src-inf" title="Afgeleid van OpenConext">afgeleid</span>, plus uid uit Nubus</td><td>Alleen als Keycloak in Nubus het niveau meldt en govConext het doorgeeft.</td><td>Via een provisioning-event, als de app een consumer heeft; anders bij een nieuwe login.</td></tr>
+          <tr class="grp"><td colspan="5">OIDC / OAuth 2.0</td></tr>
+          <tr><th scope="row"><button type="button" class="vt-go" data-m="oidc">Inloggen + API</button></th><td>Jouw OpenID Provider</td><td>iss + sub</td><td>Via acr; in OpenID NLGov een eIDAS-niveau.</td><td>Bij verversen, als de OP de accountstatus controleert; bij uitloggen via back-channel logout.</td></tr>
+          <tr><th scope="row"><button type="button" class="vt-go" data-m="oidc-gov">Via govConext</button></th><td>govConext</td><td>sub (pseudoniem) <span class="src src-inf" title="Afgeleid van OpenConext">afgeleid</span> plus uid</td><td>Afhankelijk van wat govConext doorgeeft.</td><td>Bij de volgende SAML-login van govConext bij jouw IdP.</td></tr>
+          <tr><th scope="row"><button type="button" class="vt-go" data-m="oidc-kc">Via Keycloak</button></th><td>Keycloak</td><td>sub = ID van het lokale Keycloak-account</td><td>Via acr van Keycloak, standaard alleen 0 of 1.</td><td>Bij het verlopen van de Keycloak-sessie.</td></tr>
+          <tr><th scope="row"><button type="button" class="vt-go" data-m="cc">Server naar server</button></th><td>Jouw OpenID Provider</td><td>client_id; er is geen gebruiker</td><td>Niet van toepassing.</td><td>Rol of sleutel intrekken; een uitgegeven token blijft geldig tot het verloopt.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
   <div class="outro">
     <section>
       <h2>Wat je moet onthouden</h2>
       <ul>
-        <li>SP en IdP praten tijdens het inloggen niet met elkaar. De browser draagt de berichten; het vertrouwen komt uit de metadata die vooraf is uitgewisseld.</li>
-        <li>Een assertion is een bearer-token: wie hem heeft, kan hem gebruiken. Audience, Recipient, InResponseTo en het tijdvenster beperken hem tot één SP, één verzoek en een paar minuten.</li>
+        <li>Bij de gangbare Redirect- en POST-binding praten SP en IdP tijdens het inloggen niet met elkaar. De browser draagt de berichten; het vertrouwen komt uit de metadata die vooraf is uitgewisseld. Bij de zelden gebruikte Artifact-binding is er wel direct contact.</li>
+        <li>Een assertion is een bearer-token: wie hem heeft, kan hem gebruiken. Audience, Recipient, InResponseTo en het tijdvenster beperken hem tot één SP, één verzoek en een paar minuten, samen met de handtekening en een controle op hergebruik.</li>
         <li>Hoe de gebruiker inlogt staat buiten SAML. De SP ziet alleen het resultaat en het niveau.</li>
-        <li>Na de login heeft de SP een eigen sessie. Blokkeren of afmelden bij de IdP raakt die sessie niet vanzelf.</li>
+        <li>Na de login heeft de SP een eigen sessie. Blokkeren of afmelden bij de IdP raakt die sessie niet vanzelf. Single Logout of aparte provisioning kan dat oplossen, maar alleen als elke partij het ondersteunt en het is ingericht.</li>
       </ul>
     </section>
     <section>
@@ -264,20 +314,20 @@ h1{font-size:clamp(1.65rem,1.1rem + 2.2vw,2.45rem);line-height:1.12;letter-spaci
       <ul>
         <li><b>Beheer.</b> govConext draait bij Stichting govroam en wordt in Nederland gehost. Keycloak beheer je zelf, of laat je beheren, inclusief patches, beschikbaarheid en sleutelbeheer.</li>
         <li><b>Bereik.</b> Op govConext sluit een leverancier één keer aan voor alle deelnemers, en jij koppelt één keer voor alle applicaties die er al zijn. Bij Keycloak koppel je elke applicatie zelf.</li>
-        <li><b>Gebruikers.</b> govConext geeft identiteiten door en bewaart weinig: pseudoniemen per SP en toestemmingen. Keycloak maakt bij de eerste login een lokaal account aan, met de lifecycle die daarbij hoort.</li>
+        <li><b>Gebruikers.</b> govConext heeft geen eigen gebruikersbeheer voor medewerkers: het geeft attributen van jouw IdP door en onthoudt toestemmingen per dienst. Volgens de privacyverklaring van govroam worden logbestanden met persoonsgegevens in principe maximaal zes maanden bewaard. Keycloak maakt bij de eerste login een lokaal account aan, met de lifecycle die daarbij hoort.</li>
         <li><b>Maatwerk.</b> Keycloak geeft volledige controle over flows, mappers en extra MFA. govConext biedt modules (govSecureID, Invite, govID) binnen het aanbod van de hub.</li>
         <li><b>Uitwisselbaarheid.</b> In beide gevallen hangen applicaties aan de broker, niet aan Entra ID. Wissel je later van IdP, dan pas je één koppeling aan.</li>
       </ul>
-      <p class="fine" style="margin-top:.8em">Hoe govConext intern werkt, is hier afgeleid van OpenConext zoals SURFconext het gebruikt. Controleer details zoals attribuutnamen in de govConext-wiki.</p>
+      <p class="fine" style="margin-top:.8em">Attribuutnamen en het OIDC-profiel van govConext volgen de govConext-wiki (geraadpleegd 2026-11-01). Wat daar niet staat, zoals de vorm van pseudoniemen, is afgeleid van OpenConext, de software eronder.</p>
     </section>
     <section>
       <h2>SAML of OIDC?</h2>
       <ul>
         <li><b>Route.</b> Bij SAML reist de assertion via de browser. Bij OIDC gaat via de browser alleen een kortlevende code; de tokens haalt de app rechtstreeks bij de IdP op.</li>
-        <li><b>Formaat.</b> XML met XML-handtekeningen tegenover JSON in JWT's. JWT's zijn eenvoudiger te controleren, maar kennen eigen valkuilen zoals alg-verwarring.</li>
-        <li><b>API's.</b> SAML regelt alleen inloggen. OAuth 2.0 geeft access tokens waarmee een app namens een gebruiker, of namens zichzelf, een API aanroept.</li>
-        <li><b>Grip na de login.</b> Met kortlevende access tokens en verversen beslist de IdP steeds opnieuw. Na een SAML-login is de IdP buiten beeld.</li>
-        <li><b>Mengen.</b> Een broker vertaalt tussen de protocollen: de app spreekt OIDC, jouw IdP SAML. Wel verlies je dan een deel van de grip die verversen bij OIDC geeft.</li>
+        <li><b>Formaat.</b> XML met XML-handtekeningen tegenover JSON. Een ID token is altijd een JWT; een access token kan ook een ondoorzichtige string zijn. JWT's zijn eenvoudiger te controleren, maar kennen eigen valkuilen zoals alg-verwarring.</li>
+        <li><b>Doel.</b> SAML regelt inloggen. OAuth 2.0 is een autorisatieprotocol: access tokens waarmee een app namens een gebruiker, of namens zichzelf, een API aanroept. OpenID Connect voegt daar het inloggen aan toe, met het ID token.</li>
+        <li><b>Grip na de login.</b> Bij OIDC beslist de authorization server opnieuw bij elk verversen, niet bij elke API-aanroep. Wat hij dan controleert, verschilt per product. Na een SAML-login komt de IdP pas weer in beeld bij een nieuwe login of via Single Logout.</li>
+        <li><b>Mengen.</b> Een broker vertaalt tussen de protocollen: de app spreekt OIDC, jouw IdP SAML. Hoeveel grip verversen dan nog geeft, hangt af van de broker: zijn eigen sessie- en tokenbeleid, en of hij via provisioning hoort dat een account is geblokkeerd.</li>
         <li><b>Keuze.</b> SAML voor bestaande webapplicaties die het al ondersteunen; OIDC voor nieuwe applicaties, mobiele apps en alles wat API's aanroept. Voor de overheid bestaan Nederlandse profielen: OAuth NL GOV en OpenID NLGov van Logius.</li>
       </ul>
     </section>
@@ -324,10 +374,11 @@ h1{font-size:clamp(1.65rem,1.1rem + 2.2vw,2.45rem);line-height:1.12;letter-spaci
 @5|        <ds:Reference URI="#_a92d5f7c3e0b4186a4d1">
 @6|          <ds:Transforms>…</ds:Transforms>
 @6|          <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
-@6|          <ds:DigestValue>3qR8nV2wXk…</ds:DigestValue>
+@6|          <ds:DigestValue>XiOqd4qB47o2Cx…</ds:DigestValue>
 @6|        </ds:Reference>
 @6|      </ds:SignedInfo>
-@6|      <ds:SignatureValue>kX9fP0aQ7tLm…</ds:SignatureValue>
+@6|      <ds:SignatureValue>Og6GihGgNthXRD…</ds:SignatureValue>
+@6|      <ds:KeyInfo><ds:X509Data><ds:X509Certificate>MIIC8zCCAdugAwIBAgIHWj…</ds:X509Certificate></ds:X509Data></ds:KeyInfo>
 @6|    </ds:Signature>
     <saml:Subject>
 @7|      <saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent">9f8e7d6c-5b4a-4c3d-8e2f-1a0b9c8d7e6f</saml:NameID>
@@ -350,13 +401,16 @@ h1{font-size:clamp(1.65rem,1.1rem + 2.2vw,2.45rem);line-height:1.12;letter-spaci
 @11|      </saml:AuthnContext>
 @11|    </saml:AuthnStatement>
 @12|    <saml:AttributeStatement>
-@12|      <saml:Attribute Name="urn:oid:2.16.840.1.113730.3.1.241" FriendlyName="displayName">
+@12|      <saml:Attribute Name="urn:oid:2.16.840.1.113730.3.1.241" FriendlyName="displayName"
+@12|          NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
 @12|        <saml:AttributeValue>Jan Jansen</saml:AttributeValue>
 @12|      </saml:Attribute>
-@12|      <saml:Attribute Name="urn:oid:0.9.2342.19200300.100.1.3" FriendlyName="mail">
+@12|      <saml:Attribute Name="urn:oid:0.9.2342.19200300.100.1.3" FriendlyName="mail"
+@12|          NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
 @12|        <saml:AttributeValue>j.jansen@gemeente.voorbeeld.nl</saml:AttributeValue>
 @12|      </saml:Attribute>
-@12|      <saml:Attribute Name="urn:oid:1.3.6.1.4.1.5923.1.5.1.1" FriendlyName="isMemberOf">
+@12|      <saml:Attribute Name="urn:oid:1.3.6.1.4.1.5923.1.5.1.1" FriendlyName="isMemberOf"
+@12|          NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
 @12|        <saml:AttributeValue>rapportage-lezers</saml:AttributeValue>
 @12|      </saml:Attribute>
 @12|    </saml:AttributeStatement>
@@ -370,12 +424,12 @@ h1{font-size:clamp(1.65rem,1.1rem + 2.2vw,2.45rem);line-height:1.12;letter-spaci
 const ENC = {
   reqXml: 800, reqDef: 396, reqB64: 528, reqUrl: 564,
   reqFull: "fVPLjtpAELzvVyDf8ZhHHowAiYCiIJEEAbuHXKLGbmCkeWW6Z7P5%2B4xtEBxW9mWk6a7qqpr2lMBoLxeRL3aHfyIS996MtiSbwiyLwUoHpEhaMEiSS7lffN%2FIYV5IHxy70unsqZe%2BO6wbBUQYWDnbwtarWfb702kEk3KI48Hx87gqYIIfyrb8goFS7yxL0CuAKOLaEoPldF0MP%2FYHRX80OBQTORjKYvyr7VslL8oCN%2BgLsycphHZnZfMzGkTLmL86F46IusqtFrV0QeRa%2BOImc%2BksRYNhj%2BFVlfi829zpwPt3OKCklmN7DeiLspWy5%2B5cjm0TyW%2BHw7a%2F%2Fbk%2FZPPEMq0pZWM6zLvnGmSogGEqHjE3Di9%2FpJnr1dZpVf7rfXXBAHdLqm9U1T81rdLXT0GcgmvdpYy0dn%2BXAYFxlnGImImHcdd9wqrZrhQj4xv3ls54CIrqVzHKKhNN4%2FPm9LF5qdOy7PDU%2BE62kxigHGNwHtIhNm4hKB6bVVCgr77fZahliQ5d86db%2BfFfmP8H",
-  respXml: 2950, respB64: 3936,
-  respFull: "PHNhbWxwOlJlc3BvbnNlIHhtbG5zOnNhbWxwPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6cHJvdG9jb2wiCiAgICB4bWxuczpzYW1sPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6YXNzZXJ0aW9uIgogICAgSUQ9Il9jNDFlOGIwZjJhNmQ0ZTE3YjlhMyIKICAgIEluUmVzcG9uc2VUbz0iXzdmM2E5YzJlNDFiODRkMGE5ZTVjIgogICAgVmVyc2lvbj0iMi4wIgogICAgSXNzdWVJbnN0YW50PSIyMDI2LTEwLTMxVDA5OjEyOjMxWiIKICAgIERlc3RpbmF0aW9uPSJodHRwczovL2FwcC52b29yYmVlbGQubmwvc2FtbC9hY3MiPgogIDxzYW1sOklzc3Vlcj5odHRwczovL2xvZ2luLmdlbWVlbnRlLnZvb3JiZWVsZC5ubC9zYW1sPC9zYW1sOklzc3Vlcj4KICA8c2FtbHA6U3RhdHVzPgogICAgPHNhbWxwOlN0YXR1c0NvZGUgVmFsdWU9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDpzdGF0dXM6U3VjY2VzcyIvPgogIDwvc2FtbHA6U3RhdHVzPgogIDxzYW1sOkFzc2VydGlvbiBJRD0iX2E5MmQ1ZjdjM2UwYjQxODZhNGQxIiBWZXJzaW9uPSIyLjAiCiAgICAgIElzc3VlSW5zdGFudD0iMjAyNi0xMC0zMVQwOToxMjozMVoiPgogICAgPHNhbWw6SXNzdWVyPmh0dHBzOi8vbG9naW4uZ2VtZWVudGUudm9vcmJlZWxkLm5sL3NhbWw8L3NhbWw6SXNzdWVyPgogICAgPGRzOlNpZ25hdHVyZSB4bWxuczpkcz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC8wOS94bWxkc2lnIyI+CiAgICAgIDxkczpTaWduZWRJbmZvPgogICAgICAgIDxkczpDYW5vbmljYWxpemF0aW9uTWV0aG9kIEFsZ29yaXRobT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS8xMC94bWwtZXhjLWMxNG4jIi8+CiAgICAgICAgPGRzOlNpZ25hdHVyZU1ldGhvZCBBbGdvcml0aG09Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvMDQveG1sZHNpZy1tb3JlI3JzYS1zaGEyNTYiLz4KICAgICAgICA8ZHM6UmVmZXJlbmNlIFVSST0iI19hOTJkNWY3YzNlMGI0MTg2YTRkMSI+CiAgICAgICAgICA8ZHM6VHJhbnNmb3Jtcz7igKY8L2RzOlRyYW5zZm9ybXM+CiAgICAgICAgICA8ZHM6RGlnZXN0TWV0aG9kIEFsZ29yaXRobT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS8wNC94bWxlbmMjc2hhMjU2Ii8+CiAgICAgICAgICA8ZHM6RGlnZXN0VmFsdWU+M3FSOG5WMndYa+KApjwvZHM6RGlnZXN0VmFsdWU+CiAgICAgICAgPC9kczpSZWZlcmVuY2U+CiAgICAgIDwvZHM6U2lnbmVkSW5mbz4KICAgICAgPGRzOlNpZ25hdHVyZVZhbHVlPmtYOWZQMGFRN3RMbeKApjwvZHM6U2lnbmF0dXJlVmFsdWU+CiAgICA8L2RzOlNpZ25hdHVyZT4KICAgIDxzYW1sOlN1YmplY3Q+CiAgICAgIDxzYW1sOk5hbWVJRCBGb3JtYXQ9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDpuYW1laWQtZm9ybWF0OnBlcnNpc3RlbnQiPjlmOGU3ZDZjLTViNGEtNGMzZC04ZTJmLTFhMGI5YzhkN2U2Zjwvc2FtbDpOYW1lSUQ+CiAgICAgIDxzYW1sOlN1YmplY3RDb25maXJtYXRpb24gTWV0aG9kPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6Y206YmVhcmVyIj4KICAgICAgICA8c2FtbDpTdWJqZWN0Q29uZmlybWF0aW9uRGF0YSBJblJlc3BvbnNlVG89Il83ZjNhOWMyZTQxYjg0ZDBhOWU1YyIKICAgICAgICAgICAgUmVjaXBpZW50PSJodHRwczovL2FwcC52b29yYmVlbGQubmwvc2FtbC9hY3MiCiAgICAgICAgICAgIE5vdE9uT3JBZnRlcj0iMjAyNi0xMC0zMVQwOToxNzozMVoiLz4KICAgICAgPC9zYW1sOlN1YmplY3RDb25maXJtYXRpb24+CiAgICA8L3NhbWw6U3ViamVjdD4KICAgIDxzYW1sOkNvbmRpdGlvbnMgTm90QmVmb3JlPSIyMDI2LTEwLTMxVDA5OjEyOjAxWiIKICAgICAgICBOb3RPbk9yQWZ0ZXI9IjIwMjYtMTAtMzFUMDk6MTc6MzFaIj4KICAgICAgPHNhbWw6QXVkaWVuY2VSZXN0cmljdGlvbj4KICAgICAgICA8c2FtbDpBdWRpZW5jZT5odHRwczovL2FwcC52b29yYmVlbGQubmwvc2FtbC9tZXRhZGF0YTwvc2FtbDpBdWRpZW5jZT4KICAgICAgPC9zYW1sOkF1ZGllbmNlUmVzdHJpY3Rpb24+CiAgICA8L3NhbWw6Q29uZGl0aW9ucz4KICAgIDxzYW1sOkF1dGhuU3RhdGVtZW50IEF1dGhuSW5zdGFudD0iMjAyNi0xMC0zMVQwOToxMjoyOFoiCiAgICAgICAgU2Vzc2lvbkluZGV4PSJfczRiN2UxOWQyIj4KICAgICAgPHNhbWw6QXV0aG5Db250ZXh0PgogICAgICAgIDxzYW1sOkF1dGhuQ29udGV4dENsYXNzUmVmPmh0dHA6Ly9laWRhcy5ldXJvcGEuZXUvTG9BL3N1YnN0YW50aWFsPC9zYW1sOkF1dGhuQ29udGV4dENsYXNzUmVmPgogICAgICA8L3NhbWw6QXV0aG5Db250ZXh0PgogICAgPC9zYW1sOkF1dGhuU3RhdGVtZW50PgogICAgPHNhbWw6QXR0cmlidXRlU3RhdGVtZW50PgogICAgICA8c2FtbDpBdHRyaWJ1dGUgTmFtZT0idXJuOm9pZDoyLjE2Ljg0MC4xLjExMzczMC4zLjEuMjQxIiBGcmllbmRseU5hbWU9ImRpc3BsYXlOYW1lIj4KICAgICAgICA8c2FtbDpBdHRyaWJ1dGVWYWx1ZT5KYW4gSmFuc2VuPC9zYW1sOkF0dHJpYnV0ZVZhbHVlPgogICAgICA8L3NhbWw6QXR0cmlidXRlPgogICAgICA8c2FtbDpBdHRyaWJ1dGUgTmFtZT0idXJuOm9pZDowLjkuMjM0Mi4xOTIwMDMwMC4xMDAuMS4zIiBGcmllbmRseU5hbWU9Im1haWwiPgogICAgICAgIDxzYW1sOkF0dHJpYnV0ZVZhbHVlPmouamFuc2VuQGdlbWVlbnRlLnZvb3JiZWVsZC5ubDwvc2FtbDpBdHRyaWJ1dGVWYWx1ZT4KICAgICAgPC9zYW1sOkF0dHJpYnV0ZT4KICAgICAgPHNhbWw6QXR0cmlidXRlIE5hbWU9InVybjpvaWQ6MS4zLjYuMS40LjEuNTkyMy4xLjUuMS4xIiBGcmllbmRseU5hbWU9ImlzTWVtYmVyT2YiPgogICAgICAgIDxzYW1sOkF0dHJpYnV0ZVZhbHVlPnJhcHBvcnRhZ2UtbGV6ZXJzPC9zYW1sOkF0dHJpYnV0ZVZhbHVlPgogICAgICA8L3NhbWw6QXR0cmlidXRlPgogICAgPC9zYW1sOkF0dHJpYnV0ZVN0YXRlbWVudD4KICA8L3NhbWw6QXNzZXJ0aW9uPgo8L3NhbWxwOlJlc3BvbnNlPg=="
+  respXml: 4593, respB64: 6124,
+  respFull: "PHNhbWxwOlJlc3BvbnNlIHhtbG5zOnNhbWxwPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6cHJvdG9jb2wiIHhtbG5zOnNhbWw9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDphc3NlcnRpb24iIElEPSJfYzQxZThiMGYyYTZkNGUxN2I5YTMiIEluUmVzcG9uc2VUbz0iXzdmM2E5YzJlNDFiODRkMGE5ZTVjIiBWZXJzaW9uPSIyLjAiIElzc3VlSW5zdGFudD0iMjAyNi0xMC0zMVQwOToxMjozMVoiIERlc3RpbmF0aW9uPSJodHRwczovL2FwcC52b29yYmVlbGQubmwvc2FtbC9hY3MiPgogIDxzYW1sOklzc3Vlcj5odHRwczovL2xvZ2luLmdlbWVlbnRlLnZvb3JiZWVsZC5ubC9zYW1sPC9zYW1sOklzc3Vlcj4KICA8c2FtbHA6U3RhdHVzPgogICAgPHNhbWxwOlN0YXR1c0NvZGUgVmFsdWU9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDpzdGF0dXM6U3VjY2VzcyIvPgogIDwvc2FtbHA6U3RhdHVzPgogIDxzYW1sOkFzc2VydGlvbiBJRD0iX2E5MmQ1ZjdjM2UwYjQxODZhNGQxIiBWZXJzaW9uPSIyLjAiIElzc3VlSW5zdGFudD0iMjAyNi0xMC0zMVQwOToxMjozMVoiPgogICAgPHNhbWw6SXNzdWVyPmh0dHBzOi8vbG9naW4uZ2VtZWVudGUudm9vcmJlZWxkLm5sL3NhbWw8L3NhbWw6SXNzdWVyPgogICAgPGRzOlNpZ25hdHVyZSB4bWxuczpkcz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC8wOS94bWxkc2lnIyI+PGRzOlNpZ25lZEluZm8+PGRzOkNhbm9uaWNhbGl6YXRpb25NZXRob2QgQWxnb3JpdGhtPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzEwL3htbC1leGMtYzE0biMiLz48ZHM6U2lnbmF0dXJlTWV0aG9kIEFsZ29yaXRobT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS8wNC94bWxkc2lnLW1vcmUjcnNhLXNoYTI1NiIvPjxkczpSZWZlcmVuY2UgVVJJPSIjX2E5MmQ1ZjdjM2UwYjQxODZhNGQxIj48ZHM6VHJhbnNmb3Jtcz48ZHM6VHJhbnNmb3JtIEFsZ29yaXRobT0iaHR0cDovL3d3dy53My5vcmcvMjAwMC8wOS94bWxkc2lnI2VudmVsb3BlZC1zaWduYXR1cmUiLz48ZHM6VHJhbnNmb3JtIEFsZ29yaXRobT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS8xMC94bWwtZXhjLWMxNG4jIi8+PC9kczpUcmFuc2Zvcm1zPjxkczpEaWdlc3RNZXRob2QgQWxnb3JpdGhtPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGVuYyNzaGEyNTYiLz48ZHM6RGlnZXN0VmFsdWU+WGlPcWQ0cUI0N28yQ3hQL2hZUzNrazNXdUd3amVlaExkN2ZJQXNleGlJQT08L2RzOkRpZ2VzdFZhbHVlPjwvZHM6UmVmZXJlbmNlPjwvZHM6U2lnbmVkSW5mbz48ZHM6U2lnbmF0dXJlVmFsdWU+T2c2R2loR2dOdGhYUkRETVFzWGpqWUFMTVAvVXdialFKZlFYaTFQUzdMMVdIZFRnSmxTdTk3YzcyTHpXcDJjVWlwbTlkL0JjTVNCT2c1MHUyeEdOOUdYS2hZZUtKYkg5RS9CUEdlQzMzZFFBVVR2YmpCRkwvdzNvdE5ydmJ0SmwzQTU3MXBGQ0ZMc2pSSDlyNTJoTzYzb1BSZFgwNmtsUlNYeHBVZ2dQN1VOQ29qVlMwSU1RR0E2SVRja0tNSWxraTVYYURKbXIvdWV5MG4rdEdtNCtpalFzeTVvWWMvaTFpMEo0Z1d4N0FIL1FsMmFIOG5zNytucFcwY1Fvb2llY1BGNW1SMFpRcDQ5OVVNR2J4UnIzUDJMeHRtOGNqNERUNnIzenErcEl0VEJLR1ZEdWc4WUZTbFgySzREa0lGa3RORE43K1pCM1orV3NXL3pkYmFSRThnPT08L2RzOlNpZ25hdHVyZVZhbHVlPjxkczpLZXlJbmZvPjxkczpYNTA5RGF0YT48ZHM6WDUwOUNlcnRpZmljYXRlPk1JSUM4ekNDQWR1Z0F3SUJBZ0lIV2o0ZElDWVFNVEFOQmdrcWhraUc5dzBCQVFzRkFEQTZNVGd3TmdZRFZRUUQKREM5c2IyZHBiaTVuWlcxbFpXNTBaUzUyYjI5eVltVmxiR1F1Ym13Z1UwRk5UQ0J6YVdkdWFXNW5JQ2hrWlcxdgpLVEFlRncweU5qQXhNREV3TURBd01EQmFGdzB5T0RFeU16RXdNREF3TURCYU1Eb3hPREEyQmdOVkJBTU1MMnh2CloybHVMbWRsYldWbGJuUmxMblp2YjNKaVpXVnNaQzV1YkNCVFFVMU1JSE5wWjI1cGJtY2dLR1JsYlc4cE1JSUIKSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQW03Skh4VzA5YzY4R0QwY2ZFdFN3NzN5UwpybGNkU1VzMDgrd2VhaUsvWVpiTjlzSnYxeEg4U3htTTYvRmx0YXIxeEY5UFNSUU0xOTlhdEhaUkRqZG5Wd2Y4CkFIcS9FMU1ZTW1WSTNXTzlFejNvdE5MSTdxWTBERDlNV0ZrYVJuK2J0djhnZG5iWEpBN1QxK25Fb1Q1bTZwTHgKbFVmaFZTU2ZhcllRZ3lGQmg4QitrckRRMkZFZEVXTEZlMk4waGo1b21qNWI1QTluSUIyekIrMm5LZTBsejM4TApUK20rSHlWY0N2UmhMck80WGdsYUZFWjVkejZCVEJqa2hXdU5OMVZtOXJlRWd6WldaaHZVaElTdkJOZGlDdUY0Ck1Oemw4a1hrZjF0OUltZGc1WFF4UVVrVlZnWWJLTDNwaTF2WHR2b1F5R2lLZEFPMGsyNCtKeGordllnQ1d3SUQKQVFBQk1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQkFRQkErYkFKaDlYR0oyc2JJcXl4VFdidkV1M3RueWlEdGgrbApoaWJNSjNTVlJia2FIMG1XWDBrd0o1dVBRWGFlZDJjcG9WL1MrMHFQamtjVTMwUzdmUXE2aVM2cjV2RVdwZXVkCnB1NitPb3E2WlUvV3pXUm1aVDZ3TnRWNkZhYkpSTlNoU1l0ZGJtbnAzQ0p0T2xKOXRhNXVpUTBQeTYrdHpvemgKclFPY29ROUNGWk9xYlhRKzJhcFl0dFh6OHVwMFpyOHdQbUt5Lys0c2ttQWlzRW5laGtnb0x3RVhRM3VrRUNvUQpQRWkxQUNpTWVNaUhEYUZIWWRHbmVIa1hjaWY3L1hKRjZrUEVOWU8zTlcvVWw1YkxVTk5FR05mY205QysrS3FxClJ3aVlmSEtKeW1kU0p1dDNFbTlLeW93eGNwOFpuOHBJZ0xJdEh2YkRSNGNRUSsvN1NUY3oKPC9kczpYNTA5Q2VydGlmaWNhdGU+PC9kczpYNTA5RGF0YT48L2RzOktleUluZm8+PC9kczpTaWduYXR1cmU+CiAgICA8c2FtbDpTdWJqZWN0PgogICAgICA8c2FtbDpOYW1lSUQgRm9ybWF0PSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6bmFtZWlkLWZvcm1hdDpwZXJzaXN0ZW50Ij45ZjhlN2Q2Yy01YjRhLTRjM2QtOGUyZi0xYTBiOWM4ZDdlNmY8L3NhbWw6TmFtZUlEPgogICAgICA8c2FtbDpTdWJqZWN0Q29uZmlybWF0aW9uIE1ldGhvZD0idXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6Mi4wOmNtOmJlYXJlciI+CiAgICAgICAgPHNhbWw6U3ViamVjdENvbmZpcm1hdGlvbkRhdGEgSW5SZXNwb25zZVRvPSJfN2YzYTljMmU0MWI4NGQwYTllNWMiIFJlY2lwaWVudD0iaHR0cHM6Ly9hcHAudm9vcmJlZWxkLm5sL3NhbWwvYWNzIiBOb3RPbk9yQWZ0ZXI9IjIwMjYtMTAtMzFUMDk6MTc6MzFaIi8+CiAgICAgIDwvc2FtbDpTdWJqZWN0Q29uZmlybWF0aW9uPgogICAgPC9zYW1sOlN1YmplY3Q+CiAgICA8c2FtbDpDb25kaXRpb25zIE5vdEJlZm9yZT0iMjAyNi0xMC0zMVQwOToxMjowMVoiIE5vdE9uT3JBZnRlcj0iMjAyNi0xMC0zMVQwOToxNzozMVoiPgogICAgICA8c2FtbDpBdWRpZW5jZVJlc3RyaWN0aW9uPgogICAgICAgIDxzYW1sOkF1ZGllbmNlPmh0dHBzOi8vYXBwLnZvb3JiZWVsZC5ubC9zYW1sL21ldGFkYXRhPC9zYW1sOkF1ZGllbmNlPgogICAgICA8L3NhbWw6QXVkaWVuY2VSZXN0cmljdGlvbj4KICAgIDwvc2FtbDpDb25kaXRpb25zPgogICAgPHNhbWw6QXV0aG5TdGF0ZW1lbnQgQXV0aG5JbnN0YW50PSIyMDI2LTEwLTMxVDA5OjEyOjI4WiIgU2Vzc2lvbkluZGV4PSJfczRiN2UxOWQyIj4KICAgICAgPHNhbWw6QXV0aG5Db250ZXh0PgogICAgICAgIDxzYW1sOkF1dGhuQ29udGV4dENsYXNzUmVmPmh0dHA6Ly9laWRhcy5ldXJvcGEuZXUvTG9BL3N1YnN0YW50aWFsPC9zYW1sOkF1dGhuQ29udGV4dENsYXNzUmVmPgogICAgICA8L3NhbWw6QXV0aG5Db250ZXh0PgogICAgPC9zYW1sOkF1dGhuU3RhdGVtZW50PgogICAgPHNhbWw6QXR0cmlidXRlU3RhdGVtZW50PgogICAgICA8c2FtbDpBdHRyaWJ1dGUgTmFtZT0idXJuOm9pZDoyLjE2Ljg0MC4xLjExMzczMC4zLjEuMjQxIiBGcmllbmRseU5hbWU9ImRpc3BsYXlOYW1lIiBOYW1lRm9ybWF0PSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6YXR0cm5hbWUtZm9ybWF0OnVyaSI+CiAgICAgICAgPHNhbWw6QXR0cmlidXRlVmFsdWU+SmFuIEphbnNlbjwvc2FtbDpBdHRyaWJ1dGVWYWx1ZT4KICAgICAgPC9zYW1sOkF0dHJpYnV0ZT4KICAgICAgPHNhbWw6QXR0cmlidXRlIE5hbWU9InVybjpvaWQ6MC45LjIzNDIuMTkyMDAzMDAuMTAwLjEuMyIgRnJpZW5kbHlOYW1lPSJtYWlsIiBOYW1lRm9ybWF0PSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6YXR0cm5hbWUtZm9ybWF0OnVyaSI+CiAgICAgICAgPHNhbWw6QXR0cmlidXRlVmFsdWU+ai5qYW5zZW5AZ2VtZWVudGUudm9vcmJlZWxkLm5sPC9zYW1sOkF0dHJpYnV0ZVZhbHVlPgogICAgICA8L3NhbWw6QXR0cmlidXRlPgogICAgICA8c2FtbDpBdHRyaWJ1dGUgTmFtZT0idXJuOm9pZDoxLjMuNi4xLjQuMS41OTIzLjEuNS4xLjEiIEZyaWVuZGx5TmFtZT0iaXNNZW1iZXJPZiIgTmFtZUZvcm1hdD0idXJuOm9hc2lzOm5hbWVzOnRjOlNBTUw6Mi4wOmF0dHJuYW1lLWZvcm1hdDp1cmkiPgogICAgICAgIDxzYW1sOkF0dHJpYnV0ZVZhbHVlPnJhcHBvcnRhZ2UtbGV6ZXJzPC9zYW1sOkF0dHJpYnV0ZVZhbHVlPgogICAgICA8L3NhbWw6QXR0cmlidXRlPgogICAgPC9zYW1sOkF0dHJpYnV0ZVN0YXRlbWVudD4KICA8L3NhbWw6QXNzZXJ0aW9uPjwvc2FtbHA6UmVzcG9uc2U+"
 };
 const fmt = n => n.toLocaleString('nl-NL');
 const PHASES_DIRECT = [
-  {n:0, t:'Fase 0 · Vertrouwen vooraf', s:'eenmalig, buiten de browser om'},
+  {n:0, t:'Fase 0 · Vertrouwen vooraf', s:'vooraf, daarna periodiek bijgewerkt'},
   {n:1, t:'Fase 1 · Toegang vragen', s:''},
   {n:2, t:'Fase 2 · Inloggen bij de IdP', s:'geen SAML'},
   {n:3, t:'Fase 3 · Antwoord via de browser', s:''},
@@ -395,7 +449,7 @@ const DIRECT = [
   title:`De SP stelt zich voor aan de IdP`,
   tr:`Vooraf · bestand of metadata-URL`,
   prose:[
-    `Voordat er ooit iemand inlogt, wisselen SP en IdP metadata uit: een XML-document dat zegt wie je bent, op welk adres je berichten ontvangt en met welke sleutel je tekent. Dit gebeurt eenmalig en buiten de browser om; daarom is deze pijl gestippeld.`,
+    `Voordat er ooit iemand inlogt, wisselen SP en IdP metadata uit: een XML-document dat zegt wie je bent, op welk adres je berichten ontvangt en met welke sleutel je tekent. Dit gebeurt vooraf en buiten de browser om, en opnieuw als er iets verandert, zoals een certificaatwissel; daarom is deze pijl gestippeld.`,
     `In Entra ID vul je precies dit in bij een enterprise app: <em>Identifier (Entity ID)</em> is het entityID, <em>Reply URL</em> is de AssertionConsumerService.`
   ],
   views:[{ cap:'SP-metadata (XML)', lines:`
@@ -427,11 +481,11 @@ const DIRECT = [
   title:`De IdP stelt zich voor aan de SP`,
   tr:`Vooraf · bestand of metadata-URL`,
   prose:[
-    `De andere kant van dezelfde uitwisseling. Het belangrijkste dat de SP hieruit haalt, is het signing-certificaat van de IdP: elke handtekening die later binnenkomt, wordt daartegen gecontroleerd.`,
+    `De andere kant van dezelfde uitwisseling. Het belangrijkste dat de SP hieruit haalt, is het signing-certificaat van de IdP: elke handtekening die later binnenkomt, wordt daartegen gecontroleerd. Het certificaat in dit voorbeeld is echt: de SAML-response in stap 6 is ermee ondertekend.`,
     `In een federatie zoals govConext wissel je metadata uit met de hub, niet met elke SP afzonderlijk. Dat is de "één koppeling" uit de folder.`
   ],
   callout:`Verloopt het IdP-certificaat terwijl de SP nog de oude metadata heeft, dan faalt elke login. Laat de SP de metadata periodiek ophalen via een URL in plaats van eenmalig een bestand te importeren.`,
-  views:[{ cap:'IdP-metadata (XML)', lines:`
+  views:[{ cap:'IdP-metadata (XML)', copy:[['saml_cert','Kopieer IdP-certificaat (PEM)']], lines:`
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
     xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
 @1|    entityID="https://login.gemeente.voorbeeld.nl/saml">
@@ -439,7 +493,7 @@ const DIRECT = [
       protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
     <md:KeyDescriptor use="signing">
       <ds:KeyInfo><ds:X509Data>
-@3|        <ds:X509Certificate>MIIDBTCCAe2gAwIBAgIQ…</ds:X509Certificate>
+@3|        <ds:X509Certificate>MIIC8zCCAdugAwIBAgIHWj…</ds:X509Certificate>
       </ds:X509Data></ds:KeyInfo>
     </md:KeyDescriptor>
 @4|    <md:SingleSignOnService
@@ -455,7 +509,7 @@ const DIRECT = [
     {n:2, t:'WantAuthnRequestsSigned', d:`De IdP eist ondertekende verzoeken. Bij veel IdP's is dit optioneel en staat het standaard uit.`},
     {n:3, t:'X509Certificate', d:`De publieke sleutel waarmee de SP alle handtekeningen van de IdP controleert. Self-signed is in SAML normaal: het vertrouwen komt uit de metadata-uitwisseling, niet uit een CA-keten. Bij een certificaatwissel staan er tijdelijk twee in de metadata.`},
     {n:4, t:'SingleSignOnService', d:`Het adres waar de SP de browser naartoe stuurt, met de binding die dit endpoint verwacht.`},
-    {n:5, t:'SingleLogoutService', d:`Optioneel. Single Logout is in de praktijk het minst betrouwbare deel van SAML, omdat het afhangt van elke SP die meedoet.`}
+    {n:5, t:'SingleLogoutService', d:`Optioneel. Single Logout werkt alleen als de IdP en elke SP het ondersteunen, met passende bindings en de juiste sessie-index (SessionIndex). In de praktijk is het daarom het minst betrouwbare deel van SAML.`}
   ]}]
 },
 { id:'1', ph:1, from:'br', to:'sp', kind:'http', lbl:'GET /rapportages',
@@ -489,8 +543,8 @@ Accept: text/html
         {n:3, t:'Destination', d:`Voor welk endpoint dit bericht bedoeld is. De IdP controleert dat dit zijn eigen adres is.`},
         {n:4, t:'AssertionConsumerServiceURL / ProtocolBinding', d:`Waar en hoe het antwoord terug moet. De IdP accepteert dit alleen als het overeenkomt met de SP-metadata; anders kon een aanvaller het antwoord omleiden.`},
         {n:5, t:'Issuer', d:`Het entityID van de SP. Hiermee zoekt de IdP de juiste configuratie op: metadata, certificaat en welke attributen deze SP mag krijgen.`},
-        {n:6, t:'NameIDPolicy', d:`Welk identifierformaat de SP wil. <code>AllowCreate="true"</code> staat de IdP toe om voor deze SP een nieuw pseudoniem aan te maken.`},
-        {n:7, t:'RequestedAuthnContext', d:`De minimale sterkte van de login, hier eIDAS-niveau substantieel. De IdP mag sterker authenticeren, niet zwakker. Lukt dat niet, dan volgt een foutstatus (NoAuthnContext) in plaats van een assertion.`}
+        {n:6, t:'NameIDPolicy', d:`Welk identifierformaat de SP wil. <code>AllowCreate="true"</code> staat de IdP toe om voor deze SP een nieuw pseudoniem aan te maken. Entra ID negeert AllowCreate.`},
+        {n:7, t:'RequestedAuthnContext', d:`De minimale sterkte van de login, hier eIDAS-niveau substantieel. De IdP mag sterker authenticeren, niet zwakker. Lukt dat niet, dan volgt een foutstatus (NoAuthnContext) in plaats van een assertion. Comparison="minimum" veronderstelt een rangorde tussen niveaus. Bij de eIDAS-niveaus is die er; bij andere sets klassen bepaalt de IdP zelf hoe hij vergelijkt. Entra ID wijkt af: het accepteert alleen Comparison="exact" en een vaste lijst klassen, zoals Password, X509 en Kerberos, zonder eIDAS-niveaus. MFA dwing je daar af met voorwaardelijke toegang.`}
       ]},
     { name:'Op de lijn', cap:'HTTP-response van de SP', pipe:'req', lines:`
 HTTP/1.1 302 Found
@@ -520,7 +574,7 @@ GET /saml/sso?SAMLRequest=fVPLjtpAELzvVyDf8ZhHHowAiYCiIJEEAbuH…&RelayState=%2F
 Host: login.gemeente.voorbeeld.nl
 @1|Cookie: idp_session=… (alleen als je eerder al bent ingelogd)`,
   notes:[
-    {n:1, t:'Cookie: idp_session', d:`Het sessiecookie van de IdP, op het domein van de IdP. Dit cookie maakt SSO mogelijk. Wil de SP toch een nieuwe login afdwingen, dan zet hij <code>ForceAuthn="true"</code> in de AuthnRequest.`}
+    {n:1, t:'Cookie: idp_session', d:`Het sessiecookie van de IdP, op het domein van de IdP. Dit cookie maakt SSO mogelijk. Wil de SP toch een nieuwe login afdwingen, dan zet hij <code>ForceAuthn="true"</code> in de AuthnRequest. Het omgekeerde is <code>IsPassive="true"</code>: de SP wil alleen een antwoord als het zonder interactie kan, en anders een foutstatus (NoPassive).`}
   ]}]
 },
 { id:'4', ph:2, from:'idp', to:'br', kind:'http', lbl:'Inlogpagina',
@@ -581,7 +635,7 @@ Content-Type: application/x-www-form-urlencoded
         {n:9, t:'Conditions', d:`Het geldigheidsvenster, hier vijf minuten. NotBefore ligt iets vóór het aanmaakmoment om kleine klokverschillen tussen servers op te vangen.`},
         {n:10, t:'AudienceRestriction', d:`Voor welke SP deze assertion bedoeld is: het SP-entityID uit stap 0a. Zonder deze controle kan een andere SP die van dezelfde IdP een geldige assertion krijgt, die doorsturen naar jouw applicatie.`},
         {n:11, t:'AuthnStatement', d:`Wanneer en hoe sterk de gebruiker is ingelogd. De SP vergelijkt AuthnContextClassRef met wat hij vroeg. SessionIndex is nodig voor Single Logout.`},
-        {n:12, t:'AttributeStatement', d:`Gegevens over de gebruiker. Welke attributen een SP krijgt, bepaalt het attribuutbeleid van de IdP per SP. Namen verschillen per omgeving: federaties zoals OpenConext gebruiken <code>urn:oid</code>-namen, Microsoft gebruikt URI's zoals <code>http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress</code>.`}
+        {n:12, t:'AttributeStatement', d:`Gegevens over de gebruiker. Welke attributen een SP krijgt, bepaalt het attribuutbeleid van de IdP per SP. Namen verschillen per omgeving: federaties zoals OpenConext gebruiken <code>urn:oid</code>-namen, Microsoft gebruikt URI's zoals <code>http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress</code>. Bij urn:oid-namen hoort NameFormat uri, zodat de ontvanger weet hoe hij de naam moet lezen.`}
       ]},
     { name:'Op de lijn', cap:'HTTP-response van de IdP', pipe:'resp', lines:`
 HTTP/1.1 200 OK
@@ -705,6 +759,7 @@ const GOV = {
   n0b1:`Het SP-gezicht van de hub; dit vul je in Entra ID in als Identifier. Het verschilt van het IdP-gezicht uit stap 0a: /sp/ in plaats van /idp/ in het pad.`,
   n0b2:`Het adres waar jouw IdP het antwoord naartoe post. In Entra ID is dit de Reply URL.`,
   cookie:`(sessiecookie van govConext, als je eerder via de hub bent ingelogd)`,
+  src4:'inf', n8_3s:'inf', n11_5s:'inf',
   lbl4:'Kies organisatie', title4:`De hub vraagt bij welke organisatie de gebruiker hoort`,
   t4:[
     `govConext weet nog niet welke IdP de gebruiker kan authenticeren. Daarom toont de hub een keuzescherm; in federatietaal heet dat een WAYF (Where Are You From). De gebruiker kiest zijn gemeente en de browser stuurt die keuze terug.`,
@@ -728,19 +783,28 @@ Content-Type: text/html
     {t:'Controleer het antwoord van jouw IdP', d:`Dezelfde controles die een SP doet: handtekening, Audience, InResponseTo, tijdvenster. Zie`, from:'13'},
     {t:'Zoek de SP-configuratie op', d:`Via het bewaarde verzoek van de SP: welke attributen deze SP mag krijgen (attribuutbeleid) en welke toegangsregels gelden. Zie`, from:'2'},
     {t:'Toestemming', d:`Afhankelijk van de instellingen ziet de gebruiker welke gegevens naar de SP gaan en geeft hij toestemming. Dat is een extra scherm, dus een extra rondje via de browser.`},
-    {t:'Pseudoniem per SP', d:`De hub maakt een eigen persistent NameID per SP, zodat SP's gebruikers niet onderling kunnen koppelen. De NameID van jouw IdP gaat niet door.`},
-    {t:'Attributen vertalen', d:`Microsoft-namen worden federatienamen (urn:oid), en de hub voegt de organisatie toe (schacHomeOrganization).`},
+    {t:'Identiteit en pseudoniem', s:'inf', d:`De hub herkent de gebruiker aan uid en schacHomeOrganization; daarom zijn die verplicht. In OpenConext wordt daaruit ook het pseudoniem (persistent NameID) per SP afgeleid. Geef je uid of mail aan een SP vrij, dan is de gebruiker over SP's heen toch te herleiden.`},
+    {t:'Attributen filteren', d:`Jouw IdP levert al federatienamen (urn:mace). De hub geeft per SP alleen door wat in het technische intakeformulier is afgesproken.`},
     {t:'Eventueel step-up', d:`Eist de SP een hoger niveau, dan vraagt de hub een extra factor via govSecureID.`},
     {t:'Nieuw antwoord tekenen', d:`De hub bouwt een nieuwe Response en assertion en tekent die met zijn eigen sleutel. Zie`, from:'11'}
   ],
   c10:`De SP ziet de handtekening van jouw IdP nooit en vertrouwt volledig op de hub. Wie de signing-sleutel van govConext beheert, kan in principe elke identiteit uitgeven bij elke aangesloten SP. Dat vertrouwen leg je bij Stichting govroam.`,
-  n11_5:`Een pseudoniem dat de hub per SP maakt. Een andere SP krijgt voor dezelfde medewerker een andere waarde.`,
-  attrs:[
-    ['urn:oid:2.16.840.1.113730.3.1.241','displayName','Jan Jansen'],
-    ['urn:oid:0.9.2342.19200300.100.1.3','mail','j.jansen@gemeente.voorbeeld.nl'],
-    ['urn:oid:1.3.6.1.4.1.25178.1.2.9','schacHomeOrganization','gemeente.voorbeeld.nl']
+  n11_5:`Een pseudoniem per SP. In OpenConext wordt het afgeleid van uid en schacHomeOrganization; de govConext-wiki legt de vorm niet vast. Een andere SP krijgt een andere waarde, maar herkent de gebruiker via uid of mail mogelijk toch.`,
+  upAttrs:[
+    ['urn:mace:dir:attribute-def:eduPersonPrincipalName','j.jansen@gemeente.voorbeeld.nl'],
+    ['urn:mace:dir:attribute-def:uid','j.jansen@gemeente.voorbeeld.nl'],
+    ['urn:mace:terena.org:attribute-def:schacHomeOrganization','gemeente.voorbeeld.nl'],
+    ['urn:mace:dir:attribute-def:displayName','Jan Jansen'],
+    ['urn:mace:dir:attribute-def:mail','j.jansen@gemeente.voorbeeld.nl']
   ],
-  n11_attr:`Vertaald naar federatienamen en gefilterd op wat deze SP mag krijgen. schacHomeOrganization vertelt de SP bij welke organisatie de gebruiker hoort.`
+  n8_attr:`Federatienamen (urn:mace), zoals de govConext-handleiding voor Entra ID voorschrijft. Verplicht zijn eduPersonPrincipalName, uid en schacHomeOrganization; in Entra ID worden alle drie afgeleid van de UPN. Je stelt dit in bij de claims van de enterprise app voor govConext.`,
+  attrs:[
+    ['urn:mace:dir:attribute-def:uid','uid','j.jansen@gemeente.voorbeeld.nl'],
+    ['urn:mace:terena.org:attribute-def:schacHomeOrganization','schacHomeOrganization','gemeente.voorbeeld.nl'],
+    ['urn:mace:dir:attribute-def:displayName','displayName','Jan Jansen'],
+    ['urn:mace:dir:attribute-def:mail','mail','j.jansen@gemeente.voorbeeld.nl']
+  ],
+  n11_attr:`Federatienamen (urn:mace), gefilterd op wat voor deze SP is afgesproken. uid en schacHomeOrganization samen identificeren gebruiker en organisatie. uid is hier de UPN uit Entra ID, zoals de govConext-handleiding voorschrijft; die verandert mee bij een naamswijziging.`
 };
 const KC = {
   key:'keycloak', name:'Keycloak', short:'Keycloak', sub:'eigen broker',
@@ -787,6 +851,12 @@ Content-Type: text/html
   ],
   c10:`De SP vertrouwt volledig op Keycloak. Wie de realm-sleutel of een beheeraccount van Keycloak heeft, kan elke identiteit uitgeven bij elke gekoppelde applicatie. Behandel Keycloak daarom als kritieke identiteitsinfrastructuur, beschermd zoals een domeincontroller. En de lokale accounts uit taak 2 moet je zelf opruimen als iemand vertrekt.`,
   n11_5:`Standaard zet Keycloak hier de gebruikersnaam van het lokale account; per client kun je kiezen voor e-mail, transient of persistent. De waarde komt uit Keycloak, niet rechtstreeks van jouw IdP.`,
+  upAttrs:[
+    ['http://schemas.microsoft.com/identity/claims/displayname','Jan Jansen'],
+    ['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress','j.jansen@gemeente.voorbeeld.nl'],
+    ['http://schemas.microsoft.com/ws/2008/06/identity/claims/groups','3c5e8f1a-2b7d-4e90-a6c3-9d1f0b8e7a24']
+  ],
+  n8_attr:`Attributen in Microsoft-naamgeving, met een groep als objectID. Keycloak zet dit in stap 10 om naar wat de SP verwacht.`,
   attrs:[
     ['displayName',null,'Jan Jansen'],
     ['email',null,'j.jansen@gemeente.voorbeeld.nl'],
@@ -833,19 +903,11 @@ function buildBroker(B){
     </saml:Conditions>
     <saml:AuthnStatement AuthnInstant="2026-10-31T09:12:28Z">
       <saml:AuthnContext>
-@7|        <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml:AuthnContextClassRef>
+@7|        <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</saml:AuthnContextClassRef>
       </saml:AuthnContext>
     </saml:AuthnStatement>
 @8|    <saml:AttributeStatement>
-@8|      <saml:Attribute Name="http://schemas.microsoft.com/identity/claims/displayname">
-@8|        <saml:AttributeValue>Jan Jansen</saml:AttributeValue>
-@8|      </saml:Attribute>
-@8|      <saml:Attribute Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress">
-@8|        <saml:AttributeValue>j.jansen@gemeente.voorbeeld.nl</saml:AttributeValue>
-@8|      </saml:Attribute>
-@8|      <saml:Attribute Name="http://schemas.microsoft.com/ws/2008/06/identity/claims/groups">
-@8|        <saml:AttributeValue>3c5e8f1a-2b7d-4e90-a6c3-9d1f0b8e7a24</saml:AttributeValue>
-@8|      </saml:Attribute>
+${B.upAttrs.map(a => '@8|      <saml:Attribute Name="' + a[0] + '">\n@8|        <saml:AttributeValue>' + a[1] + '</saml:AttributeValue>\n@8|      </saml:Attribute>').join('\n')}
 @8|    </saml:AttributeStatement>
   </saml:Assertion>
 </samlp:Response>`;
@@ -899,10 +961,10 @@ ${attrLines}
     {n:2, t:'Destination / Recipient', d:`De ACS van de SP.`},
     {n:3, t:'Issuer', d:`${B.name}, niet jouw IdP. Voor de SP is de broker de IdP.`},
     {n:4, t:'Signature', d:`Getekend met de sleutel van ${B.name}. De handtekening van jouw IdP is weg; dit is een volledig nieuwe assertion.`},
-    {n:5, t:'NameID', d:B.n11_5},
+    {n:5, s:B.n11_5s, t:'NameID', d:B.n11_5},
     {n:6, t:'AudienceRestriction', d:`Het SP-entityID: deze assertion is alleen voor deze applicatie.`}
   ];
-  if (isGov) resp1Notes.push({n:7, t:'AuthenticatingAuthority', d:`De IdP waar de gebruiker werkelijk heeft ingelogd. Zo kan de SP toch zien uit welke organisatie de login kwam.`});
+  if (isGov) resp1Notes.push({n:7, s:'inf', t:'AuthenticatingAuthority', d:`De IdP waar de gebruiker werkelijk heeft ingelogd. Zo kan de SP toch zien uit welke organisatie de login kwam.`});
   resp1Notes.push({n:attrN, t:'AttributeStatement', d:B.n11_attr});
 
   const checks = D('8').checks.map((c,i) => {
@@ -1011,7 +1073,7 @@ Host: ${B.host}
 @1|Cookie: ${B.cookie}`,
       notes:[{n:1, t:'Cookie', d:`De eigen SSO-sessie van ${B.name}. Is die er, dan gaat de broker direct door naar ${xref('11')}: keuzescherm en jouw IdP komen er niet aan te pas.`}]
     }]},
-  { id:'4', ph:2, from:'brk', to:'br', dir:'both', kind:'http', lbl:B.lbl4, keys:['wayf'],
+  { id:'4', ph:2, from:'brk', to:'br', dir:'both', kind:'http', lbl:B.lbl4, keys:['wayf'], src:B.src4,
     title:B.title4, tr:`HTTP 200 + keuze · buiten SAML`,
     prose:B.t4,
     views:[{ cap:B.cap4, lines:B.lines4, notes:[Object.assign({n:1}, B.n4)] }]},
@@ -1070,12 +1132,12 @@ Host: login.gemeente.voorbeeld.nl
         notes:[
           {n:1, t:'InResponseTo', d:`Het verzoek-ID van ${B.name} uit stap 5, niet dat van de SP.`},
           {n:2, t:'Destination / Recipient', d:`De ACS van ${B.name}: het antwoord gaat naar de broker, niet naar de applicatie.`},
-          {n:3, t:'Issuer', d:B.n8_3},
+          {n:3, s:B.n8_3s, t:'Issuer', d:B.n8_3},
           {n:4, t:'Signature', d:`Getekend met de sleutel van jouw IdP. Alleen ${B.name} controleert deze handtekening.`},
           {n:5, t:'NameID', d:`De identifier die jouw IdP aan ${B.name} geeft. De broker koppelt daar zijn eigen beeld van de gebruiker aan.`},
           {n:6, t:'AudienceRestriction', d:`Het SP-gezicht van ${B.name} uit stap 0b.`},
-          {n:7, t:'AuthnContextClassRef', d:`Veel IdP's melden hier alleen een wachtwoordlogin over een versleutelde verbinding, ook als er MFA was. Entra ID zet MFA bijvoorbeeld in een apart attribuut. De broker moet dat goed vertalen, anders lijkt het voor de SP alsof er zonder MFA is ingelogd.`},
-          {n:8, t:'AttributeStatement', d:`Attributen in Microsoft-naamgeving, met een groep als objectID. ${B.name} vertaalt dit in stap 10 naar wat de SP verwacht.`}
+          {n:7, t:'AuthnContextClassRef', d:`Veel IdP's melden hier alleen een wachtwoordlogin, ook als er MFA was. Entra ID zet MFA bijvoorbeeld in een apart attribuut. De broker moet dat goed vertalen, anders lijkt het voor de SP alsof er zonder MFA is ingelogd.`},
+          {n:8, t:'AttributeStatement', d:B.n8_attr}
         ]},
       { name:'Op de lijn', cap:'HTTP-response van jouw IdP', lines:`
 HTTP/1.1 200 OK
@@ -1148,7 +1210,7 @@ SAMLResponse=PHNhbWxwOlJlc3BvbnNlIHht…&RelayState=%2Frapportages`,
     prose:[`De SP doet dezelfde controles als zonder broker, alleen tegen ${B.name}. Hoe de gebruiker bij jouw IdP heeft ingelogd, weet de SP alleen voor zover de broker het hem vertelt.`],
     checks:checks, callout:D('8').callout },
   Object.assign({}, D('9'), {id:'14', ph:7, keys:['session'],
-    callout:`Er lopen nu drie sessies: bij jouw IdP, bij ${B.name} en in de app. Een account blokkeren bij de IdP raakt de andere twee niet. Een volgende app kan nog inloggen via de sessie van ${B.name}, tot die verloopt.`}),
+    callout:`Er lopen nu drie sessies: bij jouw IdP, bij ${B.name} en in de app. Een account blokkeren bij de IdP raakt de andere twee niet. Een volgende app kan nog inloggen via de sessie van ${B.name}, tot die verloopt. Single Logout of back-channel logout kan sessies samen beëindigen, maar alleen als elke schakel het ondersteunt en het is ingericht.`}),
   Object.assign({}, D('10'), {id:'15', ph:7, keys:['done']})
   ];
 
@@ -1163,12 +1225,12 @@ SAMLResponse=PHNhbWxwOlJlc3BvbnNlIHht…&RelayState=%2Frapportages`,
     lanes:[{k:'sp',b:'App (SP)',s:'de applicatie'},{k:'br',b:'Browser',s:'de koerier'},{k:'brk',b:B.name,s:B.sub},{k:'idp',b:'IdP',s:'bv. Entra ID'}],
     pos:[10,36.667,63.333,90],
     phases:[
-      {n:0, t:'Fase 0 · Vertrouwen vooraf', s:'twee koppelingen, eenmalig'},
+      {n:0, t:'Fase 0 · Vertrouwen vooraf', s:'twee koppelingen, vooraf ingericht'},
       {n:1, t:'Fase 1 · Toegang vragen aan ' + B.name, s:''},
       {n:2, t:'Fase 2 · Organisatie kiezen', s:isGov ? 'keuzescherm' : 'vaak overgeslagen'},
       {n:3, t:'Fase 3 · Doorsturen naar je eigen IdP', s:'tweede SAML-gesprek'},
       {n:4, t:'Fase 4 · Antwoord terug naar ' + B.name, s:''},
-      {n:5, t:'Fase 5 · ' + B.name + ' vertaalt', s:''},
+      {n:5, t:'Fase 5 · ' + B.name + ' valideert en bouwt opnieuw', s:''},
       {n:6, t:'Fase 6 · Nieuw antwoord naar de SP', s:''},
       {n:7, t:'Fase 7 · Controleren en sessie', s:''}
     ],
@@ -1177,7 +1239,7 @@ SAMLResponse=PHNhbWxwOlJlc3BvbnNlIHht…&RelayState=%2Frapportages`,
 }
 
 /* ---------- OIDC / OAuth ---------- */
-const TOK = {"id": "eyJhbGciOiJSUzI1NiIsImtpZCI6Imd2LTIwMjYtMTAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2xvZ2luLmdlbWVlbnRlLnZvb3JiZWVsZC5ubCIsInN1YiI6IjlmOGU3ZDZjLTViNGEtNGMzZC04ZTJmLTFhMGI5YzhkN2U2ZiIsImF1ZCI6InJhcHBvcnRhZ2UtYXBwIiwiaWF0IjoxNzkzNDM3OTUxLCJleHAiOjE3OTM0NDE1NTEsImF1dGhfdGltZSI6MTc5MzQzNzk0OCwibm9uY2UiOiJuLTBTNl9XekEyTWoiLCJhY3IiOiJodHRwOi8vZWlkYXMuZXVyb3BhLmV1L0xvQS9zdWJzdGFudGlhbCIsImFtciI6WyJwd2QiLCJtZmEiXSwibmFtZSI6IkphbiBKYW5zZW4iLCJlbWFpbCI6ImouamFuc2VuQGdlbWVlbnRlLnZvb3JiZWVsZC5ubCJ9.fangSGcuyCU-9nlZEOorcx1AYoOnqs8kCzFdVFl28i2PMRW2yeBALcWnu-4OIguPW12g3GSM734EY_W243jHPNJlbkj5J0dmwR52jST37uL1oi_s4Z8U5WpwLuoNc6gYAlsCvWr-CRr_PGnUfIzBW3y9WGxdNo94OTV9dGa5HG6WTSdaPgVdoSs3svz5DuFQcWmVM1NQfIvpo265hqb-JY2A78JN4XbvDF5zJduBJKQt3RyJskIWYCW4L9NBgr4D-jMKG5uz0lvO10kwYXrfeDGes2FCgiRz_6p5YrMGu7bFsbWixzAhHP4_23IbLS23Vq8ZerMhR8mE0WbquJLx7w", "at": "eyJhbGciOiJSUzI1NiIsImtpZCI6Imd2LTIwMjYtMTAiLCJ0eXAiOiJhdCtqd3QifQ.eyJpc3MiOiJodHRwczovL2xvZ2luLmdlbWVlbnRlLnZvb3JiZWVsZC5ubCIsInN1YiI6IjlmOGU3ZDZjLTViNGEtNGMzZC04ZTJmLTFhMGI5YzhkN2U2ZiIsImF1ZCI6ImFwaTovL3JhcHBvcnRhZ2UiLCJjbGllbnRfaWQiOiJyYXBwb3J0YWdlLWFwcCIsInNjb3BlIjoicmFwcG9ydGVuLmxlemVuIiwiaWF0IjoxNzkzNDM3OTUxLCJleHAiOjE3OTM0Mzg4NTEsImp0aSI6ImF0LTNiOWQ4MWYwYzJlNyJ9.uYhprt-gE_8AxBnDQSSDUJxSnWXhdkvpz3UwXXH71x1sxiZ-kozQmv_RcQZWVvBqpZQNqpexIcuSadpvd5kH3yWJRP_adyuFQB_OdC9x5F_D92ywFGFFdy-S5jxX51MR1MG8qYJUQ5B_Z8819zrCVbgsLWzVx0SLBb-fks1a0lagGPZ1rZsYaaoHaky5SZpX_HFE8nxTBmN5vMoLbP-YYHtraTX4jIfZH9BtpCbgB80QMWJ1t2bOIl6fBBuvROLP7xquiq0LSXnVBc-Xia74f3_w7Qlv7WH-FuKR2f7bOef-VLr5Hy5VEMBKoH1qq15JXXyIMhNNXFEqnBpK20lYcQ", "cc": "eyJhbGciOiJSUzI1NiIsImtpZCI6Imd2LTIwMjYtMTAiLCJ0eXAiOiJhdCtqd3QifQ.eyJpc3MiOiJodHRwczovL2xvZ2luLmdlbWVlbnRlLnZvb3JiZWVsZC5ubCIsInN1YiI6ImtvcHBlbGluZy1lc2IiLCJhdWQiOiJhcGk6Ly9yYXBwb3J0YWdlIiwiY2xpZW50X2lkIjoia29wcGVsaW5nLWVzYiIsInJvbGVzIjpbIlJhcHBvcnRlbi5MZXplbi5BbGxlcyJdLCJpYXQiOjE3OTM0Mzg0MDAsImV4cCI6MTc5MzQ0MjAwMCwianRpIjoiYXQtYzcxZTA1YTlkNGIyIn0.mxiS1OLER54w6ncp4Jr1pVAhKBmoYOtvA7UA54Wa39EL9Q2m0I1g2kAEt-thQji6zD8q5TMHTq9-zyGRSIL42X-hDzsjrtYUOjTkwFV4aSGal1pDM0Q_5xeiWAZcyRkBFJRf04mUrdX4i6SqnwkSgfyzDTGXbBG4ahEkdqPX5JNxnjZ_C8xIrpGlctZ-vmO8Bizk0HklmWYBnLBTnGdq5noKL0RfnoJ15k6IeyT6p4bRJdQEGuutVX4KuvmO2KFHLQzhwC-5G5MHY38kmY4LfsJCeXu-22mNOwlgdPMzPPFnsZ1v8UDeb6e57Sb6s7EQDhsBdJJq1Jsm6vQ-xyxRqA", "assert": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImVzYi0yMDI2IiwidHlwIjoiSldUIn0.eyJpc3MiOiJrb3BwZWxpbmctZXNiIiwic3ViIjoia29wcGVsaW5nLWVzYiIsImF1ZCI6Imh0dHBzOi8vbG9naW4uZ2VtZWVudGUudm9vcmJlZWxkLm5sL29hdXRoMi90b2tlbiIsImp0aSI6ImNhLTVmMmU4YjFkN2E5MCIsImlhdCI6MTc5MzQzODM5OCwiZXhwIjoxNzkzNDM4Njk4fQ.AypW2cM0rFPy33lrKJl5WOOkMLWYYb0kjKmIye8HiWJjPy546s0F3IUhfLx46tVUK_9HWWEPDXGa3rsVu5aOH82Lq0U6zvrATduKAhqNkZL3ddklMy-RcrILsMx8FlbNHzWXShUXiJ7P4hea8HNOb3kE0Ha7HwvwtvX1aCjqVXKAvQBKwGxTEmlrQRujbrCkozSlUYUS-dxHZY2-C9kuSn-GhSgGXvxqQseAv9_EZJmCszDdCx2pRpYK72Q-_L6897br8r5KWgBpYgniBvaXVmZ2cKaau-klmYZyIOycRnvOIFnoawkp8ljpi_6Z86gFCx8R9jYyxL-UIfRWoLVyQQ", "jwk": {"kty": "RSA", "kid": "gv-2026-10", "use": "sig", "alg": "RS256", "n": "57HLXwTm9m3rpIaLhAdBWd05NqWbZM1lzoCbx8yPmopVCeYxbU2T2fKvuP4Zm8XX3LLyQjGOyG044ZtEcbSq8mWq2NuIEZXURLzRUTsg5MLAI1csNzI0M1F-N6NfAaWdg54qOAgvTWQeRzdaOzbsy1X5d22ddngJRdeFPcLtp-8TnQY5XKrXYfIu0hJQ_vbyddFI2tRMnMO2AVe4dKzoB6Gu_5dEzAPBY6paGtJ2Y0HfJzAgIJSnHCNR1ZUqHy_tQsf3ned5hVPgoVNCzboUne0kMu2b4t-4D8u0o8XJAerAPPQumFYcD-Ge-W62BEwavZRkon2s_MH-30ZNTZgzSQ", "e": "AQAB"}, "jwk_gov": {"kty": "RSA", "kid": "gc-2026-10", "use": "sig", "alg": "RS256", "n": "uYemaV21kvTNs0nJUgPutRMhxYFE3SOMixYWuEkt0pDTq1NnM-YIzLb7j0WfE2-ffSPHK_vsfJI-G6CdvpqupmYhW8H8TA7rWS94HgTxFMJWFrvaWJJUTLqYImn-Ln9bmrlC1ASgJSk9_4dFwQd6DaaQ_nEgEluqsspd6c_0mh8xGyg4RJ_ZcKpCE4lOqpaiNbLlZ2b4v8k6qQG7UUUezCtJTZ2vgM4zGH8dmq6dhL7TxqKPwIT1PnimIVWQ0-_DEo95slctYPRcEpfDLxmRprg8MXwrlicrsWbruWQo4qSFRSFrrOydosZ_Js7xNtt_iCAC8GO3ARw_4d-9Xx5liQ", "e": "AQAB"}, "jwk_kc": {"kty": "RSA", "kid": "kc-rs256-4Qf1", "use": "sig", "alg": "RS256", "n": "vY_MU3OI0UN2NvUH3miwBsVsOx_j3_RIz__zb-1freqqUvE_e5lN9FrGrdTPRj78vLJbTndbOu8-c4CAV_wcRbFNeHPg3RCM18S0MMpiImLRJOnP2z5GTh1eQeoT-P_Sn-bxj2H6Obv89NgucKRfBuLr2ab1mo0JqCG8TrbAUe8Bzi0dWQ-7RvLjhXt1SQE5iSe7EqpqGwMiTv-1879pHxiuy06m0qeEUwGFI4HW0UuFJ19R10oUcFjpQzVjnvygqEvrnQRkqhBgnvhZ0CRYTCptZuksnhNINUY8s379B2vTl4ahYFPII_Mw07snaJCkPyvRNTpbQU2XYVr9znRxHw", "e": "AQAB"}, "id_gov": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImdjLTIwMjYtMTAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2Nvbm5lY3QuZ292Y29uZXh0LnZvb3JiZWVsZC5ubCIsInN1YiI6ImM5YTRlMWYwM2I3ZDI2ZThhMTVmMGI5NGQ3YzNlODJhNjFmNWQwYjciLCJhdWQiOiJyYXBwb3J0YWdlLWFwcCIsImlhdCI6MTc5MzQzNzk1NCwiZXhwIjoxNzkzNDQxNTU0LCJub25jZSI6Im4tMFM2X1d6QTJNaiIsIm5hbWUiOiJKYW4gSmFuc2VuIiwiZW1haWwiOiJqLmphbnNlbkBnZW1lZW50ZS52b29yYmVlbGQubmwiLCJzY2hhY19ob21lX29yZ2FuaXphdGlvbiI6ImdlbWVlbnRlLnZvb3JiZWVsZC5ubCJ9.efe6nPuWvFOsQ0J4AfiJvhTLOhUVg2MbC05xY_82u--vO2KuHv4SXqGfJJhPCpJ0GLX9BRk0OfzxGEsUolttWxtK58HzqFOUSppeSV8oujPp1Nk752OgKlUQadjJYAXdBSOxwPjdfhbhjfiA-zumbWh9vSrHcODLVPnohVd28kiRMG2RKynJ9QoceBMkXI677pHZHQlFLl85m1G650NrRcN9VSXbLA8aMZhVRU1O4-tHwtxLztvExOEe1ZZWbJFZe-vHv9267hSQ7UdLeMtSa_XJod84hT3NUU4Bw9ktI3pzUdc4PzzUai5KCoZWEJWtz0W-FWizfyCOjWtXROK8Rg", "id_kc": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImtjLXJzMjU2LTRRZjEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3Nzby52b29yYmVlbGQubmwvcmVhbG1zL2dlbWVlbnRlIiwic3ViIjoiM2QxZjZiMmUtOGE0Yy00ZjFlLTliN2QtMGM1ZTJhOWY0ZDYxIiwiYXVkIjoicmFwcG9ydGFnZS1hcHAiLCJpYXQiOjE3OTM0Mzc5NTQsImV4cCI6MTc5MzQzODI1NCwibm9uY2UiOiJuLTBTNl9XekEyTWoiLCJuYW1lIjoiSmFuIEphbnNlbiIsImVtYWlsIjoiai5qYW5zZW5AZ2VtZWVudGUudm9vcmJlZWxkLm5sIiwiYXpwIjoicmFwcG9ydGFnZS1hcHAiLCJ0eXAiOiJJRCIsImFjciI6IjEiLCJzaWQiOiI2YjhlMmYxMC00YzNhLTRkN2UtOWE1MS0wZTJiN2M5ZDRmODMiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJqLmphbnNlbkBnZW1lZW50ZS52b29yYmVlbGQubmwifQ.jEdh5cbpUKZqmBHiOHJjrH_HzDINb5fAmOaSsFxDGmA09CMgLKgPTCCGZCohkexo1JWU4U4xIVHIQHis2Tq7uYKt9RoNVapjS10x9U5HBq8nUgCTpEeDniuQOPnoYyKtnSPrlF04rUWwfPZTJMbBAV8Da4jfQNi9jxsYyn2eZJwYm3ZYWaaGIVesk7EXPqhqCdZdMfsNc-WfFJSpVSfcnvX2L8OH3LXVLG_98a4AZL5XDjJytUeXfPF3zZpjcSOFx24UNaawgsD_e1hrfY37LgMxGLPslweBIIwNLAkHUTzmCsQCp-9umpJnR4Y-ZXUAFx0G_HPKBwvww5Itfi0Ygw"};
+const TOK = {"id": "eyJhbGciOiJSUzI1NiIsImtpZCI6Imd2LTIwMjYtMTAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2xvZ2luLmdlbWVlbnRlLnZvb3JiZWVsZC5ubCIsInN1YiI6IjlmOGU3ZDZjLTViNGEtNGMzZC04ZTJmLTFhMGI5YzhkN2U2ZiIsImF1ZCI6InJhcHBvcnRhZ2UtYXBwIiwiaWF0IjoxNzkzNDM3OTUxLCJleHAiOjE3OTM0NDE1NTEsIm5iZiI6MTc5MzQzNzk1MSwianRpIjoiaWQtNmMyZjllMTRhN2IzIiwiYXV0aF90aW1lIjoxNzkzNDM3OTQ4LCJub25jZSI6Im4wUzZXekEyTWo3S3hRNHBWOHRSMWUiLCJhY3IiOiJodHRwOi8vZWlkYXMuZXVyb3BhLmV1L0xvQS9zdWJzdGFudGlhbCIsInNpZCI6IjA4YTUwMTljLTE3ZTEtNDk3Ny04ZjQyLTY1YTEyODQzZWEwMiIsIm5hbWUiOiJKYW4gSmFuc2VuIiwiZW1haWwiOiJqLmphbnNlbkBnZW1lZW50ZS52b29yYmVlbGQubmwifQ.xY1SAbhpCHndV9OvGj9kFnbG038Cw0Uh-pVP4Bl7sEzEEKSFlK8iRW2K701OV5OVwnpPL9Qdj4BCh6DfJtMLbj87pPAEOObDSXduQYUityQVweuBdT2ef8oySU9cpZTn5Abx6jNHVLRnNlNt63wuog1fhX4MLd2xdvy7NWSFet4iwch4ZUre7tstXqox9NLLt4Bxm4gRCdOAGUfQa41ZmVAkbhERkbfI5FJlH1dnyi9kfayEdCDE8r9hDK3P9rTUi-Y9DAD9dRbC88Q_Kxv6mCQDYZ0VfSOvRzoVltRf3tWti2Ch6eop0xffI2S3oEK7Ou5KhP5IBzHAe8CAFB0umQ", "at": "eyJhbGciOiJSUzI1NiIsImtpZCI6Imd2LTIwMjYtMTAiLCJ0eXAiOiJhdCtqd3QifQ.eyJpc3MiOiJodHRwczovL2xvZ2luLmdlbWVlbnRlLnZvb3JiZWVsZC5ubCIsInN1YiI6IjlmOGU3ZDZjLTViNGEtNGMzZC04ZTJmLTFhMGI5YzhkN2U2ZiIsImF1ZCI6ImFwaTovL3JhcHBvcnRhZ2UiLCJjbGllbnRfaWQiOiJyYXBwb3J0YWdlLWFwcCIsInNjb3BlIjoicmFwcG9ydGVuLmxlemVuIiwiaWF0IjoxNzkzNDM3OTUxLCJleHAiOjE3OTM0Mzg4NTEsImp0aSI6ImF0LTNiOWQ4MWYwYzJlNyJ9.uYhprt-gE_8AxBnDQSSDUJxSnWXhdkvpz3UwXXH71x1sxiZ-kozQmv_RcQZWVvBqpZQNqpexIcuSadpvd5kH3yWJRP_adyuFQB_OdC9x5F_D92ywFGFFdy-S5jxX51MR1MG8qYJUQ5B_Z8819zrCVbgsLWzVx0SLBb-fks1a0lagGPZ1rZsYaaoHaky5SZpX_HFE8nxTBmN5vMoLbP-YYHtraTX4jIfZH9BtpCbgB80QMWJ1t2bOIl6fBBuvROLP7xquiq0LSXnVBc-Xia74f3_w7Qlv7WH-FuKR2f7bOef-VLr5Hy5VEMBKoH1qq15JXXyIMhNNXFEqnBpK20lYcQ", "cc": "eyJhbGciOiJSUzI1NiIsImtpZCI6Imd2LTIwMjYtMTAiLCJ0eXAiOiJhdCtqd3QifQ.eyJpc3MiOiJodHRwczovL2xvZ2luLmdlbWVlbnRlLnZvb3JiZWVsZC5ubCIsInN1YiI6ImtvcHBlbGluZy1lc2IiLCJhdWQiOiJhcGk6Ly9yYXBwb3J0YWdlIiwiY2xpZW50X2lkIjoia29wcGVsaW5nLWVzYiIsInJvbGVzIjpbIlJhcHBvcnRlbi5MZXplbi5BbGxlcyJdLCJpYXQiOjE3OTM0Mzg0MDAsImV4cCI6MTc5MzQ0MjAwMCwianRpIjoiYXQtYzcxZTA1YTlkNGIyIn0.mxiS1OLER54w6ncp4Jr1pVAhKBmoYOtvA7UA54Wa39EL9Q2m0I1g2kAEt-thQji6zD8q5TMHTq9-zyGRSIL42X-hDzsjrtYUOjTkwFV4aSGal1pDM0Q_5xeiWAZcyRkBFJRf04mUrdX4i6SqnwkSgfyzDTGXbBG4ahEkdqPX5JNxnjZ_C8xIrpGlctZ-vmO8Bizk0HklmWYBnLBTnGdq5noKL0RfnoJ15k6IeyT6p4bRJdQEGuutVX4KuvmO2KFHLQzhwC-5G5MHY38kmY4LfsJCeXu-22mNOwlgdPMzPPFnsZ1v8UDeb6e57Sb6s7EQDhsBdJJq1Jsm6vQ-xyxRqA", "assert": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImVzYi0yMDI2IiwidHlwIjoiSldUIn0.eyJpc3MiOiJrb3BwZWxpbmctZXNiIiwic3ViIjoia29wcGVsaW5nLWVzYiIsImF1ZCI6Imh0dHBzOi8vbG9naW4uZ2VtZWVudGUudm9vcmJlZWxkLm5sIiwianRpIjoiY2EtNWYyZThiMWQ3YTkwIiwiaWF0IjoxNzkzNDM4Mzk4LCJleHAiOjE3OTM0Mzg2OTh9.hVUXcn27aMFyedRB_qDxI1fC9utc-H5BUTDn4zz99TXl1F98jleUi-iKLtcV1SS7SH_vTfVnTT8IDGP7cQ5tP-IGQy0FWCIe_OKKX6Db6Mhr0fqCWT8natM-ZmNr4xAS8u0VJ6edykA8g0V5ZWg40HWEtwnYB9k3Ie05hspiFTmtC9t5EiFx7jxCbJV23ZfziZZgQa9vYdocj9Vhh1Sy2tqQtkeuN1ySonsmTtyLQUVVU1XorYPw929hnfBUu_avBUSoZS-y9n5CcI3tTY7CkkZHE6pZFXvipdXTFyhIP276MiHB6ZnFD1478inQeelwoiBgZl-rFSDIaYR_ApOMFg", "jwk": {"kty": "RSA", "kid": "gv-2026-10", "use": "sig", "alg": "RS256", "n": "57HLXwTm9m3rpIaLhAdBWd05NqWbZM1lzoCbx8yPmopVCeYxbU2T2fKvuP4Zm8XX3LLyQjGOyG044ZtEcbSq8mWq2NuIEZXURLzRUTsg5MLAI1csNzI0M1F-N6NfAaWdg54qOAgvTWQeRzdaOzbsy1X5d22ddngJRdeFPcLtp-8TnQY5XKrXYfIu0hJQ_vbyddFI2tRMnMO2AVe4dKzoB6Gu_5dEzAPBY6paGtJ2Y0HfJzAgIJSnHCNR1ZUqHy_tQsf3ned5hVPgoVNCzboUne0kMu2b4t-4D8u0o8XJAerAPPQumFYcD-Ge-W62BEwavZRkon2s_MH-30ZNTZgzSQ", "e": "AQAB"}, "app_assert": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImFwcC0yMDI2IiwidHlwIjoiSldUIn0.eyJpc3MiOiJyYXBwb3J0YWdlLWFwcCIsInN1YiI6InJhcHBvcnRhZ2UtYXBwIiwiYXVkIjoiaHR0cHM6Ly9sb2dpbi5nZW1lZW50ZS52b29yYmVlbGQubmwiLCJqdGkiOiJjYS0xZDdlNGI5YTJmNjMiLCJpYXQiOjE3OTM0Mzc5NTMsImV4cCI6MTc5MzQzODI1M30.pql90j-DOgfm_bk7UF72PPFXMvhaPnYuLhqvzUeRHeAo42CXTo0A04rThV1sgXz-q4GMOEYRfU85n36wxMQQjcg0TtZjz6TxHqzCxAtbMlgWAEjljRpVffwm1Z0L1a82_WkdynPPoJkqxNy9u9Du5IM31aTa8v7sPrRQeMB1VO10em2Pkob2A_2fDGN1l6oSeK4R0dFaswL2LdUUHfTpVnWpSamhrZCwCnufL6NPIy3X1UkT8pWpFMMjm9ukPKoqniWbl47XiB4JfYiGxhqGlf618_BESXlIq-6NxbAveYBzXTGyWizinVvfGuZy1PxgfoIVllMART9V79l1XpLchg", "logout": "eyJhbGciOiJSUzI1NiIsImtpZCI6Imd2LTIwMjYtMTAiLCJ0eXAiOiJsb2dvdXQrand0In0.eyJpc3MiOiJodHRwczovL2xvZ2luLmdlbWVlbnRlLnZvb3JiZWVsZC5ubCIsImF1ZCI6InJhcHBvcnRhZ2UtYXBwIiwiaWF0IjoxNzkzNDY1MTEwLCJleHAiOjE3OTM0NjUyMzAsImp0aSI6ImxvLThmMmM2MWUwYjRkNyIsInN1YiI6IjlmOGU3ZDZjLTViNGEtNGMzZC04ZTJmLTFhMGI5YzhkN2U2ZiIsInNpZCI6IjA4YTUwMTljLTE3ZTEtNDk3Ny04ZjQyLTY1YTEyODQzZWEwMiIsImV2ZW50cyI6eyJodHRwOi8vc2NoZW1hcy5vcGVuaWQubmV0L2V2ZW50L2JhY2tjaGFubmVsLWxvZ291dCI6e319fQ.gLgEMbRYUriHDFXfRTvzGoUDi78_MJEJriuIeZttzumSHB7-xBgBrtt4bQBio52DFcJLTCbNeSrtXW0vJw1JcBYr0QPRvMdD6zE0NKfi98RKiZSPAuvU4apVWwi5hQdNMJin2PptorzkBetBAAsh8gWpnqCaerTbNIRSQZuCKmB7OEnZCnuD6iRfrXVZRfs8cpWHLDCDhnWgl8ndvQphrEliZ24aeELcIkJSpRMdKlofbUNrIU-kOIBxRW35j0nqR0nVQ8m2or0TvGQTiZxKEGTqPXnGE_v3JtQdGp8ehLRpMcFy7grLUUI3qfTDDLgVSWRrlKXmY2Tss_DG3zHMoQ", "jwk_gov": {"kty": "RSA", "kid": "gc-2026-10", "use": "sig", "alg": "RS256", "n": "uYemaV21kvTNs0nJUgPutRMhxYFE3SOMixYWuEkt0pDTq1NnM-YIzLb7j0WfE2-ffSPHK_vsfJI-G6CdvpqupmYhW8H8TA7rWS94HgTxFMJWFrvaWJJUTLqYImn-Ln9bmrlC1ASgJSk9_4dFwQd6DaaQ_nEgEluqsspd6c_0mh8xGyg4RJ_ZcKpCE4lOqpaiNbLlZ2b4v8k6qQG7UUUezCtJTZ2vgM4zGH8dmq6dhL7TxqKPwIT1PnimIVWQ0-_DEo95slctYPRcEpfDLxmRprg8MXwrlicrsWbruWQo4qSFRSFrrOydosZ_Js7xNtt_iCAC8GO3ARw_4d-9Xx5liQ", "e": "AQAB"}, "jwk_kc": {"kty": "RSA", "kid": "kc-rs256-4Qf1", "use": "sig", "alg": "RS256", "n": "vY_MU3OI0UN2NvUH3miwBsVsOx_j3_RIz__zb-1freqqUvE_e5lN9FrGrdTPRj78vLJbTndbOu8-c4CAV_wcRbFNeHPg3RCM18S0MMpiImLRJOnP2z5GTh1eQeoT-P_Sn-bxj2H6Obv89NgucKRfBuLr2ab1mo0JqCG8TrbAUe8Bzi0dWQ-7RvLjhXt1SQE5iSe7EqpqGwMiTv-1879pHxiuy06m0qeEUwGFI4HW0UuFJ19R10oUcFjpQzVjnvygqEvrnQRkqhBgnvhZ0CRYTCptZuksnhNINUY8s379B2vTl4ahYFPII_Mw07snaJCkPyvRNTpbQU2XYVr9znRxHw", "e": "AQAB"}, "id_gov": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImdjLTIwMjYtMTAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2Nvbm5lY3QuZ292Y29uZXh0LnZvb3JiZWVsZC5ubCIsInN1YiI6ImM5YTRlMWYwM2I3ZDI2ZThhMTVmMGI5NGQ3YzNlODJhNjFmNWQwYjciLCJhdWQiOiJyYXBwb3J0YWdlLWFwcCIsImlhdCI6MTc5MzQzNzk1NCwiZXhwIjoxNzkzNDQxNTU0LCJub25jZSI6Im4wUzZXekEyTWo3S3hRNHBWOHRSMWUiLCJ1aWQiOiJqLmphbnNlbkBnZW1lZW50ZS52b29yYmVlbGQubmwiLCJzY2hhY19ob21lX29yZ2FuaXphdGlvbiI6ImdlbWVlbnRlLnZvb3JiZWVsZC5ubCIsIm5hbWUiOiJKYW4gSmFuc2VuIiwiZW1haWwiOiJqLmphbnNlbkBnZW1lZW50ZS52b29yYmVlbGQubmwifQ.ZC5ml9zlEirjT9mw24DWF7hJA5bPNMGA8c5vukuHGkP-WxL9Ny1-XtrHnG4bvb3HCJCYeFezuRc4VLdUzWV1ZK6leYSZsbyVY6pf7cE2mvGWrDzBfnl2zjLgYbc648eapSV6hktAqYFpoFXoFcU863EC0nMOVwJeJwRxKl3HkQF2o8XEAL8oW4iLrHjPdK1x2_KU07WFw6REOWnNC6uifwtCutAr5_xh8vaCADRDbMNT0xSENjmfBCTDfQotFO0dM7sb_j3SzXc1avX9JNHq5DWn3pbocxNL4dyTYGetI6B1LTFQ3cUlo4Z8lkNyqQTLpT85UL6Jk4exzQ265mvKyw", "id_kc": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImtjLXJzMjU2LTRRZjEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3Nzby52b29yYmVlbGQubmwvcmVhbG1zL2dlbWVlbnRlIiwic3ViIjoiM2QxZjZiMmUtOGE0Yy00ZjFlLTliN2QtMGM1ZTJhOWY0ZDYxIiwiYXVkIjoicmFwcG9ydGFnZS1hcHAiLCJpYXQiOjE3OTM0Mzc5NTQsImV4cCI6MTc5MzQzODI1NCwibm9uY2UiOiJuMFM2V3pBMk1qN0t4UTRwVjh0UjFlIiwibmFtZSI6IkphbiBKYW5zZW4iLCJlbWFpbCI6ImouamFuc2VuQGdlbWVlbnRlLnZvb3JiZWVsZC5ubCIsImF6cCI6InJhcHBvcnRhZ2UtYXBwIiwidHlwIjoiSUQiLCJhY3IiOiIxIiwic2lkIjoiNmI4ZTJmMTAtNGMzYS00ZDdlLTlhNTEtMGUyYjdjOWQ0ZjgzIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiai5qYW5zZW5AZ2VtZWVudGUudm9vcmJlZWxkLm5sIn0.PowrI1MRnOH_FZbL1h02C9P1A2CxXwSRWJ6MmNYPfAYTVJVLdyMaJUGPd1w_-hkgvbofvQVPyAiYig98tvO5v3U5PZICX3gEChmqNSggv4D7tTI4iAPtrxuieT9Hjs9oDfXDYGUmmJP_EX-0GnJS1pJGgxgc2h2coO0kUvYw4AypZnM2vtb8zX5Q7Ab-yeZfvkAwDYm5LItG6GgoAzB9fPWKCAWwsUdrCoJOi3R2XkgSNXq-L5Ir5WjV4-RGUcsCyejUulZdFySYJa7VpJ1kXZPyI8Rg_hM9d3GxD4EO0LpOrjZnKoVeMngXY6YJkdNJbsgoLpX-FGg_RyKwtCcOBQ", "saml_cert": "-----BEGIN CERTIFICATE-----\nMIIC8zCCAdugAwIBAgIHWj4dICYQMTANBgkqhkiG9w0BAQsFADA6MTgwNgYDVQQD\nDC9sb2dpbi5nZW1lZW50ZS52b29yYmVlbGQubmwgU0FNTCBzaWduaW5nIChkZW1v\nKTAeFw0yNjAxMDEwMDAwMDBaFw0yODEyMzEwMDAwMDBaMDoxODA2BgNVBAMML2xv\nZ2luLmdlbWVlbnRlLnZvb3JiZWVsZC5ubCBTQU1MIHNpZ25pbmcgKGRlbW8pMIIB\nIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAm7JHxW09c68GD0cfEtSw73yS\nrlcdSUs08+weaiK/YZbN9sJv1xH8SxmM6/Fltar1xF9PSRQM199atHZRDjdnVwf8\nAHq/E1MYMmVI3WO9Ez3otNLI7qY0DD9MWFkaRn+btv8gdnbXJA7T1+nEoT5m6pLx\nlUfhVSSfarYQgyFBh8B+krDQ2FEdEWLFe2N0hj5omj5b5A9nIB2zB+2nKe0lz38L\nT+m+HyVcCvRhLrO4XglaFEZ5dz6BTBjkhWuNN1Vm9reEgzZWZhvUhISvBNdiCuF4\nMNzl8kXkf1t9Imdg5XQxQUkVVgYbKL3pi1vXtvoQyGiKdAO0k24+Jxj+vYgCWwID\nAQABMA0GCSqGSIb3DQEBCwUAA4IBAQBA+bAJh9XGJ2sbIqyxTWbvEu3tnyiDth+l\nhibMJ3SVRbkaH0mWX0kwJ5uPQXaed2cpoV/S+0qPjkcU30S7fQq6iS6r5vEWpeud\npu6+Ooq6ZU/WzWRmZT6wNtV6FabJRNShSYtdbmnp3CJtOlJ9ta5uiQ0Py6+tzozh\nrQOcoQ9CFZOqbXQ+2apYttXz8up0Zr8wPmKy/+4skmAisEnehkgoLwEXQ3ukECoQ\nPEi1ACiMeMiHDaFHYdGneHkXcif7/XJF6kPENYO3NW/Ul5bLUNNEGNfcm9C++Kqq\nRwiYfHKJymdSJut3Em9Kyowxcp8Zn8pIgLItHvbDR4cQQ+/7STcz\n-----END CERTIFICATE-----\n"};
 function b64uDec(s){ s = s.replace(/-/g,'+').replace(/_/g,'/'); while (s.length % 4) s += '='; const bin = atob(s); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; }
 function b64uEnc(bytes){ let bin = ''; bytes.forEach(b => { bin += String.fromCharCode(b); }); return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
 const utf8 = u => new TextDecoder().decode(u);
@@ -1195,7 +1257,7 @@ function jwtLines(key, marks, sigNote){
 }
 const ISS = 'https://login.gemeente.voorbeeld.nl';
 const PKCE = {verifier:'dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk', challenge:'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM'};
-const AUTHZ_QS = 'response_type=code&client_id=rapportage-app&redirect_uri=https%3A%2F%2Fapp.voorbeeld.nl%2Foidc%2Fcallback&scope=openid%20profile%20email%20api%3A%2F%2Frapportage%2Frapporten.lezen&state=st-8KdQ2v1Lw0&nonce=n-0S6_WzA2Mj&code_challenge=' + PKCE.challenge + '&code_challenge_method=S256';
+const AUTHZ_QS = 'response_type=code&client_id=rapportage-app&redirect_uri=https%3A%2F%2Fapp.voorbeeld.nl%2Foidc%2Fcallback&scope=openid%20profile%20email%20api%3A%2F%2Frapportage%2Frapporten.lezen&state=Zk3qT9vLm2Xw8RbN5yJ0cA&nonce=n0S6WzA2Mj7KxQ4pV8tR1e&code_challenge=' + PKCE.challenge + '&code_challenge_method=S256&acr_values=http%3A%2F%2Feidas.europa.eu%2FLoA%2Fsubstantial';
 const tId = jwtParts(TOK.id).p, tAt = jwtParts(TOK.at).p, tCc = jwtParts(TOK.cc).p, tAs = jwtParts(TOK.assert).p;
 
 function buildOidc(){
@@ -1213,15 +1275,20 @@ function buildOidc(){
 {
 @1|  "client_id": "rapportage-app",
 @2|  "redirect_uris": ["https://app.voorbeeld.nl/oidc/callback"],
-@3|  "token_endpoint_auth_method": "client_secret_basic",
+@3|  "token_endpoint_auth_method": "private_key_jwt",
+@3|  "jwks_uri": "https://app.voorbeeld.nl/.well-known/jwks.json",
 @4|  "grant_types": ["authorization_code", "refresh_token"],
-@4|  "response_types": ["code"]
+@4|  "response_types": ["code"],
+@5|  "post_logout_redirect_uris": ["https://app.voorbeeld.nl/afgemeld"],
+@5|  "backchannel_logout_uri": "https://app.voorbeeld.nl/oidc/backchannel-logout",
+@5|  "backchannel_logout_session_required": true
 }`,
       notes:[
         {n:1, t:'client_id', d:`De naam van de app bij de IdP, vergelijkbaar met het SAML-entityID. Komt terug in het verzoek en als aud in het ID token. In Entra ID is dit een GUID (Application (client) ID).`},
         {n:2, t:'redirect_uris', d:`De enige adressen waar de IdP de browser met een code naartoe mag sturen. De IdP vergelijkt exact; een te ruime instelling met jokertekens is een bekende manier om codes te stelen.`},
-        {n:3, t:'token_endpoint_auth_method', d:`Hoe de app zich bij het token-endpoint bewijst. client_secret_basic is een gedeeld wachtwoord. Sterker is een sleutelpaar (private_key_jwt) of een certificaat (mTLS); zie de variant Server naar server.`},
-        {n:4, t:'grant_types / response_types', d:`Welke flows deze client mag gebruiken: authorization code, en verversen met een refresh token.`}
+        {n:3, t:'token_endpoint_auth_method / jwks_uri', d:`De app bewijst zich met een eigen sleutelpaar (private_key_jwt); de IdP haalt de publieke sleutel op via jwks_uri. OpenID NLGov eist voor confidential clients private_key_jwt of mTLS; een gedeeld geheim zoals client_secret_basic mag daar niet. In Entra ID komt een certificaat als credential hierop neer.`},
+        {n:4, t:'grant_types / response_types', d:`Welke flows deze client mag gebruiken: authorization code, en verversen met een refresh token.`},
+        {n:5, t:'uitlog-adressen', d:`Waar de IdP na het uitloggen naartoe mag terugsturen, en waar hij een uitlogbericht rechtstreeks aan de app aflevert (back-channel logout, stap L3).`}
       ]}]},
   { id:'0b', ph:0, from:'idp', to:'sp', kind:'meta', lbl:'Discovery + JWKS', keys:['meta-idp'],
     title:`De app haalt de configuratie en sleutels van de IdP op`, tr:`Bij het opstarten · direct, zonder browser`,
@@ -1235,6 +1302,11 @@ function buildOidc(){
 @1|  "issuer": "https://login.gemeente.voorbeeld.nl",
 @2|  "authorization_endpoint": "https://login.gemeente.voorbeeld.nl/oauth2/authorize",
 @3|  "token_endpoint": "https://login.gemeente.voorbeeld.nl/oauth2/token",
+@3|  "userinfo_endpoint": "https://login.gemeente.voorbeeld.nl/oauth2/userinfo",
+@8|  "end_session_endpoint": "https://login.gemeente.voorbeeld.nl/oauth2/logout",
+@8|  "backchannel_logout_supported": true,
+@9|  "token_endpoint_auth_methods_supported": ["private_key_jwt", "tls_client_auth"],
+@10|  "acr_values_supported": ["http://eidas.europa.eu/LoA/substantial", "http://eidas.europa.eu/LoA/high"],
 @4|  "jwks_uri": "https://login.gemeente.voorbeeld.nl/oauth2/jwks",
 @5|  "scopes_supported": ["openid", "profile", "email", "offline_access"],
 @5|  "response_types_supported": ["code"],
@@ -1244,11 +1316,14 @@ function buildOidc(){
         notes:[
           {n:1, t:'issuer', d:`De identiteit van de IdP. Moet exact overeenkomen met iss in elk token; ook een ontbrekende of extra slash telt.`},
           {n:2, t:'authorization_endpoint', d:`Waar de browser naartoe gaat om in te loggen (stap 3).`},
-          {n:3, t:'token_endpoint', d:`Waar de app zelf de code inwisselt (stap 7). Dit adres ziet de browser nooit.`},
+          {n:3, t:'token_endpoint / userinfo_endpoint', d:`Waar de app zelf de code inwisselt (stap 7) en eventueel gebruikersgegevens ophaalt (stap 9a). Deze adressen ziet de browser nooit.`},
           {n:4, t:'jwks_uri', d:`Waar de publieke sleutels staan waarmee tokens gecontroleerd worden.`},
           {n:5, t:'scopes / response types', d:`Wat de IdP ondersteunt. offline_access is de standaardscope voor een refresh token.`},
           {n:6, t:'code_challenge_methods_supported', d:`PKCE met SHA-256. De variant plain is af te raden.`},
-          {n:7, t:'id_token_signing_alg_values_supported', d:`De algoritmes waarmee de IdP tekent. De app accepteert alleen deze, en nooit alg none.`}
+          {n:7, t:'id_token_signing_alg_values_supported', d:`De algoritmes waarmee de IdP tekent. De app accepteert alleen deze, en nooit alg none.`},
+          {n:8, t:'uitloggen', d:`Waar de app de browser heen stuurt om uit te loggen, en of de IdP uitlogberichten rechtstreeks aan apps stuurt. Zie fase 8.`},
+          {n:9, t:'token_endpoint_auth_methods_supported', d:`De toegestane manieren van client-authenticatie. Volgens OpenID NLGov alleen private_key_jwt en mTLS (tls_client_auth).`},
+          {n:10, t:'acr_values_supported', d:`De betrouwbaarheidsniveaus die de IdP kan leveren; in OpenID NLGov eIDAS-niveaus.`}
         ]},
       { name:'JWKS', cap:'GET /oauth2/jwks', copy:[['jwks','Kopieer JWKS']], lines:`
 {
@@ -1283,8 +1358,9 @@ GET https://login.gemeente.voorbeeld.nl/oauth2/authorize
 @2|  client_id = rapportage-app
 @3|  redirect_uri = https://app.voorbeeld.nl/oidc/callback
 @4|  scope = openid profile email api://rapportage/rapporten.lezen
-@5|  state = st-8KdQ2v1Lw0
-@6|  nonce = n-0S6_WzA2Mj
+@5|  state = Zk3qT9vLm2Xw8RbN5yJ0cA
+@6|  nonce = n0S6WzA2Mj7KxQ4pV8tR1e
+@8|  acr_values = http://eidas.europa.eu/LoA/substantial
 @7|  code_challenge = ${PKCE.challenge}
 @7|  code_challenge_method = S256
 
@@ -1294,9 +1370,10 @@ GET https://login.gemeente.voorbeeld.nl/oauth2/authorize
           {n:2, t:'client_id', d:`De app, zoals geregistreerd in stap 0a.`},
           {n:3, t:'redirect_uri', d:`Moet exact een van de geregistreerde adressen zijn.`},
           {n:4, t:'scope', d:`openid maakt dit een OIDC-login; zonder die scope is het puur OAuth. profile en email vragen gebruikersgegevens in het ID token. De laatste scope is toegang tot de API, namens de gebruiker.`},
-          {n:5, t:'state', d:`Willekeurige waarde tegen login-CSRF. Komt ongewijzigd terug bij de callback. Vergelijkbaar met de rol van InResponseTo en RelayState in SAML.`},
-          {n:6, t:'nonce', d:`Willekeurige waarde die de IdP in het ID token zet. Zo hoort het token bij dit verzoek en is het niet in een andere login te gebruiken.`},
-          {n:7, t:'code_challenge (PKCE)', d:`De SHA-256-hash van een geheim dat de app bewaart, de code_verifier. Wie de code onderweg onderschept, kan hem zonder dat geheim niet inwisselen. In ${xref('7')} reken je het na. De waarden zijn het voorbeeld uit RFC 7636.`}
+          {n:5, t:'state', d:`Willekeurige waarde tegen login-CSRF. Komt ongewijzigd terug bij de callback. Vergelijkbaar met de rol van InResponseTo en RelayState in SAML. OpenID NLGov eist minstens 128 bits willekeur.`},
+          {n:6, t:'nonce', d:`Willekeurige waarde die de IdP in het ID token zet. Zo hoort het token bij dit verzoek en is het niet in een andere login te gebruiken. Ook hier minstens 128 bits willekeur.`},
+          {n:7, t:'code_challenge (PKCE)', d:`De SHA-256-hash van een geheim dat de app bewaart, de code_verifier. Wie de code onderweg onderschept, kan hem zonder dat geheim niet inwisselen. In ${xref('7')} reken je het na. De waarden zijn het voorbeeld uit RFC 7636. RFC 9700 maakt PKCE verplicht voor public clients en raadt het ook aan voor confidential clients zoals deze webapp; OpenID NLGov maakt het voor alle clients verplicht.`},
+          {n:8, t:'acr_values', d:`Het gevraagde betrouwbaarheidsniveau. De IdP moet minstens dit niveau leveren en meldt het in acr. Entra ID kent deze eIDAS-waarden niet; daar dwing je MFA af met voorwaardelijke toegang.`}
         ]},
       { name:'Op de lijn', cap:'HTTP-response van de app', lines:`
 HTTP/1.1 302 Found
@@ -1333,7 +1410,7 @@ Host: login.gemeente.voorbeeld.nl
 HTTP/1.1 302 Found
 @1|Location: https://app.voorbeeld.nl/oidc/callback
 @2|  ?code=SplxlOBeZQQYbYS6WxSbIA
-@3|  &state=st-8KdQ2v1Lw0`,
+@3|  &state=Zk3qT9vLm2Xw8RbN5yJ0cA`,
       notes:[
         {n:1, t:'redirect_uri', d:`Het geregistreerde callback-adres van de app.`},
         {n:2, t:'code', d:`Eenmalig bruikbaar en kort geldig; de specificatie adviseert hooguit tien minuten. De code is geen token: om hem in te wisselen zijn ook de client-authenticatie en de code_verifier nodig.`},
@@ -1346,7 +1423,7 @@ HTTP/1.1 302 Found
       `Er bestaat ook een variant waarbij de IdP de code via een automatisch formulier post (response_mode=form_post), zoals bij SAML. Het principe blijft gelijk.`
     ],
     views:[{ cap:'HTTP-request van de browser', lines:`
-GET /oidc/callback?code=SplxlOBeZQQYbYS6WxSbIA&state=st-8KdQ2v1Lw0 HTTP/1.1
+GET /oidc/callback?code=SplxlOBeZQQYbYS6WxSbIA&state=Zk3qT9vLm2Xw8RbN5yJ0cA HTTP/1.1
 Host: app.voorbeeld.nl
 @1|Cookie: oidc_tx=…`,
       notes:[{n:1, t:'Cookie: oidc_tx', d:`Hiermee vindt de app de bewaarde state, nonce en code_verifier terug.`}]
@@ -1358,28 +1435,37 @@ Host: app.voorbeeld.nl
       `De IdP controleert vier dingen: de client-authenticatie, de code (eenmalig, niet verlopen, voor deze client), de redirect_uri (gelijk aan stap 2) en de code_verifier (de hash moet gelijk zijn aan de code_challenge uit stap 2).`
     ],
     lab:'pkce',
-    views:[{ cap:'HTTP-request van de app', lines:`
+    views:[{ name:'Op de lijn', cap:'HTTP-request van de app', lines:`
 POST /oauth2/token HTTP/1.1
 Host: login.gemeente.voorbeeld.nl
-@1|Authorization: Basic cmFwcG9ydGFnZS1hcHA6…
 Content-Type: application/x-www-form-urlencoded
 
 @2|grant_type=authorization_code
 @3|&code=SplxlOBeZQQYbYS6WxSbIA
 @4|&redirect_uri=https%3A%2F%2Fapp.voorbeeld.nl%2Foidc%2Fcallback
-@5|&code_verifier=${PKCE.verifier}`,
+@5|&code_verifier=${PKCE.verifier}
+@1|&client_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-bearer
+@1|&client_assertion=⟦jwt:app_assert⟧`,
       notes:[
-        {n:1, t:'Authorization: Basic', d:`client_id en client secret, Base64-gecodeerd. Een gedeeld geheim moet je beschermen en roteren; een sleutelpaar of certificaat is sterker.`},
+        {n:1, t:'client_assertion', d:`De app bewijst wie hij is met een korte JWT, ondertekend met zijn eigen privésleutel (private_key_jwt); zie het tabblad Client assertion. Er gaat geen gedeeld geheim over de lijn. Een mobiele app of een SPA zonder backend kan geen sleutel geheimhouden (public client); daar valt dit weg en is PKCE de enige binding tussen code en app.`},
         {n:2, t:'grant_type', d:`Een code inwisselen. In werkelijkheid staat de body op één regel.`},
         {n:3, t:'code', d:`De code uit stap 5.`},
         {n:4, t:'redirect_uri', d:`Moet gelijk zijn aan die in stap 2.`},
         {n:5, t:'code_verifier', d:`Het geheim achter de code_challenge. Het is nu voor het eerst buiten de app en gaat alleen rechtstreeks naar de IdP.`}
+      ]},
+      { name:'Client assertion', cap:'Client assertion, gedecodeerd', lines:jwtLines('app_assert', {h:1, iss:2, sub:2, aud:3, jti:4, exp:5}, 0),
+      notes:[
+        {n:1, t:'header', d:`Getekend met de sleutel van de app (kid app-2026). De IdP kent de publieke helft via de jwks_uri uit de registratie.`},
+        {n:2, t:'iss / sub', d:`Beide het client_id: de app verklaart iets over zichzelf.`},
+        {n:3, t:'aud', d:`De issuer van de IdP, als enige waarde. Sinds de audience-injectie-kwetsbaarheid uit 2025 mag het token-endpoint hier niet meer staan (IETF-draft rfc7523bis).`},
+        {n:4, t:'jti', d:`Uniek ID. De IdP accepteert elke assertion maar één keer.`},
+        {n:5, t:'exp', d:`Kort geldig: vijf minuten.`}
       ]}]},
   { id:'8', ph:4, from:'idp', to:'sp', kind:'back', lbl:'Tokens', keys:['token-resp','resp'],
     title:`De IdP geeft de tokens terug`, tr:`HTTP 200 · direct, zonder browser`,
     prose:[
       `Het antwoord bevat drie tokens met elk een eigen doel. Het ID token is voor de app: wie heeft ingelogd. Het access token is voor de API: wat mag deze app namens de gebruiker. Het refresh token is om later nieuwe access tokens te halen.`,
-      `ID token en access token zijn JWT's: drie Base64url-delen (header, payload, handtekening) gescheiden door punten. De kleuren op het tabblad Antwoord laten die delen zien.`
+      `Het ID token is altijd een JWT: drie Base64url-delen (header, payload, handtekening) gescheiden door punten. Het access token is in dit voorbeeld ook een JWT, maar kan bij andere IdP's een ondoorzichtige string zijn. De kleuren op het tabblad Antwoord laten de delen zien.`
     ],
     views:[
       { name:'Antwoord', cap:'HTTP-response van de IdP', copy:[['id','Kopieer ID token'],['at','Kopieer access token']], lines:`
@@ -1398,23 +1484,25 @@ Cache-Control: no-store
         notes:[
           {n:1, t:'token_type', d:`Bearer: wie het token heeft, mag het gebruiken. Net als een SAML-assertion.`},
           {n:2, t:'access_token', d:`Bestemd voor de API. De app hoort de inhoud niet te gebruiken; voor de app is het een sleutel, geen bericht.`},
-          {n:3, t:'id_token', d:`Bestemd voor de app: de verklaring wie er heeft ingelogd. Het equivalent van de SAML-assertion.`},
+          {n:3, t:'id_token', d:`Bestemd voor de app: de verklaring wie er heeft ingelogd. Het vervult een vergelijkbare rol als de SAML-assertion, maar met een andere opbouw en eigen controleregels.`},
           {n:4, t:'refresh_token', d:`Langer geldig. Alleen bruikbaar bij het token-endpoint, samen met de client-authenticatie.`},
           {n:5, t:'expires_in', d:`Geldigheid van het access token in seconden, hier een kwartier.`},
           {n:6, t:'scope', d:`Wat daadwerkelijk is toegekend. Dat kan minder zijn dan gevraagd.`}
         ]},
-      { name:'ID token', cap:'ID token, gedecodeerd', lines:jwtLines('id', {h:1, iss:2, sub:3, aud:4, iat:5, exp:5, auth_time:6, nonce:7, acr:8, amr:8, name:9, email:9}, 10),
+      { name:'ID token', cap:'ID token, gedecodeerd', lines:jwtLines('id', {h:1, iss:2, sub:3, aud:4, iat:5, nbf:5, exp:5, jti:6, auth_time:7, nonce:8, acr:9, sid:10, name:11, email:11}, 12),
         notes:[
           {n:1, t:'header', d:`alg zegt hoe er getekend is, kid met welke sleutel uit de JWKS.`},
           {n:2, t:'iss', d:`De issuer uit het discovery-document.`},
           {n:3, t:'sub', d:`De identifier van de gebruiker bij deze IdP. De combinatie iss en sub is de sleutel waarop de app de gebruiker herkent; een e-mailadres kan veranderen.`},
           {n:4, t:'aud', d:`Het client_id van de app. Een ID token is alleen voor de app, nooit om naar een API te sturen.`},
-          {n:5, t:'iat / exp', d:`Unix-tijd in seconden: uitgegeven ${iso(tId.iat)}, verloopt ${iso(tId.exp)}.`},
-          {n:6, t:'auth_time', d:`Wanneer de gebruiker werkelijk inlogde (${iso(tId.auth_time)}). Bij SSO kan dat eerder zijn dan iat.`},
-          {n:7, t:'nonce', d:`De nonce uit stap 2. Bindt dit token aan deze login, zoals InResponseTo in SAML.`},
-          {n:8, t:'acr / amr', d:`Het niveau van de login en de gebruikte methoden: hier wachtwoord en MFA. De waarden voor amr komen uit RFC 8176.`},
-          {n:9, t:'name / email', d:`Gebruikersgegevens, geleverd omdat de scopes profile en email zijn gevraagd.`},
-          {n:10, t:'handtekening', d:`Controleer hem zelf in ${xref('9')}.`}
+          {n:5, t:'iat / nbf / exp', d:`Unix-tijd in seconden: uitgegeven ${iso(tId.iat)}, geldig vanaf ${iso(tId.nbf)}, verloopt ${iso(tId.exp)}. nbf is in OpenID NLGov verplicht.`},
+          {n:6, t:'jti', d:`Uniek ID van dit token, verplicht in OpenID NLGov. Hiermee is hergebruik te herkennen.`},
+          {n:7, t:'auth_time', d:`Wanneer de gebruiker werkelijk inlogde (${iso(tId.auth_time)}). Bij SSO kan dat eerder zijn dan iat.`},
+          {n:8, t:'nonce', d:`De nonce uit stap 2. Bindt dit token aan deze login, zoals InResponseTo in SAML.`},
+          {n:9, t:'acr', d:`Het betrouwbaarheidsniveau van de login, hier eIDAS substantieel: minstens wat de app in acr_values vroeg. OpenID NLGov schrijft eIDAS-niveaus voor en verbiedt amr, de lijst gebruikte methoden. Andere IdP's melden MFA juist via amr (RFC 8176); Entra ID kent geen eIDAS-niveaus.`},
+          {n:10, t:'sid', d:`Het ID van de sessie bij de IdP. De app bewaart het, zodat hij bij uitloggen (stap L3) weet welke sessie moet stoppen.`},
+          {n:11, t:'name / email', d:`Gebruikersgegevens bij de scopes profile en email. Volgens OpenID Connect Core levert de IdP ze bij de code flow via UserInfo (${xref('9a')}); veel IdP's zetten ze ook in het ID token, zoals hier.`},
+          {n:12, t:'handtekening', d:`Controleer hem zelf in ${xref('9')}.`}
         ]},
       { name:'Access token', cap:'Access token, gedecodeerd', lines:jwtLines('at', {h:1, aud:2, client_id:3, scope:4, exp:5}, 0),
         notes:[
@@ -1433,20 +1521,46 @@ Cache-Control: no-store
       {t:'Algoritme', c:'alg is RS256 zoals afgesproken, nooit none', from:'0b', r:`Een token zonder handtekening wordt geaccepteerd, of een token dat met de publieke sleutel als HMAC-geheim is "getekend" (alg-verwarring).`},
       {t:'Issuer', c:'iss is exact de issuer uit discovery', from:'0b', r:`Een token van een andere IdP wordt geaccepteerd.`},
       {t:'Audience', c:'aud bevat het eigen client_id', from:'0a', r:`Een ID token dat voor een andere app is uitgegeven, wordt hier gebruikt om in te loggen.`},
-      {t:'Tijd', c:'exp ligt in de toekomst en iat is recent', from:'8', r:`Een oud token wordt hergebruikt.`},
+      {t:'Tijd', c:'nu ligt tussen nbf en exp, en iat is recent', from:'8', r:`Een oud token wordt hergebruikt.`},
       {t:'nonce', c:'Gelijk aan de bewaarde waarde', from:'2', r:`Een eerder of elders uitgegeven ID token wordt in deze login geïnjecteerd.`},
       {t:'state', c:'Al gecontroleerd bij de callback', from:'6', r:`Login-CSRF: het slachtoffer wordt ingelogd in het account van de aanvaller.`},
-      {t:'Sterkte', c:'acr en amr voldoen aan wat de app eist', from:'8', r:`Een login zonder MFA geeft toegang tot gegevens waarvoor MFA vereist is.`}
+      {t:'Sterkte', c:'acr is minstens het niveau uit acr_values', from:'2', r:`Een login zonder MFA geeft toegang tot gegevens waarvoor MFA vereist is.`}
     ],
     lab:'sig',
     callout:`Gebruik ook hier een gangbare OIDC-bibliotheek. De bekende fouten zitten in weggelaten aud-, iss- of alg-controles, niet in de cryptografie.`},
+  { id:'9a', ph:5, from:'sp', to:'idp', dir:'both', kind:'back', lbl:'UserInfo (optioneel)', keys:['userinfo'],
+    title:`De app haalt gebruikersgegevens op bij UserInfo`, tr:`HTTP GET · direct, zonder browser · optioneel`,
+    prose:[
+      `Volgens OpenID Connect Core komen claims als name en email bij de code flow via het UserInfo-endpoint. Veel IdP's zetten ze ook in het ID token; dan is deze stap niet nodig.`,
+      `De app roept UserInfo rechtstreeks bij de IdP aan, met een access token.`
+    ],
+    callout:`In Entra ID is UserInfo een endpoint van Microsoft Graph. Het access token voor je eigen API werkt daar niet; je hebt een apart token voor Graph nodig. Microsoft raadt aan de gegevens uit het ID token te halen.`,
+    views:[{ cap:'Request en response', lines:`
+GET /oauth2/userinfo HTTP/1.1
+Host: login.gemeente.voorbeeld.nl
+@1|Authorization: Bearer eyJ… (access token met scope openid)
+
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+@2|  "sub": "${tId.sub}",
+@3|  "name": "Jan Jansen",
+@3|  "email": "j.jansen@gemeente.voorbeeld.nl",
+@3|  "email_verified": true
+}`,
+      notes:[
+        {n:1, t:'Authorization: Bearer', d:`Een access token dat de IdP voor UserInfo accepteert, doorgaans uitgegeven met de scope openid. Het access token voor de rapportage-API uit stap 8 is daarvoor niet altijd geschikt.`},
+        {n:2, t:'sub', d:`Moet exact gelijk zijn aan sub in het ID token uit stap 8. Is dat niet zo, dan gooit de app het antwoord weg; zo kan een verwisseld token geen andere gebruiker opleveren.`},
+        {n:3, t:'claims', d:`Het antwoord is meestal gewone JSON zonder handtekening. Het vertrouwen komt uit de TLS-verbinding met het endpoint uit het discovery-document.`}
+      ]}]},
   { id:'10', ph:5, from:'sp', to:'br', kind:'http', lbl:'302 + sessiecookie', keys:['session'],
     title:`De app start zijn eigen sessie`, tr:`HTTP 302`,
     prose:[
       `De app maakt een eigen sessie aan. De tokens blijven op de server van de app; de browser krijgt alleen een sessiecookie.`,
       `Bij een single-page app zonder eigen server staan de tokens in de browser. Daarom wordt voor webapps steeds vaker dit patroon aangeraden: een eigen backend die de tokens beheert (backend for frontend).`
     ],
-    callout:`Een account blokkeren bij de IdP beëindigt de sessie in de app niet direct. Wel weigert de IdP bij de gangbare inrichting het volgende verversen (stap 14), zodat de toegang tot de API binnen een kwartier stopt.`,
+    callout:`Een account blokkeren bij de IdP beëindigt de sessie in de app niet direct. Controleert de authorization server bij verversen of het account nog actief is (stap 14), dan stopt de toegang tot de API binnen een kwartier. Of dat zo is, verschilt per product; test het.`,
     views:[{ cap:'HTTP-response van de app', lines:`
 HTTP/1.1 302 Found
 @1|Location: /rapportages
@@ -1496,26 +1610,96 @@ Content-Type: application/json
     title:`De app haalt een nieuw access token`, tr:`HTTP POST · direct, zonder browser`,
     prose:[
       `Na een kwartier is het access token verlopen. De app ruilt het refresh token in voor een nieuw access token, zonder dat de gebruiker iets merkt.`,
-      `Dit is een moment waarop de IdP opnieuw beslist. Is het account inmiddels geblokkeerd of het refresh token ingetrokken, dan krijgt de app geen nieuw token. Kortlevende access tokens geven de IdP zo meer grip dan een SAML-login, die na afloop niets meer met de IdP te maken heeft.`
+      `Op dit moment beslist de IdP opnieuw. Bij gewone API-aanroepen doet hij dat niet: de API accepteert een geldig access token zonder de IdP te vragen. Is het refresh token ingetrokken, dan krijgt de app geen nieuw token; of een geblokkeerd account het verversen ook tegenhoudt, hangt af van de authorization server. Zo geven kortlevende access tokens de IdP meer grip dan een SAML-login, waarna de IdP pas weer in beeld komt bij een nieuwe login.`
     ],
     views:[{ cap:'Request en response', lines:`
 POST /oauth2/token HTTP/1.1
 Host: login.gemeente.voorbeeld.nl
-Authorization: Basic cmFwcG9ydGFnZS1hcHA6…
 Content-Type: application/x-www-form-urlencoded
 
 @1|grant_type=refresh_token&refresh_token=rt-7Yc2…
+@1|&client_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-bearer&client_assertion=eyJ…
 
 HTTP/1.1 200 OK
 @2|{ "token_type": "Bearer", "access_token": "eyJ…", "refresh_token": "rt-Q9mX…", "expires_in": 900 }`,
       notes:[
         {n:1, t:'grant_type=refresh_token', d:`Alleen het refresh token en de client-authenticatie: geen browser, geen gebruiker.`},
-        {n:2, t:'nieuwe tokens', d:`Een nieuw access token en vaak ook een nieuw refresh token. Bij rotatie wordt het oude refresh token ongeldig, zodat een gestolen exemplaar snel opvalt.`}
+        {n:2, t:'nieuwe tokens', d:`Een nieuw access token en vaak ook een nieuw refresh token. Bij rotatie wordt het oude refresh token ongeldig. Gebruikt iemand een oud exemplaar opnieuw, dan kan de IdP dat als diefstal herkennen en de hele reeks intrekken.`}
+      ]}]},
+  { id:'L1', ph:8, from:'sp', to:'br', kind:'saml', lbl:'302 naar uitloggen', keys:['logout-start'],
+    title:`De gebruiker logt uit in de app`, tr:`HTTP 302 · via de browser`,
+    prose:[
+      `De gebruiker klikt op Uitloggen. De app beëindigt zijn eigen sessie en stuurt de browser naar het end_session_endpoint van de IdP, zodat ook de sessie daar stopt (OpenID Connect RP-Initiated Logout).`,
+      `Zonder deze stap blijft de gebruiker bij de IdP ingelogd, en logt de volgende klik op Inloggen hem zonder vragen weer in.`
+    ],
+    views:[{ cap:'HTTP-response van de app', lines:`
+HTTP/1.1 302 Found
+@1|Location: https://login.gemeente.voorbeeld.nl/oauth2/logout
+@2|  ?id_token_hint=eyJhbGciOiJSUzI1NiIs…
+@3|  &post_logout_redirect_uri=https%3A%2F%2Fapp.voorbeeld.nl%2Fafgemeld
+@4|  &state=Lg7vQ2mX9pK4wT1zR8nB5c
+@5|Set-Cookie: app_session=; Max-Age=0`,
+      notes:[
+        {n:1, t:'Location', d:`Het end_session_endpoint uit het discovery-document (stap 0b).`},
+        {n:2, t:'id_token_hint', d:`Het ID token uit stap 8. Daaraan ziet de IdP om welke gebruiker, sessie en app het gaat.`},
+        {n:3, t:'post_logout_redirect_uri', d:`Waar de IdP de browser na afloop heen stuurt. Moet bij de registratie (stap 0a) zijn opgegeven.`},
+        {n:4, t:'state', d:`Komt terug in stap L4, zodat de app een vervalste terugkeer herkent.`},
+        {n:5, t:'Set-Cookie: app_session', d:`De sessie van de app is al weg, ook als de rest mislukt.`}
+      ]}]},
+  { id:'L2', ph:8, from:'br', to:'idp', kind:'saml', lbl:'GET /logout', keys:['logout-req'],
+    title:`De IdP beëindigt zijn eigen sessie`, tr:`HTTP GET · via de browser`,
+    prose:[
+      `De IdP controleert id_token_hint en post_logout_redirect_uri en beëindigt zijn eigen sessie. Vaak vraagt hij de gebruiker eerst te bevestigen dat hij wil uitloggen.`,
+      `Daarna laat de IdP de andere apps in dezelfde sessie weten dat de gebruiker is uitgelogd; zie stap L3.`
+    ],
+    views:[{ cap:'HTTP-request van de browser', lines:`
+GET /oauth2/logout?id_token_hint=eyJhbGciOiJSUzI1NiIs…&post_logout_redirect_uri=https%3A%2F%2Fapp.voorbeeld.nl%2Fafgemeld&state=Lg7vQ2mX9pK4wT1zR8nB5c HTTP/1.1
+Host: login.gemeente.voorbeeld.nl
+@1|Cookie: idp_session=…`,
+      notes:[{n:1, t:'Cookie: idp_session', d:`De SSO-sessie die de IdP nu beëindigt.`}]}]},
+  { id:'L3', ph:8, from:'idp', to:'sp', kind:'back', lbl:'Back-channel logout', keys:['logout-bc'],
+    title:`De IdP meldt de afmelding rechtstreeks aan de apps`, tr:`HTTP POST · direct, zonder browser`,
+    prose:[
+      `Aan elke app met een backchannel_logout_uri in deze sessie stuurt de IdP rechtstreeks een logout token (OpenID Connect Back-Channel Logout). Zo stopt ook de sessie in apps die de gebruiker nu niet open heeft, en het werkt ook als de browser al dicht is.`,
+      `Niet elke IdP ondersteunt back-channel logout. Controleer het, en houd anders de sessies in apps kort.`
+    ],
+    callout:`Refresh tokens die bij deze sessie horen, horen hierbij te vervallen, behalve die met offline_access. Een geblokkeerd account leidt niet vanzelf tot zo'n bericht; dat hangt af van de IdP.`,
+    views:[
+      { name:'Op de lijn', cap:'HTTP-request van de IdP', copy:[['logout','Kopieer logout token']], lines:`
+POST /oidc/backchannel-logout HTTP/1.1
+Host: app.voorbeeld.nl
+Content-Type: application/x-www-form-urlencoded
+
+@1|logout_token=⟦jwt:logout⟧
+
+HTTP/1.1 200 OK
+Cache-Control: no-store`,
+        notes:[{n:1, t:'logout_token', d:`Een JWT van de IdP; zie het tabblad Logout token. De app controleert het en antwoordt met 200.`}]},
+      { name:'Logout token', cap:'Logout token, gedecodeerd', lines:jwtLines('logout', {h:1, iss:2, aud:2, iat:3, exp:3, jti:4, sub:5, sid:5, events:6}, 0),
+        notes:[
+          {n:1, t:'typ: logout+jwt', d:`Een eigen type, zodat een logout token niet met een ID token te verwarren is.`},
+          {n:2, t:'iss / aud', d:`De IdP en deze app. De app controleert handtekening, iss en aud zoals bij het ID token.`},
+          {n:3, t:'iat / exp', d:`Kort geldig: twee minuten.`},
+          {n:4, t:'jti', d:`Eenmalig. De app onthoudt het en weigert herhaling.`},
+          {n:5, t:'sub / sid', d:`Welke gebruiker en welke sessie bij de IdP. De app beëindigt de sessies met deze sid; die zat ook in het ID token (stap 8).`},
+          {n:6, t:'events', d:`Maakt dit een logout token. Een logout token bevat nooit een nonce, zodat het niet als ID token is te gebruiken.`}
+        ]}
+    ]},
+  { id:'L4', ph:8, from:'idp', to:'br', kind:'http', lbl:'302 terug naar app', keys:['logout-done'],
+    title:`De IdP stuurt de browser terug naar de app`, tr:`HTTP 302`,
+    prose:[`De IdP stuurt de browser naar het geregistreerde post_logout_redirect_uri, met de state uit stap L1. De app controleert de state en toont een afgemeld-pagina.`],
+    views:[{ cap:'HTTP-response van de IdP', lines:`
+HTTP/1.1 302 Found
+@1|Location: https://app.voorbeeld.nl/afgemeld?state=Lg7vQ2mX9pK4wT1zR8nB5c
+@2|Set-Cookie: idp_session=; Max-Age=0`,
+      notes:[
+        {n:1, t:'Location', d:`Terug naar de app, met de state uit stap L1.`},
+        {n:2, t:'Set-Cookie: idp_session', d:`De SSO-sessie bij de IdP is weg. Een volgende login vraagt weer om wachtwoord en tweede factor.`}
       ]}]}
   ];
   return {
-    note:'OpenID Connect, authorization code flow met PKCE: inloggen in een webapp en daarna namens de gebruiker een API aanroepen (OAuth 2.0).',
-    lanes:[{k:'api',b:'API',s:'resource server'},{k:'sp',b:'App (RP)',s:'de applicatie'},{k:'br',b:'Browser',s:'de koerier'},{k:'idp',b:'IdP (OP)',s:'bv. Entra ID'}],
+    note:'OpenID Connect volgens het NL GOV-profiel (OpenID NLGov): inloggen met de authorization code flow en PKCE, namens de gebruiker een API aanroepen (OAuth 2.0), en uitloggen. Waar Entra ID afwijkt, staat dat bij de toelichting.',
+    lanes:[{k:'api',b:'API',s:'resource server'},{k:'sp',b:'App (RP)',s:'de applicatie'},{k:'br',b:'Browser',s:'de koerier'},{k:'idp',b:'IdP (OP)',s:'OpenID Provider'}],
     pos:[10,36.667,63.333,90],
     phases:[
       {n:0, t:'Fase 0 · Vooraf ingericht', s:'registratie en discovery'},
@@ -1525,15 +1709,16 @@ HTTP/1.1 200 OK
       {n:4, t:'Fase 4 · Code inwisselen', s:'direct, zonder browser'},
       {n:5, t:'Fase 5 · Controleren en sessie', s:''},
       {n:6, t:'Fase 6 · API aanroepen', s:'OAuth 2.0'},
-      {n:7, t:'Fase 7 · Verversen', s:'na een kwartier'}
+      {n:7, t:'Fase 7 · Verversen', s:'na een kwartier'},
+      {n:8, t:'Fase 8 · Uitloggen', s:'RP-initiated en back-channel'}
     ],
     steps:steps,
     track:[
       {k:1, name:'client_id', v:'rapportage-app'},
       {k:2, name:'redirect_uri', v:'https://app.voorbeeld.nl/oidc/callback', alt:['https%3A%2F%2Fapp.voorbeeld.nl%2Foidc%2Fcallback']},
       {k:3, name:'Issuer', v:ISS},
-      {k:4, name:'state', v:'st-8KdQ2v1Lw0'},
-      {k:5, name:'nonce', v:'n-0S6_WzA2Mj'},
+      {k:4, name:'state', v:'Zk3qT9vLm2Xw8RbN5yJ0cA'},
+      {k:5, name:'nonce', v:'n0S6WzA2Mj7KxQ4pV8tR1e'},
       {k:6, name:'code', v:'SplxlOBeZQQYbYS6WxSbIA'},
       {k:7, name:'code_verifier', v:PKCE.verifier}
     ]
@@ -1583,7 +1768,7 @@ Content-Type: application/x-www-form-urlencoded
         notes:[
           {n:1, t:'header', d:`Getekend met de sleutel van de koppeling (kid esb-2026), niet met die van de IdP.`},
           {n:2, t:'iss / sub', d:`Beide het client_id: de koppeling verklaart iets over zichzelf.`},
-          {n:3, t:'aud', d:`Het token-endpoint van de IdP. Zo is deze assertion niet bij een andere partij te hergebruiken.`},
+          {n:3, t:'aud', d:`De issuer van de IdP, als enige waarde. Sinds de audience-injectie-kwetsbaarheid uit 2025 (CVE-2025-27370 en -27371) mag het token-endpoint hier niet meer staan (IETF-draft rfc7523bis). Niet elke IdP volgt dit al; controleer wat de jouwe accepteert.`},
           {n:4, t:'jti', d:`Uniek ID. De IdP accepteert elke assertion maar één keer.`},
           {n:5, t:'exp', d:`Verloopt ${iso(tAs.exp)}, vijf minuten na uitgifte.`}
         ]}
@@ -1628,7 +1813,7 @@ Accept: application/json`,
     }]},
   { id:'4', ph:2, from:'api', to:'api', kind:'saml', lbl:'Controleer token', keys:['api-check','check'],
     title:`De API controleert het token`, tr:`Intern in de API`,
-    prose:[`Dezelfde controles als bij een token namens een gebruiker. Het verschil zit in de autorisatie: de API kijkt naar de rol van het systeem, niet naar een persoon.`],
+    prose:[`Dezelfde controles als bij een token namens een gebruiker. Het verschil zit in de autorisatie: de API kijkt naar de rol van het systeem, niet naar een persoon. roles en scope zijn twee verschillende autorisatiemodellen. Wat een rol of scope betekent, legt de IdP niet vast; dat dwingt de API zelf af.`],
     checks:[
       {t:'Handtekening', c:'Gecontroleerd met de sleutel uit de JWKS van de IdP', r:`Iedereen kan een token maken met elke gewenste rol erin.`},
       {t:'Issuer en audience', c:'iss is de verwachte IdP, aud is de eigen API', from:'2', r:`Een token voor een andere API of van een andere IdP geeft toegang.`},
@@ -1672,23 +1857,32 @@ const GOVO = {
   host:'connect.govconext.voorbeeld.nl', authz:'/oidc/authorize', token:'/oidc/token', jwks:'/oidc/certs',
   tok:'id_gov', jwk:'jwk_gov', code:'Gk3PzW8rN1vT6yLqA2',
   t0a:`De app meldt zich bij govConext aan als OIDC-client (relying party). De hub koppelt hem aan het juiste attribuutbeleid, net als een SAML-SP.`,
-  n0aIss:`De issuer van govConext voor OIDC. Bij OpenConext is dit een aparte component naast de SAML-hub (zoals connect.surfconext.nl bij SURFconext); hostnamen hier zijn fictief.`,
+  n0aIss:`De issuer van govConext voor OIDC, een aparte component naast de SAML-hub. In productie staat de discovery op connect.govconext.nl; hier fictief. govConext volgt het Nederlandse OIDC-profiel (OpenID NLGov) en sluit de implicit flow uit.`,
+  nAuth:`Een gedeeld geheim: govConext geeft volgens de wiki een ClientID en ClientSecret uit. OpenID NLGov, dat govConext zegt te volgen, eist voor confidential clients private_key_jwt of mTLS. Vraag govroam welke methode ze ondersteunen.`,
+  scope:'openid',
+  nScope:`Alleen openid. Volgens de govConext-wiki worden andere scopes genegeerd; welke claims de app krijgt, spreek je af in het technische intakeformulier.`,
+  n7:`Alleen als bij de aansluiting afgesproken; via de scopes profile en email krijg je ze niet.`,
   t4b:`Een OIDC-app kan geen Scoping-element meesturen. Of en hoe een app de keuze vooraf kan doorgeven, verschilt per broker; controleer dat in de govConext-wiki.`,
   n8_3:`Jouw IdP. In het ID token voor de app komt deze naam niet terug; de organisatie staat daar als claim schac_home_organization.`,
   tasks:[
     {t:'Controleer het SAML-antwoord van jouw IdP', d:`Handtekening, Audience, InResponseTo en tijdvenster, zoals elke SAML-SP dat doet.`},
     {t:'Zoek de OIDC-client op', d:`Via het bewaarde autorisatieverzoek: redirect_uri, scopes, nonce en de code_challenge. Zie`, from:'2'},
-    {t:'Attributen worden claims', d:`SAML-attributen in Microsoft-naamgeving worden OIDC-claims zoals name, email en schac_home_organization, gefilterd op het attribuutbeleid van deze app.`},
-    {t:'Pseudoniem per app', d:`sub wordt een pseudoniem per client, zoals de persistent NameID in de SAML-variant. De identifier van jouw IdP gaat niet door.`},
-    {t:'Binnen de hub', d:`Bij OpenConext is de OIDC-kant een aparte component die zelf via SAML met de hub praat. Van buiten zie je die extra stap niet.`},
+    {t:'Attributen worden claims', d:`De federatieattributen van jouw IdP (urn:mace) worden OIDC-claims zoals uid en schac_home_organization. Welke claims een app krijgt, is bij de aansluiting afgesproken, niet via scopes.`},
+    {t:'Pseudoniem per app', s:'inf', d:`In OpenConext is sub een pseudoniem per client, net als de persistent NameID in de SAML-variant. De govConext-wiki legt dit niet vast. Met uid erbij is de gebruiker over apps heen toch te herleiden.`},
+    {t:'Binnen de hub', s:'inf', d:`Bij OpenConext is de OIDC-kant een aparte component die zelf via SAML met de hub praat. Van buiten zie je die extra stap niet.`},
     {t:'Code uitgeven', d:`De hub bewaart de tokeninhoud en stuurt de browser met een code terug naar de app. Zie`, from:'11'}
   ],
-  sub:'Pseudoniem per app; dezelfde waarde als de persistent NameID in de SAML-variant via govConext.',
-  extra:{schac_home_organization:`De organisatie van de gebruiker. Zo weet de app bij welke gemeente iemand hoort.`}
+  subS:'inf',
+  sub:'Bij OpenConext een pseudoniem per app; de govConext-wiki legt de vorm niet vast en noemt uid als gebruikersidentificatie.',
+  extra:{uid:`De gebruikersidentificatie die govConext voorschrijft; bij Entra ID de UPN. Die verandert mee bij een naamswijziging.`, schac_home_organization:`De organisatie van de gebruiker. Zo weet de app bij welke gemeente iemand hoort.`}
 };
 const KCO = {
   host:'sso.voorbeeld.nl', authz:'/realms/gemeente/protocol/openid-connect/auth', token:'/realms/gemeente/protocol/openid-connect/token', jwks:'/realms/gemeente/protocol/openid-connect/certs',
   tok:'id_kc', jwk:'jwk_kc', code:'5e1a9c7f-3b2d-4c8e.9f04c6e1-8a7b-4d21',
+  nAuth:`Een gedeeld geheim (in Keycloak: Client Id and Secret). Keycloak ondersteunt ook Signed JWT (private_key_jwt) en X509-certificaten (mTLS); voor OpenID NLGov kies je een van die twee.`,
+  scope:'openid profile email',
+  nScope:`Keycloak bepaalt met client scopes welke claims bij welke scope in de tokens komen.`,
+  n7:`Vertaald uit de SAML-attributen van jouw IdP (stap 8).`,
   t0a:`De app wordt in de realm geregistreerd als OpenID Connect-client, met client-authenticatie aan. Keycloak spreekt aan de ene kant OIDC en aan de andere kant SAML.`,
   n0aIss:`De issuer is de URL van de realm. Dezelfde URL is in de SAML-koppeling het entityID van Keycloak.`,
   t4b:`Een OIDC-app kan de keuze vooraf meegeven met de parameter kc_idp_hint=entra in het autorisatieverzoek. Dan slaat Keycloak deze stap over.`,
@@ -1718,7 +1912,7 @@ function buildOidcBroker(B, O){
   const xref = id => '<button type="button" class="xref" data-go="' + id + '">stap ' + id + '</button>';
   const base = 'https://' + O.host;
   const iss = B.key === 'keycloak' ? B.idpFace : base;
-  const qs = 'response_type=code&client_id=rapportage-app&redirect_uri=https%3A%2F%2Fapp.voorbeeld.nl%2Foidc%2Fcallback&scope=openid%20profile%20email&state=st-8KdQ2v1Lw0&nonce=n-0S6_WzA2Mj&code_challenge=' + PKCE.challenge + '&code_challenge_method=S256';
+  const qs = 'response_type=code&client_id=rapportage-app&redirect_uri=https%3A%2F%2Fapp.voorbeeld.nl%2Foidc%2Fcallback&scope=' + O.scope.replace(/ /g,'%20') + '&state=Zk3qT9vLm2Xw8RbN5yJ0cA&nonce=n0S6WzA2Mj7KxQ4pV8tR1e&code_challenge=' + PKCE.challenge + '&code_challenge_method=S256';
   const tok = jwtParts(TOK[O.tok]).p;
 
   const s4 = Object.assign(S('4'), {prose:[S('4').prose[0], O.t4b]});
@@ -1731,11 +1925,11 @@ function buildOidcBroker(B, O){
   const idNotes = [
     {n:1, t:'header', d:`Getekend met de sleutel van ${B.name} (kid ${jwtParts(TOK[O.tok]).h.kid}).`},
     {n:2, t:'iss', d:`${B.name}, niet jouw IdP.`},
-    {n:3, t:'sub', d:O.sub},
+    {n:3, s:O.subS, t:'sub', d:O.sub},
     {n:4, t:'aud', d:`Het client_id van de app.`},
     {n:5, t:'iat / exp', d:`Uitgegeven ${iso(tok.iat)}, verloopt ${iso(tok.exp)}.`},
     {n:6, t:'nonce', d:`De nonce uit stap 2. Die heeft ${B.name} al die tijd bewaard, ook tijdens het SAML-gesprek.`},
-    {n:7, t:'name / email', d:`Vertaald uit de SAML-attributen van jouw IdP (stap 8).`}
+    {n:7, t:'name / email', d:O.n7}
   ];
   let nn = 8;
   Object.keys(O.extra).forEach(k => { idMarks[k] = nn; idNotes.push({n:nn, t:k, d:O.extra[k]}); nn++; });
@@ -1755,7 +1949,7 @@ function buildOidcBroker(B, O){
         notes:[
           {n:1, t:'client_id', d:`De app bij ${B.name}. Jouw IdP kent deze naam niet.`},
           {n:2, t:'redirect_uris', d:`Waar ${B.name} de browser met een code naartoe mag sturen.`},
-          {n:3, t:'token_endpoint_auth_method', d:`Hoe de app zich bij het token-endpoint van ${B.name} bewijst.`}
+          {n:3, t:'token_endpoint_auth_method', d:O.nAuth}
         ]},
       { name:'Discovery', cap:`Discovery van ${B.name}`, copy:[[O.jwk.replace('jwk','jwks'), 'Kopieer JWKS']], lines:`
 {
@@ -1781,14 +1975,15 @@ GET ${base}${O.authz}
   response_type = code
 @1|  client_id = rapportage-app
 @1|  redirect_uri = https://app.voorbeeld.nl/oidc/callback
-  scope = openid profile email
-@2|  state = st-8KdQ2v1Lw0
-@2|  nonce = n-0S6_WzA2Mj
+@3|  scope = ${O.scope}
+@2|  state = Zk3qT9vLm2Xw8RbN5yJ0cA
+@2|  nonce = n0S6WzA2Mj7KxQ4pV8tR1e
 @2|  code_challenge = ${PKCE.challenge}
   code_challenge_method = S256`,
         notes:[
           {n:1, t:'client_id / redirect_uri', d:`Zoals geregistreerd bij ${B.name} in stap 0a.`},
-          {n:2, t:'state / nonce / code_challenge', d:`Dezelfde beveiligingswaarden als bij OIDC zonder broker. ${B.name} moet ze bewaren tijdens het hele SAML-gesprek met jouw IdP.`}
+          {n:2, t:'state / nonce / code_challenge', d:`Dezelfde beveiligingswaarden als bij OIDC zonder broker. ${B.name} moet ze bewaren tijdens het hele SAML-gesprek met jouw IdP.`},
+          {n:3, t:'scope', d:O.nScope}
         ]},
       { name:'Op de lijn', cap:'HTTP-response van de app', lines:`
 HTTP/1.1 302 Found
@@ -1823,7 +2018,7 @@ Host: ${O.host}
 HTTP/1.1 302 Found
 @1|Location: https://app.voorbeeld.nl/oidc/callback
 @2|  ?code=${O.code}
-@3|  &state=st-8KdQ2v1Lw0`,
+@3|  &state=Zk3qT9vLm2Xw8RbN5yJ0cA`,
       notes:[
         {n:1, t:'redirect_uri', d:`Het callback-adres van de app.`},
         {n:2, t:'code', d:`Een code van ${B.name}, kort geldig en eenmalig.`},
@@ -1833,7 +2028,7 @@ HTTP/1.1 302 Found
     title:`De browser brengt de code naar de app`, tr:`HTTP GET · OIDC via de browser`,
     prose:[`De app controleert de state en gaat de code inwisselen.`],
     views:[{ cap:'HTTP-request van de browser', lines:`
-GET /oidc/callback?code=${O.code}&state=st-8KdQ2v1Lw0 HTTP/1.1
+GET /oidc/callback?code=${O.code}&state=Zk3qT9vLm2Xw8RbN5yJ0cA HTTP/1.1
 Host: app.voorbeeld.nl
 Cookie: oidc_tx=…`, notes:[] }]},
   { id:'13', ph:7, from:'sp', to:'brk', kind:'back', lbl:'POST /token', keys:['token-req','resp-post'],
@@ -1842,7 +2037,7 @@ Cookie: oidc_tx=…`, notes:[] }]},
     views:[{ cap:'HTTP-request van de app', lines:`
 POST ${O.token} HTTP/1.1
 Host: ${O.host}
-Authorization: Basic cmFwcG9ydGFnZS1hcHA6…
+@3|Authorization: Basic cmFwcG9ydGFnZS1hcHA6…
 Content-Type: application/x-www-form-urlencoded
 
 @1|grant_type=authorization_code&code=${O.code}
@@ -1850,7 +2045,8 @@ Content-Type: application/x-www-form-urlencoded
 @2|&code_verifier=${PKCE.verifier}`,
       notes:[
         {n:1, t:'code', d:`De code uit stap 11.`},
-        {n:2, t:'code_verifier', d:`${B.name} controleert PKCE, zoals elke OIDC-IdP. Reken het na in de variant Inloggen + API, stap 7.`}
+        {n:2, t:'code_verifier', d:`${B.name} controleert PKCE, zoals elke OIDC-IdP. Reken het na in de variant Inloggen + API, stap 7.`},
+        {n:3, t:'Authorization: Basic', d:O.nAuth}
       ]}]},
   { id:'14', ph:7, from:'brk', to:'sp', kind:'back', lbl:'Tokens', keys:['token-resp','resp'],
     title:`${B.name} geeft de tokens terug`, tr:`HTTP 200 · direct, JSON`,
@@ -1888,7 +2084,7 @@ Cache-Control: no-store
       `De app maakt een eigen sessie aan; de tokens blijven op de server.`,
       `Roept de app daarna een API aan, dan gaat dat zoals in de variant Inloggen + API, met access tokens van ${B.name}. De API moet dan ${B.name} als issuer vertrouwen, niet jouw IdP.`
     ],
-    callout:`Er lopen nu drie sessies: bij jouw IdP, bij ${B.name} en in de app. Een account blokkeren bij de IdP raakt de andere twee niet. Omdat ${B.name} via SAML met jouw IdP praat, hoort hij dat in de regel pas bij de volgende SAML-login. Tot die tijd kan de app tokens blijven verversen bij ${B.name}; het voordeel van verversen uit de variant Inloggen + API valt hier dus grotendeels weg.`,
+    callout:`Er lopen nu drie sessies: bij jouw IdP, bij ${B.name} en in de app. Een account blokkeren bij de IdP raakt de andere twee niet. Zonder zo'n kanaal hoort ${B.name} een blokkade bij jouw IdP pas bij de volgende SAML-login. Hoeveel grip verversen dan nog geeft, hangt af van ${B.name}: hoe lang zijn sessie en refresh tokens geldig zijn, en of hij via een ander kanaal (provisioning, SCIM) hoort dat een account is geblokkeerd.`,
     views:[{ cap:'HTTP-response van de app', lines:`
 HTTP/1.1 302 Found
 Location: /rapportages
@@ -1901,7 +2097,7 @@ Location: /rapportages
     {k:1, name:'client_id', v:'rapportage-app'},
     {k:2, name:'redirect_uri', v:'https://app.voorbeeld.nl/oidc/callback', alt:['https%3A%2F%2Fapp.voorbeeld.nl%2Foidc%2Fcallback']},
     {k:3, name:'IdP-entityID', v:IDP},
-    {k:4, name:'state', v:'st-8KdQ2v1Lw0'}
+    {k:4, name:'state', v:'Zk3qT9vLm2Xw8RbN5yJ0cA'}
   ];
   if (B.key === 'govconext'){
     track.push({k:5, name:'govConext (OIDC-issuer)', v:base}, {k:6, name:'govConext als SAML-SP', v:B.spFace}, {k:7, name:'Verzoek-ID govConext', v:B.reqId});
@@ -1998,13 +2194,22 @@ function buildNubus(){
       </saml:AuthnContext>
     </saml:AuthnStatement>
 @8|    <saml:AttributeStatement>
-@8|      <saml:Attribute Name="urn:oid:2.16.840.1.113730.3.1.241" FriendlyName="displayName">
+@8|      <saml:Attribute Name="urn:mace:dir:attribute-def:eduPersonPrincipalName">
+@8|        <saml:AttributeValue>jjansen@gemeente.voorbeeld.nl</saml:AttributeValue>
+@8|      </saml:Attribute>
+@9|      <saml:Attribute Name="urn:mace:dir:attribute-def:uid">
+@9|        <saml:AttributeValue>jjansen</saml:AttributeValue>
+@9|      </saml:Attribute>
+@8|      <saml:Attribute Name="urn:mace:terena.org:attribute-def:schacHomeOrganization">
+@8|        <saml:AttributeValue>gemeente.voorbeeld.nl</saml:AttributeValue>
+@8|      </saml:Attribute>
+@8|      <saml:Attribute Name="urn:mace:dir:attribute-def:displayName">
 @8|        <saml:AttributeValue>Jan Jansen</saml:AttributeValue>
 @8|      </saml:Attribute>
-@8|      <saml:Attribute Name="urn:oid:0.9.2342.19200300.100.1.3" FriendlyName="mail">
+@8|      <saml:Attribute Name="urn:mace:dir:attribute-def:mail">
 @8|        <saml:AttributeValue>j.jansen@gemeente.voorbeeld.nl</saml:AttributeValue>
 @8|      </saml:Attribute>
-@8|      <saml:Attribute Name="urn:oid:1.3.6.1.4.1.5923.1.5.1.1" FriendlyName="isMemberOf">
+@8|      <saml:Attribute Name="urn:mace:dir:attribute-def:isMemberOf">
 @8|        <saml:AttributeValue>rapportage-lezers</saml:AttributeValue>
 @8|      </saml:Attribute>
 @8|    </saml:AttributeStatement>
@@ -2015,23 +2220,24 @@ function buildNubus(){
       {n:2, t:'Destination / Recipient', d:`De ACS van govConext.`},
       {n:3, t:'Issuer', d:`Keycloak in Nubus. Voor govConext is dit de IdP van de gemeente.`},
       {n:4, t:'Signature', d:`Getekend met de realm-sleutel van Keycloak in Nubus.`},
-      {n:5, t:'NameID', d:`Het stabiele Nubus-ID uit ${xref('A1')}, doorgegeven via de mapper uit ${xref('0c')}. Wisselt Jan van naam of e-mailadres, dan blijft dit gelijk, en daarmee ook het pseudoniem dat govConext per SP maakt.`},
+      {n:5, s:'inf', t:'NameID', d:`Het stabiele Nubus-ID uit ${xref('A1')}, doorgegeven via de mapper uit ${xref('0c')}. Of govConext deze waarde gebruikt, is de vraag: de hub herkent gebruikers aan uid en schacHomeOrganization (zie toelichting 9).`},
       {n:6, t:'AudienceRestriction', d:`Het SP-gezicht van govConext.`},
-      {n:7, t:'AuthnContextClassRef', d:`Keycloak zet hier zonder extra inrichting een algemene waarde, ook al is er met wachtwoord en tweede factor ingelogd. Stel een vertaling in naar een niveau dat govConext begrijpt; anders lijkt het voor de SP alsof er zonder MFA is ingelogd.`},
-      {n:8, t:'AttributeStatement', d:`Uit de directory via mappers in Keycloak, al in federatienamen. isMemberOf komt uit de groepen van ${xref('A1')}.`}
+      {n:7, s:'inf', t:'AuthnContextClassRef', d:`Keycloak zet hier zonder extra inrichting een algemene waarde, ook al is er met wachtwoord en tweede factor ingelogd. Stel een vertaling in naar een niveau dat govConext begrijpt; anders lijkt het voor de SP alsof er zonder MFA is ingelogd.`},
+      {n:8, t:'AttributeStatement', d:`Uit de directory via mappers in Keycloak, in de federatienamen (urn:mace) die govConext verwacht. Verplicht zijn eduPersonPrincipalName, uid en schacHomeOrganization. isMemberOf komt uit de groepen van ${xref('A1')}.`},
+      {n:9, s:'inf', t:'uid', d:`Hier de gebruikersnaam uit de directory. Omdat govConext gebruikers aan uid en schacHomeOrganization herkent, levert een nieuwe uid bij elke SP een nieuwe gebruiker op. Wil je dat een naamswijziging dat niet doet, dan moet uid stabiel blijven. Stem met govroam af welke waarde je hierin zet.`}
     ]};
 
   const s10 = S('10');
-  s10.tasks[4] = {t:'Attributen filteren', d:`Nubus levert de attributen al in federatienamen. De hub filtert ze op wat deze SP mag krijgen en voegt de organisatie toe (schacHomeOrganization).`};
+  s10.tasks[4] = {t:'Attributen filteren', d:`Nubus levert de attributen in federatienamen (urn:mace), inclusief de verplichte uid, eduPersonPrincipalName en schacHomeOrganization. De hub geeft per SP alleen door wat is afgesproken.`};
   const s14 = S('14');
   s14.callout = `Er lopen nu drie sessies: bij Keycloak in Nubus, bij govConext en in de app. Hoe je iemand er weer uit krijgt, zie je vanaf ${xref('U1')}.`;
 
   const steps = [
     S('0a'),
     s0b,
-    { id:'0c', ph:0, from:'idp', to:'dir', dir:'both', kind:'meta', lbl:'LDAP-federatie', keys:['ldap-setup','meta-idp'],
+    { id:'0c', ph:0, from:'idp', to:'dir', dir:'both', kind:'meta', lbl:'LDAP-federatie', keys:['ldap-setup','meta-idp'], src:'simp',
       title:`Keycloak leest gebruikers uit de Nubus-directory`, tr:`Vooraf · binnen Nubus`,
-      prose:[`In Nubus is Keycloak niet de bron van gebruikers. Hij leest ze via LDAP uit OpenLDAP, de identiteitsopslag van Nubus, en houdt ze alleen in een cache. Schrijven naar de directory gaat via de Directory Manager (UDM).`],
+      prose:[`In Nubus is de directory (OpenLDAP) de gezaghebbende bron van gebruikers. Keycloak vindt en authenticeert gebruikers via LDAP-federatie. Afhankelijk van de configuratie (in Keycloak de optie Import users) bewaart Keycloak ook een lokale kopie, gekoppeld aan het LDAP-object. Wijzigingen in de directory lopen via de Directory Manager (UDM).`],
       views:[{ cap:'LDAP-federatie in Keycloak (vereenvoudigd)', lines:`
 @1|Connection URL      ldaps://ldap-server:636
 @2|Bind DN             (serviceaccount met alleen leesrechten)
@@ -2043,10 +2249,10 @@ function buildNubus(){
           {n:1, t:'Connection URL', d:`LDAP over TLS naar de directory-dienst van Nubus. Dit verkeer blijft binnen het cluster.`},
           {n:2, t:'Bind DN', d:`Keycloak zoekt gebruikers op met een eigen serviceaccount. Dat account hoeft alleen te lezen.`},
           {n:3, t:'Users DN / uid', d:`Waar de gebruikers staan en welk attribuut de gebruikersnaam is.`},
-          {n:4, t:'Edit mode', d:`Keycloak wijzigt de directory niet. Volgens de Nubus-documentatie bewaart Keycloak identiteiten niet zelf maar benadert hij ze via LDAP; schrijven loopt via UDM.`},
-          {n:5, t:'Mapper', d:`Zet het stabiele ID van Nubus (univentionObjectIdentifier) klaar, zodat Keycloak dat in stap 8 als NameID aan govConext kan geven.`}
+          {n:4, t:'Edit mode', d:`Keycloak schrijft niet terug naar LDAP. Dat zegt niets over lokale opslag: met Import users aan bewaart Keycloak wel een kopie. De instellingen hier zijn een voorbeeld; controleer ze in je eigen Nubus-installatie.`},
+          {n:5, t:'Mapper', d:`Zet het stabiele ID van Nubus (univentionObjectIdentifier) klaar als gebruikersattribuut, zodat Keycloak het in stap 8 kan doorgeven.`}
         ]}]},
-    { id:'A1', ph:1, from:'dir', to:'dir', kind:'http', lbl:'Account via UDM', keys:['lifecycle'],
+    { id:'A1', ph:1, from:'dir', to:'dir', kind:'http', lbl:'Account via UDM', keys:['lifecycle'], src:'simp',
       title:`Een beheerder maakt het account aan in Nubus`, tr:`UDM REST API · binnen Nubus`,
       prose:[`Een beheerder (via de Management UI) of een koppeling met het personeelssysteem maakt de gebruiker aan. Alles wat in de directory komt, gaat door de Directory Manager (UDM). Die past de regels van Nubus toe en schrijft daarna in OpenLDAP.`],
       views:[{ cap:'Request aan de Directory Manager (vereenvoudigd)', lines:`
@@ -2074,15 +2280,15 @@ HTTP/1.1 201 Created
           {n:3, t:'mailPrimaryAddress', d:`Het e-mailadres. Ook dit is geen stabiele sleutel.`},
           {n:4, t:'groups', d:`Groepslidmaatschap, later bruikbaar voor rollen in apps.`},
           {n:5, t:'disabled', d:`Of het account actief is. In ${xref('U1')} zet een beheerder dit op true.`},
-          {n:6, t:'univentionObjectIdentifier', d:`Het stabiele ID dat Nubus aan het object geeft. Het verandert niet bij een nieuwe naam of een nieuw e-mailadres en is daarom de juiste sleutel richting apps en govConext.`}
+          {n:6, t:'univentionObjectIdentifier', d:`Het stabiele ID dat Nubus aan het object geeft. Het verandert niet bij een nieuwe naam of een nieuw e-mailadres en is daarom de juiste sleutel voor apps die via provisioning koppelen. Richting govConext telt uid; zie stap 8.`}
         ]}]},
-    { id:'A2', ph:1, from:'sp', to:'dir', dir:'both', kind:'back', lbl:'Event ophalen', keys:['provision'],
+    { id:'A2', ph:1, from:'sp', to:'dir', dir:'both', kind:'back', lbl:'Event ophalen', keys:['provision'], src:'simp',
       title:`De app haalt de wijziging op bij de Provisioning Service`, tr:`Provisioning API · direct, zonder browser`,
       prose:[
-        `Nubus duwt wijzigingen niet naar apps. Een app, of een connector namens de app, heeft een abonnement en haalt events op bij de Provisioning Service. Hij wacht met long polling tot er iets is, verwerkt het event en bevestigt het.`,
+        `Nubus publiceert wijzigingen als events. Een applicatie of connector abonneert zich daarop en haalt de berichten op via de Provisioning API: met long polling, waarna hij elk event verwerkt en bevestigt. Nubus levert zo'n consumer niet voor elke externe applicatie mee; die bouw of koop je per applicatie.`,
         `Een SaaS-leverancier achter govConext heeft zo'n consumer meestal niet. Die maakt het account bij de eerste login aan, op basis van wat govConext doorgeeft. Wil je accounts vooraf aanmaken en weer verwijderen, dan heb je per leverancier een connector nodig, bijvoorbeeld naar SCIM.`
       ],
-      views:[{ cap:'Consumer haalt een event op (body ingekort)', lines:`
+      views:[{ cap:'Consumer haalt een event op (vereenvoudigd, naar de Provisioning API-documentatie van Nubus)', lines:`
 GET /v1/subscriptions/rapportage-app/messages/next?timeout=30 HTTP/1.1
 Authorization: Basic cmFwcG9ydGFnZS1hcHA6…
 
@@ -2104,14 +2310,14 @@ HTTP/1.1 200 OK
         notes:[
           {n:1, t:'publisher_name', d:`Welk onderdeel het event maakte; udm-listener bij een wijziging in de directory.`},
           {n:2, t:'realm / topic', d:`Het soort object: een gebruiker uit UDM. Op deze combinatie is de app geabonneerd.`},
-          {n:3, t:'body', d:`De toestand voor en na de wijziging. Een lege old betekent een nieuw object. Het id is het stabiele Nubus-ID.`},
+          {n:3, t:'body', d:`De toestand voor en na de wijziging. Een lege old betekent een nieuw object. Vanaf Nubus 2.0 bevat id het stabiele Nubus-ID (univentionObjectIdentifier); oudere versies gebruikten daarvoor een veld uuid.`},
           {n:4, t:'sequence_number', d:`Volgnummer binnen het abonnement. Een event dat niet wordt bevestigd, komt opnieuw.`},
           {n:5, t:'PATCH status', d:`De app bevestigt dat het event verwerkt is.`}
         ]}]},
     S('1'), S('2'), S('3'), S('4'), S('5'), S('6'),
     { id:'7', ph:4, from:'br', to:'idp', dir:'both', kind:'http', lbl:'Wachtwoord', keys:['login','login-page'],
       title:`Keycloak vraagt gebruikersnaam en wachtwoord`, tr:`HTTP · buiten SAML`,
-      prose:[`Het inlogscherm is van Keycloak, de identity provider van Nubus. Keycloak kent het wachtwoord zelf niet; dat controleert hij in de volgende stap bij de directory.`],
+      prose:[`Het inlogscherm is van Keycloak, de identity provider van Nubus. Keycloak ontvangt het wachtwoord, maar slaat het niet op: hij controleert het in de volgende stap bij de directory.`],
       views:[{ cap:'HTTP-request van de browser', lines:`
 POST /realms/nubus/login-actions/authenticate?… HTTP/1.1
 Host: ${KCN.host}
@@ -2119,9 +2325,9 @@ Content-Type: application/x-www-form-urlencoded
 
 @1|username=jjansen&password=••••••••`,
         notes:[{n:1, t:'username / password', d:`Gaat alleen naar Keycloak in Nubus. govConext en de app zien het niet.`}]}]},
-    { id:'7a', ph:4, from:'idp', to:'dir', dir:'both', kind:'back', lbl:'LDAP-bind', keys:['ldap','login'],
+    { id:'7a', ph:4, from:'idp', to:'dir', dir:'both', kind:'back', lbl:'LDAP-bind', keys:['ldap','login'], src:'simp',
       title:`Keycloak controleert het wachtwoord bij de directory`, tr:`LDAP · binnen Nubus`,
-      prose:[`Keycloak zoekt de gebruiker op in OpenLDAP en probeert daarna met het opgegeven wachtwoord als die gebruiker in te loggen: een LDAP-bind. Lukt dat, dan klopt het wachtwoord. Het wachtwoord staat dus alleen in de directory van Nubus.`],
+      prose:[`Keycloak zoekt de gebruiker op in OpenLDAP en probeert daarna met het opgegeven wachtwoord als die gebruiker in te loggen: een LDAP-bind. Lukt dat, dan klopt het wachtwoord. Opgeslagen is het wachtwoord alleen in de directory; Keycloak verwerkt het alleen tijdens deze controle.`],
       views:[{ cap:'LDAP-verkeer tussen Keycloak en OpenLDAP (vereenvoudigd)', lines:`
 @1|bind    dn: (serviceaccount van Keycloak)
 @2|search  base: cn=users,dc=gemeente,dc=voorbeeld,dc=nl
@@ -2145,13 +2351,13 @@ Host: ${KCN.host}
 Content-Type: application/x-www-form-urlencoded
 
 @1|otp=482915`,
-        notes:[{n:1, t:'otp', d:`Een code uit een authenticator-app (TOTP). Keycloak kan ook een beveiligingssleutel (WebAuthn) gebruiken; controleer wat Nubus standaard aanbiedt.`}]}]},
+        notes:[{n:1, s:'inf', t:'otp', d:`Een code uit een authenticator-app (TOTP). Keycloak kan ook een beveiligingssleutel (WebAuthn) gebruiken; controleer wat Nubus standaard aanbiedt.`}]}]},
     s8, S('9'), s10, S('11'), S('12'), S('13'), s14, S('15'),
-    { id:'U1', ph:9, from:'dir', to:'dir', kind:'http', lbl:'Account uitschakelen', keys:['offboard'],
+    { id:'U1', ph:9, from:'dir', to:'dir', kind:'http', lbl:'Account uitschakelen', keys:['offboard'], src:'simp',
       title:`Jan gaat uit dienst: het account wordt uitgeschakeld`, tr:`UDM REST API · binnen Nubus`,
       prose:[
         `Een beheerder of het personeelssysteem zet het account op uitgeschakeld. Vanaf nu hoort elke nieuwe login bij Keycloak te mislukken, omdat de controle in de directory faalt.`,
-        `Sessies die al lopen, merken daar niets van: bij Keycloak, bij govConext en in de app. Keycloak houdt bovendien een cache van gebruikers bij; afhankelijk van de instelling duurt het even voordat hij de wijziging ziet. Beëindig de Keycloak-sessies daarom ook actief.`
+        `Sessies die al lopen, merken daar niets van: bij Keycloak, bij govConext en in de app. Keycloak houdt bovendien een cache of lokale kopie van gebruikers bij; afhankelijk van de instelling duurt het even voordat hij de wijziging ziet. Beëindig de Keycloak-sessies daarom ook actief.`
       ],
       views:[{ cap:'Request aan de Directory Manager (vereenvoudigd)', lines:`
 PATCH /univention/udm/users/user/uid%3Djjansen%2Ccn%3Dusers%2Cdc%3Dgemeente%2Cdc%3Dvoorbeeld%2Cdc%3Dnl HTTP/1.1
@@ -2160,13 +2366,13 @@ Content-Type: application/json
 
 @1|{ "properties": { "disabled": true } }`,
         notes:[{n:1, t:'disabled: true', d:`Alleen deze eigenschap verandert. UDM schrijft het naar OpenLDAP, en de Provisioning Service maakt er een event van.`}]}]},
-    { id:'U2', ph:9, from:'sp', to:'dir', dir:'both', kind:'back', lbl:'Event ophalen', keys:['provision-off','provision'],
+    { id:'U2', ph:9, from:'sp', to:'dir', dir:'both', kind:'back', lbl:'Event ophalen', keys:['provision-off','provision'], src:'simp',
       title:`De app hoort dat het account is uitgeschakeld`, tr:`Provisioning API · direct`,
       prose:[
         `Dit is de enige schakel die de app uit zichzelf informeert; SAML en govConext doen dat niet. Een app met een consumer kan het lokale account direct blokkeren en de sessie beëindigen.`,
         `Apps zonder consumer merken het pas als hun eigen sessie verloopt en een nieuwe login mislukt. Een korte sessieduur in de app is daarom ook een vorm van offboarding.`
       ],
-      views:[{ cap:'Consumer haalt een event op (body ingekort)', lines:`
+      views:[{ cap:'Consumer haalt een event op (vereenvoudigd, naar de Provisioning API-documentatie van Nubus)', lines:`
 GET /v1/subscriptions/rapportage-app/messages/next?timeout=30 HTTP/1.1
 
 HTTP/1.1 200 OK
@@ -2201,7 +2407,7 @@ HTTP/1.1 200 OK
       {n:3, t:'Fase 3 · Organisatie kiezen', s:'keuzescherm'},
       {n:4, t:'Fase 4 · Inloggen bij Nubus', s:'Keycloak en directory'},
       {n:5, t:'Fase 5 · Antwoord terug naar govConext', s:''},
-      {n:6, t:'Fase 6 · govConext vertaalt', s:''},
+      {n:6, t:'Fase 6 · govConext valideert en bouwt opnieuw', s:''},
       {n:7, t:'Fase 7 · Nieuw antwoord naar de SP', s:''},
       {n:8, t:'Fase 8 · Controleren en sessie', s:''},
       {n:9, t:'Fase 9 · Uit dienst', s:'UDM en provisioning'}
@@ -2221,7 +2427,7 @@ HTTP/1.1 200 OK
 
 const MODES = {
   direct:{ note:'De applicatie koppelt rechtstreeks met de IdP van de organisatie.',
-    lanes:[{k:'sp',b:'App (SP)',s:'de applicatie'},{k:'br',b:'Browser',s:'de koerier'},{k:'idp',b:'IdP',s:'bv. Entra ID'}],
+    lanes:[{k:'sp',b:'App (SP)',s:'de applicatie'},{k:'br',b:'Browser',s:'de koerier'},{k:'idp',b:'IdP',s:'van de gemeente'}],
     pos:[12,50,88], phases:PHASES_DIRECT, steps:DIRECT, track:BASE_TRACK },
   govconext: buildBroker(GOV),
   keycloak: buildBroker(KC),
@@ -2360,7 +2566,7 @@ function pipeHtml(kind){
     label = 'Kopieer volledige SAMLResponse';
   }
   return '<div class="pipe">' + items.map((it,i) => (i ? '<span class="pa" aria-hidden="true">→</span>' : '') + '<span class="pi"><small>' + it[0] + '</small><span>' + it[1] + '</span></span>').join('') +
-    '<button type="button" class="btn copy" data-k="' + kind + '">' + label + '</button></div>';
+    '<button type="button" class="btn copy" data-k="' + kind + '">' + label + '</button></div>' + (kind === 'resp' ? '<p class="pipe-note">De weergave in het tabblad Inhoud is ingekort. De gekopieerde response is volledig en echt ondertekend met een demosleutel. Controleer hem met het certificaat uit stap 0b, bijvoorbeeld met <code>xmlsec1 --verify --pubkey-cert-pem idp.pem --id-attr:ID urn:oasis:names:tc:SAML:2.0:assertion:Assertion response.xml</code>.</p>' : '');
 }
 
 function renderDetail(){
@@ -2372,7 +2578,7 @@ function renderDetail(){
     '<button type="button" class="btn prev"' + (cur === 0 ? ' disabled' : '') + '>← Vorige</button>' +
     '<button type="button" class="btn next"' + (cur === M.steps.length - 1 ? ' disabled' : '') + '>Volgende →</button></div>' +
     '<div class="grp"><span class="count">' + (cur + 1) + ' / ' + M.steps.length + '</span><button type="button" class="btn to-diagram">↑ Diagram</button></div></div>';
-  h += '<p class="eyebrow">' + phase.t + ' · stap ' + s.id + '</p>';
+  h += '<p class="eyebrow">' + phase.t + ' · stap ' + s.id + (s.src ? ' ' + srcBadge(s.src) : '') + '</p>';
   h += '<h2>' + s.title + '</h2>';
   h += '<div class="route"><span class="node">' + nodeName(M, s.from) + '</span>' + (self ? '' : '<span class="ar" aria-hidden="true">' + (s.dir === 'both' ? '⇄' : '→') + '</span><span class="node">' + nodeName(M, s.to) + '</span>') + '<span class="tr">' + s.tr + '</span></div>';
   h += '<div class="prose">' + s.prose.map(p => '<p>' + p + '</p>').join('') + '</div>';
@@ -2383,7 +2589,7 @@ function renderDetail(){
       '<span class="ck-r"><em>Zonder deze controle:</em> ' + c.r + '</span></span></li>').join('') + '</ol>';
   }
   if (s.tasks){
-    h += '<ol class="checks">' + s.tasks.map((c,i) => '<li><span class="nn">' + (i + 1) + '</span><span><span class="ck-t">' + c.t + '</span>' +
+    h += '<ol class="checks">' + s.tasks.map((c,i) => '<li><span class="nn">' + (i + 1) + '</span><span><span class="ck-t">' + c.t + srcBadge(c.s) + '</span>' +
       '<span class="ck-c">' + c.d + (c.from ? ' <button type="button" class="xref" data-go="' + c.from + '">stap ' + c.from + '</button>' : '') + '</span></span></li>').join('') + '</ol>';
   }
 
@@ -2392,8 +2598,9 @@ function renderDetail(){
     const vi = viewIdx[vkey] || 0;
     const v = s.views[vi];
     if (s.views.length > 1){
-      h += '<div class="tabs" role="tablist">' + s.views.map((x,i) => '<button type="button" role="tab" class="tab" data-v="' + i + '" aria-selected="' + (i === vi) + '">' + x.name + '</button>').join('') + '</div>';
+      h += '<div class="tabs" role="tablist" aria-label="Weergave">' + s.views.map((x,i) => '<button type="button" role="tab" class="tab" id="vtab-' + i + '" aria-controls="vpanel" tabindex="' + (i === vi ? 0 : -1) + '" data-v="' + i + '" aria-selected="' + (i === vi) + '">' + x.name + '</button>').join('') + '</div>';
     }
+    h += '<div' + (s.views.length > 1 ? ' role="tabpanel" id="vpanel" aria-labelledby="vtab-' + vi + '"' : '') + '>';
     h += '<p class="cap">' + v.cap + '</p>';
     if (v.pipe) h += pipeHtml(v.pipe);
     if (v.copy) h += '<div class="pipe">' + v.copy.map(c => '<button type="button" class="btn copy" data-k="' + c[0] + '">' + c[1] + '</button>').join('') + '</div>';
@@ -2404,8 +2611,9 @@ function renderDetail(){
     }
     h += '<div class="code">' + code + '</div>';
     if (v.notes.length){
-      h += '<ol class="notes">' + v.notes.map(n => '<li><button type="button" class="note" data-n="' + n.n + '"><span class="nn">' + n.n + '</span><span><b>' + esc(n.t) + '</b><span class="d">' + n.d + '</span></span></button></li>').join('') + '</ol>';
+      h += '<ol class="notes">' + v.notes.map(n => '<li><button type="button" class="note" data-n="' + n.n + '"><span class="nn">' + n.n + '</span><span><b>' + esc(n.t) + srcBadge(n.s) + '</b><span class="d">' + n.d + '</span></span></button></li>').join('') + '</ol>';
     }
+    h += '</div>';
   }
   if (s.lab) h += labHtml(s.lab);
   if (s.callout) h += '<div class="callout"><b>Let op</b>' + s.callout + '</div>';
@@ -2414,6 +2622,11 @@ function renderDetail(){
   bindDetail();
 }
 
+const SRC = {
+  inf:{l:'afgeleid', t:'Niet gevonden in de documentatie van govroam of Nubus; afgeleid van OpenConext of Keycloak'},
+  simp:{l:'vereenvoudigd', t:'Voorbeeld dat de vorm toont, niet letterlijk wat over de lijn gaat'}
+};
+const srcBadge = k => k && SRC[k] ? ' <span class="src src-' + k + '" title="' + SRC[k].t + '">' + SRC[k].l + '</span>' : '';
 function labHtml(kind){
   if (kind === 'pkce') return '<div class="lab"><b>Reken het zelf na</b><p>De IdP berekent BASE64URL(SHA-256(code_verifier)) en vergelijkt dat met de code_challenge uit stap 2. Je browser kan dat hier ook.</p>' +
     '<div class="lab-row"><button type="button" class="btn lab-go" data-lab="pkce">Bereken code_challenge</button></div><div class="lab-out" aria-live="polite"></div></div>';
@@ -2485,7 +2698,7 @@ function bindDetail(){
     el.addEventListener('pointerleave', () => setHv(hvPinned));
     el.addEventListener('click', () => { hvPinned = (hvPinned === el.dataset.v) ? null : el.dataset.v; setHv(hvPinned); });
   });
-  detail.querySelectorAll('.tab').forEach(el => el.addEventListener('click', () => { viewIdx[mode + ':' + MODES[mode].steps[cur].id] = Number(el.dataset.v); renderDetail(); }));
+  detail.querySelectorAll('.tab').forEach(el => el.addEventListener('click', () => { viewIdx[mode + ':' + MODES[mode].steps[cur].id] = Number(el.dataset.v); renderDetail(); const st = detail.querySelector('.tab[aria-selected="true"]'); if (st) st.focus(); }));
   detail.querySelector('.prev').addEventListener('click', () => go(cur - 1, {fromNav:true}));
   detail.querySelector('.next').addEventListener('click', () => go(cur + 1, {fromNav:true}));
   detail.querySelector('.to-diagram').addEventListener('click', () => {
@@ -2548,6 +2761,7 @@ function switchMode(m){
   go(mapStep(prev, MODES[mode]), {fromNav:true, animate:false});
 }
 variantsEl.addEventListener('click', e => { const b = e.target.closest('.mode'); if (b) switchMode(b.dataset.m); });
+document.addEventListener('click', e => { const b = e.target.closest('.vt-go'); if (!b) return; switchMode(b.dataset.m); diagramEl.scrollIntoView({block:'start', behavior: reduce() ? 'auto' : 'smooth'}); });
 const PAIR = {govconext:'oidc-gov', keycloak:'oidc-kc', 'oidc-gov':'govconext', 'oidc-kc':'keycloak'};
 protoBtns.forEach(b => b.addEventListener('click', () => { if (b.dataset.p !== protoOf(mode)) switchMode(PAIR[mode] || PROTOS[b.dataset.p][0]); }));
 
@@ -2564,6 +2778,14 @@ document.addEventListener('keydown', e => {
   if (e.altKey || e.ctrlKey || e.metaKey) return;
   const t = e.target;
   if (t && t.closest && t.closest('input,textarea,select')) return;
+  const tl = t && t.closest && t.closest('[role="tablist"]');
+  if (tl && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')){
+    e.preventDefault();
+    const tabs = Array.from(tl.querySelectorAll('[role="tab"]'));
+    const i = tabs.indexOf(t.closest('[role="tab"]'));
+    tabs[(i + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length].click();
+    return;
+  }
   let d = 0;
   if (e.key === 'ArrowRight') d = 1;
   else if (e.key === 'ArrowLeft') d = -1;
